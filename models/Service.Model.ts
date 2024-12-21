@@ -13,5 +13,5 @@ export default interface Service {
 	color: ServiceColor;
 	created_at: Date;
 	updated_at: Date;
-	deleted_at?: Date;
+	deleted_at: Date | null;
 }

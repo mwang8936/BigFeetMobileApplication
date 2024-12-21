@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useThemeColor } from '@/hooks/colors/useThemeColor';
 import { DropdownProps } from 'react-native-element-dropdown/lib/typescript/components/Dropdown/model';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -64,7 +64,8 @@ export function ThemedDropdown({
 				style={[
 					{ backgroundColor: selected ? '#909090' : backgroundColor },
 					styles.item,
-				]}>
+				]}
+			>
 				<Ionicons name={item.icon} size={20} style={[{ color }, styles.icon]} />
 				<Text style={[{ color }, styles.label]}>{item.label}</Text>
 			</View>

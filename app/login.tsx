@@ -11,15 +11,15 @@ import {
 	Platform,
 	TextInput,
 	useColorScheme,
-	ActivityIndicator,
 } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-import { useRouter } from 'expo-router';
+import { router } from 'expo-router';
 
 import { Ionicons } from '@expo/vector-icons';
 
+import { useSession } from '@/context-providers/AuthContext';
 import { ColouredButton } from '@/components/ColouredButton';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedTextInput } from '@/components/ThemedTextInput';
@@ -28,15 +28,17 @@ import { ThemedView } from '@/components/ThemedView';
 import LENGTHS from '@/constants/Lengths';
 import PLACEHOLDERS from '@/constants/Placeholders';
 
+import { CustomAPIError } from '@/models/custom-errors/API.Error';
+
 export default function LoginScreen() {
-	const router = useRouter();
+	const { signIn } = useSession();
 
 	const colorScheme = useColorScheme();
 
-	const [loading, setLoading] = useState(false);
-
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
+
+	const [isLoading, setIsLoading] = useState(false);
 
 	const [usernameInvalid, setUsernameInvalid] = useState(false);
 
@@ -48,47 +50,44 @@ export default function LoginScreen() {
 	const missingInput = username.length === 0 || password.length === 0;
 	const invalidInput = usernameInvalid || missingInput;
 
-	const showToast = () => {
-		Toast.show({
-			type: 'error',
-			text1: 'Login Failed',
-			text2: 'Could not find username',
-		});
+	const showErrorToast = (title: string, messages: string[]) => {
+		if (messages.length > 0) {
+			Toast.show({
+				type: 'error',
+				text1: title,
+				text2: messages[0],
+			});
+		}
 	};
 
-	const handleLogin = () => {
-		setLoading(true);
-		const checkAuthStatus = async () => {
-			// Simulate async auth check
-			setTimeout(() => {
-				// Set `isAuthenticated` to true if user is logged in
-				setLoading(false);
-				showToast();
-				router.replace('/(tabs)');
-			}, 2000);
-		};
+	const handleLogin = async () => {
+		setIsLoading(true);
 
-		checkAuthStatus();
+		try {
+			await signIn({ username, password });
+			router.replace('/');
+		} catch (error) {
+			console.error('Login Failed:', error);
+
+			if (error instanceof CustomAPIError)
+				showErrorToast(error.title, error.messages);
+		} finally {
+			setIsLoading(false);
+		}
 	};
-
-	if (loading) {
-		return (
-			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-				<ActivityIndicator size="large" color="#0000ff" />
-			</View>
-		);
-	}
 
 	return (
 		<TouchableWithoutFeedback
 			style={{ height: '100%' }}
 			accessible={false}
-			onPress={Keyboard.dismiss}>
+			onPress={Keyboard.dismiss}
+		>
 			<SafeAreaProvider>
 				<SafeAreaView style={{ flex: 1 }} edges={['top']}>
 					<KeyboardAvoidingView
 						style={{ flex: 1 }}
-						behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+						behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+					>
 						<ThemedView style={styles.container}>
 							<Image
 								source={require('../assets/images/logo.png')}
@@ -103,8 +102,10 @@ export default function LoginScreen() {
 									type="mediumSemiBold"
 									style={{ marginTop: 8 }}
 									placeholder={PLACEHOLDERS.login.username}
-									textContentType="oneTimeCode" // Have to use this to stop keyboard flicker
+									autoCorrect={false}
+									autoComplete="username"
 									maxLength={LENGTHS.login.username}
+									textContentType="oneTimeCode" // Have to use this to stop keyboard flicker
 									text={username}
 									setText={setUsername}
 									invalid={usernameInvalid}
@@ -129,6 +130,8 @@ export default function LoginScreen() {
 									type="mediumSemiBold"
 									style={{ marginTop: 8 }}
 									placeholder={PLACEHOLDERS.login.password}
+									autoCorrect={false}
+									autoComplete="password"
 									maxLength={LENGTHS.login.password}
 									textContentType="oneTimeCode" // Have to use this to stop keyboard flicker
 									secureTextEntry={!isPasswordVisible}
@@ -146,7 +149,8 @@ export default function LoginScreen() {
 
 								<TouchableOpacity
 									onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-									style={styles.iconContainer}>
+									style={styles.iconContainer}
+								>
 									<Ionicons
 										name={isPasswordVisible ? 'eye-off' : 'eye'}
 										size={24}
@@ -168,13 +172,15 @@ export default function LoginScreen() {
 										? '#666' // Dark mode disabled color
 										: '#a9a9a9', // Light mode disabled color
 								}}
-								disabled={missingInput}
-								onPress={handleLogin}>
+								disabled={missingInput || isLoading}
+								onPress={handleLogin}
+							>
 								<Text
 									style={[
 										styles.buttonText,
 										{ color: colorScheme === 'dark' ? '#000' : '#fff' },
-									]}>
+									]}
+								>
 									Login
 								</Text>
 							</ColouredButton>

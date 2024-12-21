@@ -13,8 +13,7 @@ import {
 import Toast from 'react-native-toast-message';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-import { useRouter } from 'expo-router';
-
+import { useSession } from '@/context-providers/AuthContext';
 import { ColouredButton } from '@/components/ColouredButton';
 import { ThemedDropdown } from '@/components/ThemedDropdown';
 import { ThemedText } from '@/components/ThemedText';
@@ -30,7 +29,7 @@ import PLACEHOLDERS from '@/constants/Placeholders';
 import LENGTHS from '@/constants/Lengths';
 
 export default function ProfileScreen() {
-	const router = useRouter();
+	const { signOut } = useSession();
 
 	const colorScheme = useColorScheme();
 
@@ -109,18 +108,11 @@ export default function ProfileScreen() {
 	};
 
 	const handleLogout = () => {
-		setLoading(true);
-		const checkAuthStatus = async () => {
-			// Simulate async auth check
-			setTimeout(() => {
-				// Set `isAuthenticated` to true if user is logged in
-				setLoading(false);
-				showToast('success');
-				// router.replace('/login');
-			}, 2000);
-		};
-
-		checkAuthStatus();
+		try {
+			signOut();
+		} catch {
+			showToast('error');
+		}
 	};
 
 	if (loading) {
@@ -137,10 +129,12 @@ export default function ProfileScreen() {
 				<KeyboardAvoidingView
 					style={{ flex: 1 }}
 					behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-					keyboardVerticalOffset={100}>
+					keyboardVerticalOffset={100}
+				>
 					<ScrollView
 						style={{ flex: 1 }}
-						contentContainerStyle={styles.scrollViewContent}>
+						contentContainerStyle={styles.scrollViewContent}
+					>
 						<ColouredButton
 							type="edit"
 							style={{
@@ -148,7 +142,8 @@ export default function ProfileScreen() {
 								marginVertical: 16,
 								borderRadius: 24,
 							}}
-							onPress={() => setChangePasswordModalVisible(true)}>
+							onPress={() => setChangePasswordModalVisible(true)}
+						>
 							<Text style={[styles.buttonText]}>Change Password</Text>
 						</ColouredButton>
 
@@ -317,7 +312,8 @@ export default function ProfileScreen() {
 									style={[
 										styles.textInputSymbol,
 										{ color: colorScheme === 'dark' ? '#fff' : '#000' },
-									]}>
+									]}
+								>
 									$
 								</Text>
 
@@ -354,7 +350,8 @@ export default function ProfileScreen() {
 									style={[
 										styles.textInputSymbol,
 										{ color: colorScheme === 'dark' ? '#fff' : '#000' },
-									]}>
+									]}
+								>
 									$
 								</Text>
 
@@ -393,7 +390,8 @@ export default function ProfileScreen() {
 									style={[
 										styles.textInputSymbol,
 										{ color: colorScheme === 'dark' ? '#fff' : '#000' },
-									]}>
+									]}
+								>
 									$
 								</Text>
 
@@ -430,7 +428,8 @@ export default function ProfileScreen() {
 									style={[
 										styles.textInputSymbol,
 										{ color: colorScheme === 'dark' ? '#fff' : '#000' },
-									]}>
+									]}
+								>
 									$
 								</Text>
 
@@ -493,7 +492,8 @@ export default function ProfileScreen() {
 									borderRadius: 24,
 								}}
 								disabled={disableEditButton}
-								onPress={handleLogout}>
+								onPress={handleLogout}
+							>
 								<Text style={[styles.buttonText]}>Update Profile</Text>
 							</ColouredButton>
 						)}
@@ -505,7 +505,8 @@ export default function ProfileScreen() {
 								marginTop: 16,
 								borderRadius: 24,
 							}}
-							onPress={handleLogout}>
+							onPress={handleLogout}
+						>
 							<Text style={[styles.buttonText]}>Logout</Text>
 						</ColouredButton>
 

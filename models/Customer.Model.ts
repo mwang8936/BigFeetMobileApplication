@@ -6,5 +6,5 @@ export default interface Customer {
 	notes: string | null;
 	created_at: Date;
 	updated_at: Date;
-	deleted_at?: Date;
+	deleted_at: Date | null;
 }

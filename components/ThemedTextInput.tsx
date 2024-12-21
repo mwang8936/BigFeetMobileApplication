@@ -1,7 +1,7 @@
 import React, { forwardRef, useState } from 'react';
 import { type TextInputProps, StyleSheet, TextInput } from 'react-native';
 
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useThemeColor } from '@/hooks/colors/useThemeColor';
 
 export type TextSizeType =
 	| 'small'
