@@ -17,8 +17,8 @@ const AuthorizedAxiosHandler: React.FC<AuthorizedAxiosHandlerProps> = ({
 
 	useEffect(() => {
 		const onRequest = (config: InternalAxiosRequestConfig) => {
-			if (socketID && config.data) {
-				config.data = { ...config.data, socket_id: socketID };
+			if (socketID) {
+				config.headers.set('x-socket-id', socketID);
 			}
 
 			return config;
@@ -33,6 +33,7 @@ const AuthorizedAxiosHandler: React.FC<AuthorizedAxiosHandlerProps> = ({
 
 		const onResponseError = (error: AxiosError) => {
 			if (error.response?.status === 401) signOut();
+			return Promise.reject(error);
 		};
 
 		const responseInterceptor =
