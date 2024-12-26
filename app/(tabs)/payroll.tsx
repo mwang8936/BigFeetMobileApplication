@@ -1,155 +1,152 @@
-import { Picker } from '@react-native-picker/picker';
-import { useState } from 'react';
-import { Text, View, StyleSheet, Alert, Pressable, Modal } from 'react-native';
+import {
+	useUserAcupunctureReportsQuery,
+	useUserPayrollsQuery,
+} from '@/hooks/react-query/profile.hooks';
+import Swiper from 'react-native-swiper';
+import { createContext, useContext, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Text, StyleSheet } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { PayrollOption, PayrollPart } from '@/models/enums';
+
+import { BallIndicator } from 'react-native-indicators';
+import YearMonthPicker from '@/components/(tabs)/payroll/YearMonthPicker';
+import { useThemeColor } from '@/hooks/colors/useThemeColor';
+import StoreEmployeePayroll from '@/components/(tabs)/payroll/StoreEmployeePayroll';
+import Payroll from '@/models/Payroll.Model';
+import StoreEmployeeWithCashAndTipsPayroll from '@/components/(tabs)/payroll/StoreEmployeeWithCashAndTipsPayroll';
+import AcupuncturistPayroll from '@/components/(tabs)/payroll/AcupuncturistPayroll';
+import ReceptionistPayroll from '@/components/(tabs)/payroll/ReceptionistPayroll';
+import { usePayrollYearMonth } from '@/context-providers/PayrollYearMonthContext';
+import AcupunctureReportTable from '@/components/(tabs)/payroll/AcupunctureReportTable';
 
 export default function PayrollScreen() {
-	const [selectedValue, setSelectedValue] = useState('Option1');
+	const { t } = useTranslation();
 
-	const [modalVisible, setModalVisible] = useState(false);
+	const textColor = useThemeColor({}, 'text');
+
+	const { yearMonth, setYearMonth } = usePayrollYearMonth();
+
+	const payrollsQuery = useUserPayrollsQuery(yearMonth.year, yearMonth.month);
+	const payrolls = payrollsQuery.data || [];
+
+	const acupunctureReportsQuery = useUserAcupunctureReportsQuery(
+		yearMonth.year,
+		yearMonth.month
+	);
+	const acupunctureReports = acupunctureReportsQuery.data;
+
+	const isLoading =
+		payrollsQuery.isLoading || acupunctureReportsQuery.isLoading;
+
+	const payrollElement = (payroll: Payroll) => {
+		switch (payroll.option) {
+			case PayrollOption.ACUPUNCTURIST:
+				return <AcupuncturistPayroll payroll={payroll} />;
+			case PayrollOption.RECEPTIONIST:
+				return <ReceptionistPayroll payroll={payroll} />;
+			case PayrollOption.STORE_EMPLOYEE:
+				return <StoreEmployeePayroll payroll={payroll} />;
+			case PayrollOption.STORE_EMPLOYEE_WITH_TIPS_AND_CASH:
+				return <StoreEmployeeWithCashAndTipsPayroll payroll={payroll} />;
+			default:
+				return <StoreEmployeePayroll payroll={payroll} />;
+		}
+	};
+
+	const payrollPart1 = payrolls.find(
+		(payroll) => payroll.part === PayrollPart.PART_1
+	);
+	const payrollPart1Element = payrollPart1 && (
+		<ScrollView
+			key={payrollPart1.part}
+			style={styles.scrollView}
+			contentContainerStyle={styles.scrollViewContent}
+		>
+			{payrollElement(payrollPart1)}
+		</ScrollView>
+	);
+
+	const payrollPart2 = payrolls.find(
+		(payroll) => payroll.part === PayrollPart.PART_2
+	);
+	const payrollPart2Element = payrollPart2 && (
+		<ScrollView
+			key={payrollPart2.part}
+			style={styles.scrollView}
+			contentContainerStyle={styles.scrollViewContent}
+		>
+			{payrollElement(payrollPart2)}
+		</ScrollView>
+	);
+
+	const acupunctureReport = acupunctureReports?.find(
+		(acupunctureReport) =>
+			acupunctureReport.year === yearMonth.year &&
+			acupunctureReport.month === yearMonth.month
+	);
+	const acupunctureReportElement = acupunctureReport && (
+		<ScrollView
+			style={styles.scrollView}
+			contentContainerStyle={styles.scrollViewContent}
+		>
+			<AcupunctureReportTable acupunctureReport={acupunctureReport} />
+		</ScrollView>
+	);
+
+	const noPayrollsElement =
+		!payrollPart1Element &&
+		!payrollPart2Element &&
+		!acupunctureReportElement ? (
+			<Text style={[styles.textContent, { color: textColor }]}>
+				{t('No Payrolls')}
+			</Text>
+		) : undefined;
+
 	return (
 		<SafeAreaProvider>
-			<SafeAreaView style={styles.centeredView}>
-				<Modal
-					animationType="slide"
-					transparent={true}
-					visible={modalVisible}
-					onRequestClose={() => {
-						Alert.alert('Modal has been closed.');
-						setModalVisible(!modalVisible);
-					}}>
-					<View style={styles.centeredView}>
-						<View style={styles.modalView}>
-							<Text style={styles.modalText}>Hello World!</Text>
-							<Picker
-								itemStyle={styles.picker}
-								selectionColor={'#FF5733'}
-								style={styles.picker}
-								// enabled={false}
-								selectedValue={selectedValue}
-								onValueChange={(itemValue, itemIndex) =>
-									setSelectedValue(itemValue)
-								}>
-								<Picker.Item label="Option 1" value="Option1" />
-								<Picker.Item label="Option 2" value="Option2" />
-								<Picker.Item label="Option 3" value="Option3" />
-								<Picker.Item label="Option 4" value="Option4" />
-								<Picker.Item label="Option 5" value="Option5" />
-								<Picker.Item label="Option 6" value="Option6" />
-								<Picker.Item label="Option 7" value="Option7" />
-								<Picker.Item label="Option 8" value="Option8" />
-								<Picker.Item label="Option 9" value="Option9" />
-							</Picker>
-							<Pressable
-								style={[styles.button, styles.buttonClose]}
-								onPress={() => setModalVisible(!modalVisible)}>
-								<Text style={styles.textStyle}>Hide Modal</Text>
-							</Pressable>
-						</View>
-					</View>
-				</Modal>
-
-				{/* <Modal
-					animationType="slide"
-					transparent={true}
-					visible={changePasswordModalVisible}>
-					<View style={styles.centeredView}>
-						<View style={styles.modalView}>
-							<Text style={{}}>Hello World!</Text>
-
-							<View style={styles.buttonContainer}>
-								<ColouredButton
-									type="default"
-									style={{
-										padding: 8,
-										marginEnd: 8,
-										marginVertical: 12,
-										borderRadius: 6,
-										borderWidth: 2,
-										borderColor: '#999999',
-									}}
-									onPress={() => setChangePasswordModalVisible(false)}>
-									<Text style={{ color: 'white' }}>Cancel</Text>
-								</ColouredButton>
-
-								<ColouredButton
-									type="edit"
-									style={{
-										padding: 8,
-										marginEnd: 8,
-										marginVertical: 12,
-										borderRadius: 6,
-										borderWidth: 2,
-										borderColor: '#999999',
-									}}
-									onPress={handleLogout}>
-									<Text style={{ color: 'white' }}>Update</Text>
-								</ColouredButton>
-							</View>
-						</View>
-					</View>
-				</Modal> */}
-				<Pressable
-					style={[styles.button, styles.buttonOpen]}
-					onPress={() => setModalVisible(true)}>
-					<Text style={styles.textStyle}>Show Modal</Text>
-				</Pressable>
+			<SafeAreaView style={styles.container} edges={['top']}>
+				{isLoading ? (
+					<BallIndicator />
+				) : (
+					<Swiper loop={false} dotColor={textColor}>
+						{noPayrollsElement}
+						{payrollPart1Element}
+						{payrollPart2Element}
+						{acupunctureReportElement}
+					</Swiper>
+				)}
+				<YearMonthPicker
+					year={yearMonth.year}
+					setYear={(year: number) =>
+						setYearMonth({ year, month: yearMonth.month })
+					}
+					month={yearMonth.month}
+					setMonth={(month: number) =>
+						setYearMonth({ year: yearMonth.year, month })
+					}
+				/>
 			</SafeAreaView>
 		</SafeAreaProvider>
 	);
 }
 
 const styles = StyleSheet.create({
-	picker: {
-		color: '#000000', // Light text color for contrast
-	},
-	button: {
-		borderRadius: 20,
-		padding: 10,
-		elevation: 2,
-	},
-	buttonOpen: {
-		backgroundColor: '#F194FF',
-	},
-	buttonClose: {
-		backgroundColor: '#2196F3',
-	},
-	textStyle: {
-		color: 'white',
-		fontWeight: 'bold',
-		textAlign: 'center',
-	},
-	modalText: {
-		marginBottom: 15,
-		textAlign: 'center',
-	},
-	centeredView: {
+	container: {
 		flex: 1,
+	},
+	scrollView: {
+		flex: 1,
+	},
+	scrollViewContent: {
+		flexGrow: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
 	},
-	modalView: {
-		margin: 20,
-		backgroundColor: 'white',
-		borderRadius: 20,
-		width: '80%',
-		alignItems: 'center',
-		shadowColor: '#000',
-		shadowOffset: {
-			width: 0,
-			height: 2,
-		},
-		shadowOpacity: 0.25,
-		shadowRadius: 4,
-		elevation: 5,
-	},
-	buttonContainer: {
-		flexDirection: 'row',
-		justifyContent: 'flex-end',
-		width: '100%',
-		marginTop: 20,
-		backgroundColor: '#dddddd',
-		borderBottomLeftRadius: 20,
-		borderBottomRightRadius: 20,
+	textContent: {
+		fontSize: 40,
+		fontWeight: 'bold',
+		margin: 'auto',
 	},
 });

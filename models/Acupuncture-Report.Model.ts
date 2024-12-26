@@ -1,7 +1,9 @@
+import { DateTime } from 'luxon';
+
 import Employee from './Employee.Model';
 
 export interface DataRow {
-	date: Date;
+	date: DateTime;
 	acupuncture: number;
 	massage: number;
 	insurance: number;
@@ -15,6 +17,6 @@ export default interface AcupunctureReport {
 	massage_percentage: number;
 	insurance_percentage: number;
 	data: DataRow[];
-	created_at: Date;
-	updated_at: Date;
+	created_at: DateTime;
+	updated_at: DateTime;
 }

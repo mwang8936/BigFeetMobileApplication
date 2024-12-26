@@ -59,9 +59,7 @@ export const getProfileAcupunctureReports = async (
 export const updateProfile = async (
 	request: UpdateProfileRequest
 ): Promise<User> => {
-	const response = await AuthorizedAxiosInstance.patch(profilePath, {
-		request,
-	});
+	const response = await AuthorizedAxiosInstance.patch(profilePath, request);
 
 	return response.data;
 };

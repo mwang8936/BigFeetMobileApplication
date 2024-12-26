@@ -1,12 +1,14 @@
+import { DateTime } from 'luxon';
+
 import Customer from './Customer.Model';
-import Service from './Service.Model';
 import { Gender, TipMethod } from './enums';
+import Service from './Service.Model';
 
 export default interface Reservation {
 	reservation_id: number;
 	employee_id: number;
-	date: Date;
-	reserved_date: Date;
+	date: DateTime;
+	reserved_date: DateTime;
 	service: Service;
 	time: number | null;
 	beds_required: number | null;
@@ -23,7 +25,7 @@ export default interface Reservation {
 	tip_method: TipMethod | null;
 	message: string | null;
 	created_by: string;
-	created_at: Date;
+	created_at: DateTime;
 	updated_by: string;
-	updated_at: Date;
+	updated_at: DateTime;
 }

@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import { Gender, Permissions, Role } from './enums';
 
 export default interface Employee {
@@ -12,7 +13,7 @@ export default interface Employee {
 	feet_rate: number | null;
 	acupuncture_rate: number | null;
 	per_hour: number | null;
-	created_at: Date;
-	updated_at: Date;
-	deleted_at: Date | null;
+	created_at: DateTime;
+	updated_at: DateTime;
+	deleted_at: DateTime | null;
 }

@@ -1,5 +1,5 @@
 const API_BASE_URL =
-	'https://197b-2607-fea8-84a1-c300-7165-d4a2-4e1a-a4f.ngrok-free.app/api';
+	'https://b564-2607-fea8-84a1-c300-d0fe-6375-3834-9559.ngrok-free.app/api';
 
 export default API_BASE_URL;
 

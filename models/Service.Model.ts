@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon';
+
 import { ServiceColor } from './enums';
 
 export default interface Service {
@@ -11,7 +13,7 @@ export default interface Service {
 	acupuncture: number;
 	beds_required: number;
 	color: ServiceColor;
-	created_at: Date;
-	updated_at: Date;
-	deleted_at: Date | null;
+	created_at: DateTime;
+	updated_at: DateTime;
+	deleted_at: DateTime | null;
 }

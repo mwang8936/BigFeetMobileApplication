@@ -1,4 +1,6 @@
+import { DateTime } from 'luxon';
+
 export interface GetGiftCardsParam {
-	start?: Date;
-	end?: Date;
+	start?: DateTime;
+	end?: DateTime;
 }

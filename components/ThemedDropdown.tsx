@@ -4,6 +4,7 @@ import { Dropdown } from 'react-native-element-dropdown';
 import { useThemeColor } from '@/hooks/colors/useThemeColor';
 import { DropdownProps } from 'react-native-element-dropdown/lib/typescript/components/Dropdown/model';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -47,11 +48,11 @@ export function ThemedDropdown({
 	type = 'small',
 	...rest
 }: ThemedDropDownProps) {
+	const { t } = useTranslation();
 	const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
-	const backgroundColor = useThemeColor(
-		{ light: lightColor, dark: darkColor },
-		'background'
-	);
+	const backgroundColor = useThemeColor({}, 'background');
+	const disabledBackgroundColor = useThemeColor({}, 'disabledBackground');
+	const borderColor = useThemeColor({}, 'border');
 
 	const [isFocused, setIsFocused] = useState(false);
 
@@ -76,12 +77,12 @@ export function ThemedDropdown({
 		<Dropdown
 			style={[
 				{
-					backgroundColor: disable ? '#ccc' : undefined,
+					backgroundColor: disable ? disabledBackgroundColor : undefined,
 					borderColor: missingRequired
 						? '#FF3B30'
 						: isFocused
 						? '#007AFF'
-						: '#2a2a2a',
+						: borderColor,
 				},
 				styles.dropdown,
 				style,
@@ -116,8 +117,8 @@ export function ThemedDropdown({
 			data={data}
 			search
 			maxHeight={300}
-			placeholder={!isFocused ? placeholderText ?? 'Select item' : '...'}
-			searchPlaceholder="Search..."
+			placeholder={!isFocused ? placeholderText ?? t('Select item') : '...'}
+			searchPlaceholder={t('Search...')}
 			value={option}
 			disable={disable}
 			onFocus={() => setIsFocused(true)}

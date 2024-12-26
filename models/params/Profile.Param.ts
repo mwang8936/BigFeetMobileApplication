@@ -1,14 +1,16 @@
+import { DateTime } from 'luxon';
+
 export interface GetProfileSchedulesParam {
-	start?: Date;
-	end?: Date;
+	start?: DateTime;
+	end?: DateTime;
 }
 
 export interface GetProfilePayrollsParam {
-	start?: Date;
-	end?: Date;
+	start?: DateTime;
+	end?: DateTime;
 }
 
 export interface GetProfileAcupunctureReportsParam {
-	start?: Date;
-	end?: Date;
+	start?: DateTime;
+	end?: DateTime;
 }

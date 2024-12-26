@@ -45,6 +45,8 @@ export const ThemedTextInput = forwardRef<TextInput, ThemedTextProps>(
 		ref
 	) => {
 		const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+		const disabledBackgroundColor = useThemeColor({}, 'disabledBackground');
+		const borderColor = useThemeColor({}, 'border');
 
 		const [isFocused, setIsFocused] = useState(false);
 
@@ -64,13 +66,13 @@ export const ThemedTextInput = forwardRef<TextInput, ThemedTextProps>(
 				style={[
 					{
 						color,
-						backgroundColor: !editable ? '#ccc' : undefined,
+						backgroundColor: !editable ? disabledBackgroundColor : undefined,
 						borderColor:
 							invalid || missingRequired
 								? '#FF3B30'
 								: isFocused
 								? '#007AFF'
-								: '#2a2a2a',
+								: borderColor,
 					},
 					styles.container,
 					type === 'small' ? styles.small : undefined,

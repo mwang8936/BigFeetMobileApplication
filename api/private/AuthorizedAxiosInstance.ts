@@ -1,15 +1,9 @@
-import axios, {
-	AxiosError,
-	AxiosInstance,
-	AxiosResponse,
-	InternalAxiosRequestConfig,
-} from 'axios';
-
-import * as SecureStore from 'expo-secure-store';
+import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 
 import { DateTime } from 'luxon';
 
 import API_BASE_URL from '@/constants/API.constants';
+import { CustomAPIError } from '@/models/custom-errors/API.Error';
 
 // The Axios Instance used for making authorized API calls
 const AuthorizedAxiosInstance: AxiosInstance = axios.create({
@@ -20,30 +14,14 @@ const AuthorizedAxiosInstance: AxiosInstance = axios.create({
 	},
 });
 
-const onRequest = async (
-	config: InternalAxiosRequestConfig
-): Promise<InternalAxiosRequestConfig> => {
-	// Attach API Access Token to request
-	const accessToken = await SecureStore.getItemAsync('session');
-
-	if (config.headers && accessToken) {
-		config.headers.Authorization = `Bearer ${accessToken}`;
-	}
-
-	return config;
-};
-
-const onRequestError = (error: AxiosError): Promise<AxiosError> => {
-	return Promise.reject(error);
-};
-
-AuthorizedAxiosInstance.interceptors.request.use(onRequest, onRequestError);
-
 const parseDate = (input: string): DateTime | string => {
 	// Check if the input is in 'yyyy-mm-dd' format
-	if (/^\d{4}-\d{2}-\d{2}$/.test(input)) {
+	if (/^\d{4}-\d{2}-\d{1,2}$/.test(input)) {
+		// Pad a 0 before the day value if it is single digit
+		const normalizedInput = input.replace(/-(\d)$/, '-0$1');
+
 		// Parse as a date in the beginning of the day in PST (America/Los_Angeles)
-		const isoDate = DateTime.fromISO(input, {
+		const isoDate = DateTime.fromISO(normalizedInput, {
 			zone: 'America/Los_Angeles',
 		}).startOf('day');
 
@@ -110,8 +88,9 @@ const onResponse = (response: AxiosResponse): AxiosResponse => {
 	return response;
 };
 
-const onResponseError = (error: AxiosError): Promise<AxiosError> => {
-	return Promise.reject(error);
+const onResponseError = (error: AxiosError): Promise<CustomAPIError> => {
+	const APIError = new CustomAPIError(error);
+	return Promise.reject(APIError);
 };
 
 AuthorizedAxiosInstance.interceptors.response.use(onResponse, onResponseError);

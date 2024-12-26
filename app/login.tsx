@@ -12,8 +12,8 @@ import {
 	TextInput,
 	useColorScheme,
 } from 'react-native';
-import Toast from 'react-native-toast-message';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 
 import { router } from 'expo-router';
 
@@ -21,6 +21,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { useSession } from '@/context-providers/AuthContext';
 import { ColouredButton } from '@/components/ColouredButton';
+import { ThemedLoadingSpinner } from '@/components/ThemedLoadingSpinner';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedTextInput } from '@/components/ThemedTextInput';
 import { ThemedView } from '@/components/ThemedView';
@@ -28,12 +29,11 @@ import { ThemedView } from '@/components/ThemedView';
 import LENGTHS from '@/constants/Lengths';
 import PLACEHOLDERS from '@/constants/Placeholders';
 
-import { CustomAPIError } from '@/models/custom-errors/API.Error';
-
 export default function LoginScreen() {
 	const { signIn } = useSession();
 
 	const colorScheme = useColorScheme();
+	const { t } = useTranslation();
 
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
@@ -50,16 +50,6 @@ export default function LoginScreen() {
 	const missingInput = username.length === 0 || password.length === 0;
 	const invalidInput = usernameInvalid || missingInput;
 
-	const showErrorToast = (title: string, messages: string[]) => {
-		if (messages.length > 0) {
-			Toast.show({
-				type: 'error',
-				text1: title,
-				text2: messages[0],
-			});
-		}
-	};
-
 	const handleLogin = async () => {
 		setIsLoading(true);
 
@@ -68,9 +58,6 @@ export default function LoginScreen() {
 			router.replace('/');
 		} catch (error) {
 			console.error('Login Failed:', error);
-
-			if (error instanceof CustomAPIError)
-				showErrorToast(error.title, error.messages);
 		} finally {
 			setIsLoading(false);
 		}
@@ -89,19 +76,25 @@ export default function LoginScreen() {
 						behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
 					>
 						<ThemedView style={styles.container}>
+							<ThemedLoadingSpinner
+								indicator="ball"
+								isLoading={isLoading}
+								message={t('Logging In...')}
+							/>
+
 							<Image
 								source={require('../assets/images/logo.png')}
 								style={{ resizeMode: 'center' }}
 							/>
 
 							<View style={{ width: '80%', marginBottom: 16 }}>
-								<ThemedText type="subtitle">Username</ThemedText>
+								<ThemedText type="subtitle">{t('Username')}</ThemedText>
 
 								<ThemedTextInput
 									ref={usernameInputRef}
 									type="mediumSemiBold"
 									style={{ marginTop: 8 }}
-									placeholder={PLACEHOLDERS.login.username}
+									placeholder={t(PLACEHOLDERS.login.username)}
 									autoCorrect={false}
 									autoComplete="username"
 									maxLength={LENGTHS.login.username}
@@ -123,13 +116,13 @@ export default function LoginScreen() {
 							</View>
 
 							<View style={{ width: '80%', marginVertical: 8 }}>
-								<ThemedText type="subtitle">Password</ThemedText>
+								<ThemedText type="subtitle">{t('Password')}</ThemedText>
 
 								<ThemedTextInput
 									ref={passwordInputRef}
 									type="mediumSemiBold"
 									style={{ marginTop: 8 }}
-									placeholder={PLACEHOLDERS.login.password}
+									placeholder={t(PLACEHOLDERS.login.password)}
 									autoCorrect={false}
 									autoComplete="password"
 									maxLength={LENGTHS.login.password}
@@ -172,7 +165,7 @@ export default function LoginScreen() {
 										? '#666' // Dark mode disabled color
 										: '#a9a9a9', // Light mode disabled color
 								}}
-								disabled={missingInput || isLoading}
+								disabled={invalidInput}
 								onPress={handleLogin}
 							>
 								<Text
@@ -181,11 +174,9 @@ export default function LoginScreen() {
 										{ color: colorScheme === 'dark' ? '#000' : '#fff' },
 									]}
 								>
-									Login
+									{t('Login')}
 								</Text>
 							</ColouredButton>
-
-							<Toast />
 						</ThemedView>
 					</KeyboardAvoidingView>
 				</SafeAreaView>

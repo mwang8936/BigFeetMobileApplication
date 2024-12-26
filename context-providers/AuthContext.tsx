@@ -5,6 +5,9 @@ import { login } from '@/api/public/services/login.service';
 import { useTranslation } from 'react-i18next';
 
 import { useQueryClient } from '@tanstack/react-query';
+import { getLanguageFile } from '@/utils/i18n.utils';
+import { Language } from '@/models/enums';
+import { userQueryKey } from '@/hooks/react-query/profile.hooks';
 const AuthContext = createContext<{
 	signIn: (credentials: LoginRequest) => void;
 	signOut: () => void;
@@ -46,10 +49,10 @@ export function SessionProvider({ children }: PropsWithChildren) {
 		const { user, accessToken } = data;
 
 		// Add user data to cache
-		queryClient.setQueryData(['user'], user);
+		queryClient.setQueryData([userQueryKey], user);
 
 		// Change language to user setting
-		i18n.changeLanguage(user.language);
+		i18n.changeLanguage(getLanguageFile(user.language));
 
 		// Save token in session state and secure storage
 		setSession(accessToken);
@@ -59,8 +62,8 @@ export function SessionProvider({ children }: PropsWithChildren) {
 		// Remove cached data
 		queryClient.clear();
 
-		// Revert language to default English
-		i18n.changeLanguage('English');
+		// Revert language to default language
+		i18n.changeLanguage(undefined);
 
 		// Remove token from session state and secure storage
 		setSession(null);

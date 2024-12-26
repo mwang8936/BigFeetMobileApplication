@@ -1,29 +1,97 @@
-const HOLIDAYS: Record<number, Date[]> = {
+import { DateTime } from 'luxon';
+
+const HOLIDAYS: Record<number, DateTime[]> = {
 	2024: [
-		new Date(2024, 0, 1), // New Year's Day
-		new Date(2024, 1, 19), // Family Day
-		new Date(2024, 2, 29), // Good Friday
-		new Date(2024, 4, 20), // Victoria Day
-		new Date(2024, 6, 1), // Canada Day
-		new Date(2024, 7, 5), // B.C. Day
-		new Date(2024, 8, 2), // Labour Day
-		new Date(2024, 8, 30), // National Day for Truth and Reconciliation
-		new Date(2024, 9, 14), // Thanksgiving Day
-		new Date(2024, 10, 11), // Remembrance Day
-		new Date(2024, 11, 25), // Christmas Day
+		DateTime.fromObject(
+			{ year: 2024, month: 1, day: 1 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // New Year's Day
+		DateTime.fromObject(
+			{ year: 2024, month: 2, day: 19 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // Family Day
+		DateTime.fromObject(
+			{ year: 2024, month: 3, day: 29 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // Good Friday
+		DateTime.fromObject(
+			{ year: 2024, month: 5, day: 20 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // Victoria Day
+		DateTime.fromObject(
+			{ year: 2024, month: 7, day: 1 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // Canada Day
+		DateTime.fromObject(
+			{ year: 2024, month: 8, day: 5 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // B.C. Day
+		DateTime.fromObject(
+			{ year: 2024, month: 9, day: 2 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // Labour Day
+		DateTime.fromObject(
+			{ year: 2024, month: 9, day: 30 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // National Day for Truth and Reconciliation
+		DateTime.fromObject(
+			{ year: 2024, month: 10, day: 14 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // Thanksgiving Day
+		DateTime.fromObject(
+			{ year: 2024, month: 11, day: 11 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // Remembrance Day
+		DateTime.fromObject(
+			{ year: 2024, month: 12, day: 25 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // Christmas Day
 	],
 	2025: [
-		new Date(2025, 0, 1), // New Year's Day
-		new Date(2025, 1, 17), // Family Day
-		new Date(2025, 3, 18), // Good Friday
-		new Date(2025, 4, 19), // Victoria Day
-		new Date(2025, 6, 1), // Canada Day
-		new Date(2025, 7, 4), // B.C. Day
-		new Date(2025, 8, 1), // Labour Day
-		new Date(2025, 8, 30), // National Day for Truth and Reconciliation
-		new Date(2025, 9, 13), // Thanksgiving Day
-		new Date(2025, 10, 11), // Remembrance Day
-		new Date(2025, 11, 25), // Christmas Day
+		DateTime.fromObject(
+			{ year: 2025, month: 1, day: 1 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // New Year's Day
+		DateTime.fromObject(
+			{ year: 2025, month: 2, day: 17 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // Family Day
+		DateTime.fromObject(
+			{ year: 2025, month: 4, day: 18 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // Good Friday
+		DateTime.fromObject(
+			{ year: 2025, month: 5, day: 19 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // Victoria Day
+		DateTime.fromObject(
+			{ year: 2025, month: 7, day: 1 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // Canada Day
+		DateTime.fromObject(
+			{ year: 2025, month: 8, day: 4 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // B.C. Day
+		DateTime.fromObject(
+			{ year: 2025, month: 9, day: 1 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // Labour Day
+		DateTime.fromObject(
+			{ year: 2025, month: 9, day: 30 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // National Day for Truth and Reconciliation
+		DateTime.fromObject(
+			{ year: 2025, month: 10, day: 13 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // Thanksgiving Day
+		DateTime.fromObject(
+			{ year: 2025, month: 11, day: 11 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // Remembrance Day
+		DateTime.fromObject(
+			{ year: 2025, month: 12, day: 25 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // Christmas Day
 	],
 };
 

@@ -1,10 +1,11 @@
+import { DateTime } from 'luxon';
 import Employee from './Employee.Model';
 import { PayrollOption, PayrollPart } from './enums';
 
 export interface DataRow {
-	date: Date;
-	start: Date | null;
-	end: Date | null;
+	date: DateTime;
+	start: DateTime | null;
+	end: DateTime | null;
 	body_sessions: number;
 	requested_body_sessions: number;
 	feet_sessions: number;
@@ -29,6 +30,6 @@ export default interface Payroll {
 	option: PayrollOption;
 	cheque_amount: number | null;
 	data: DataRow[];
-	created_at: Date;
-	updated_at: Date;
+	created_at: DateTime;
+	updated_at: DateTime;
 }
