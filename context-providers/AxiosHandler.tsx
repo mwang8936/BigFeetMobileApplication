@@ -1,18 +1,13 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 
-import { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
-import { Toast } from 'toastify-react-native';
+import { InternalAxiosRequestConfig } from 'axios';
 
 import AuthorizedAxiosInstance from '@/api/private/AuthorizedAxiosInstance';
-import UnauthorizedAxiosInstance from '@/api/public/UnauthorizedAxiosInstance';
-
-import { useStorageState } from '@/hooks/storage/useStorageState';
 
 import { CustomAPIError } from '@/models/custom-errors/API.Error';
 
 import { useSession } from './AuthContext';
 import { useSocket } from './SocketContext';
-import { useTranslation } from 'react-i18next';
 
 interface AxiosHandlerProps {
 	children: React.ReactNode;
@@ -38,57 +33,10 @@ export function useAxiosContext() {
 }
 
 const AxiosHandler: React.FC<AxiosHandlerProps> = ({ children }) => {
-	const { t } = useTranslation();
-
-	const [[_, session]] = useStorageState('session');
-
 	const [interceptorsReady, setInterceptorsReady] = useState(false);
 
 	const { socketID } = useSocket();
-	const { signOut } = useSession();
-
-	useEffect(() => {
-		const onResponse = (response: AxiosResponse): AxiosResponse => {
-			if (response.config.method !== 'get') {
-				Toast.success('Success');
-			}
-
-			return response;
-		};
-
-		const onResponseError = (
-			error: CustomAPIError
-		): Promise<CustomAPIError> => {
-			if (error.status === 401) Toast.error(t('Signed Out'));
-			else {
-				const errorMessage = error.messages?.[0] || 'An error occurred';
-				Toast.error(errorMessage);
-			}
-
-			return Promise.reject(error);
-		};
-
-		const unauthorizedResponseInterceptor =
-			UnauthorizedAxiosInstance.interceptors.response.use(
-				onResponse,
-				onResponseError
-			);
-
-		const authorizedResponseInterceptor =
-			AuthorizedAxiosInstance.interceptors.response.use(
-				onResponse,
-				onResponseError
-			);
-
-		return () => {
-			UnauthorizedAxiosInstance.interceptors.response.eject(
-				unauthorizedResponseInterceptor
-			);
-			AuthorizedAxiosInstance.interceptors.response.eject(
-				authorizedResponseInterceptor
-			);
-		};
-	}, []);
+	const { session, signOut } = useSession();
 
 	useEffect(() => {
 		const onRequest = (config: InternalAxiosRequestConfig) => {
@@ -97,18 +45,12 @@ const AxiosHandler: React.FC<AxiosHandlerProps> = ({ children }) => {
 				config.headers.Authorization = `Bearer ${session}`;
 			}
 
-			if (socketID) {
-				config.headers.set('x-socket-id', socketID);
-			}
-
 			return config;
 		};
 
 		const requestIntercepter = AuthorizedAxiosInstance.interceptors.request.use(
 			onRequest,
-			async (error) => {
-				return Promise.reject(error);
-			}
+			(error) => error
 		);
 
 		const onResponseError = (error: CustomAPIError) => {
@@ -122,14 +64,34 @@ const AxiosHandler: React.FC<AxiosHandlerProps> = ({ children }) => {
 				onResponseError
 			);
 
-		setInterceptorsReady(true);
+		if (session) setInterceptorsReady(true);
 		return () => {
 			AuthorizedAxiosInstance.interceptors.request.eject(requestIntercepter);
 			AuthorizedAxiosInstance.interceptors.response.eject(responseInterceptor);
 
 			setInterceptorsReady(false);
 		};
-	}, [session, socketID, signOut]);
+	}, [session, signOut]);
+
+	useEffect(() => {
+		const onRequest = (config: InternalAxiosRequestConfig) => {
+			// Attach Socket ID to header
+			if (socketID) {
+				config.headers.set('x-socket-id', socketID);
+			}
+
+			return config;
+		};
+
+		const requestIntercepter = AuthorizedAxiosInstance.interceptors.request.use(
+			onRequest,
+			(error) => error
+		);
+
+		return () => {
+			AuthorizedAxiosInstance.interceptors.request.eject(requestIntercepter);
+		};
+	}, [socketID]);
 
 	return (
 		<AxiosReadyContext.Provider

@@ -27,7 +27,7 @@ export const updatePayroll = async (
 ): Promise<Payroll> => {
 	const response = await AuthorizedAxiosInstance.patch(
 		`${payrollPath}/${year}/${month}/${part}/employee/${employee_id}`,
-		{ request }
+		request
 	);
 
 	return response.data;
@@ -36,22 +36,7 @@ export const updatePayroll = async (
 export const addPayroll = async (
 	request: AddPayrollRequest
 ): Promise<Payroll> => {
-	const response = await AuthorizedAxiosInstance.post(payrollPath, {
-		request,
-	});
-
-	return response.data;
-};
-
-export const deletePayroll = async (
-	year: number,
-	month: number,
-	part: PayrollPart,
-	employee_id: number
-): Promise<Payroll> => {
-	const response = await AuthorizedAxiosInstance.delete(
-		`${payrollPath}/${year}/${month}/${part}/employee/${employee_id}`
-	);
+	const response = await AuthorizedAxiosInstance.post(payrollPath, request);
 
 	return response.data;
 };

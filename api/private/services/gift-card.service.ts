@@ -23,7 +23,7 @@ export const updateGiftCard = async (
 ): Promise<GiftCard> => {
 	const response = await AuthorizedAxiosInstance.patch(
 		`${giftCardPath}/${gift_card_id}`,
-		{ request }
+		request
 	);
 
 	return response.data;
@@ -32,9 +32,7 @@ export const updateGiftCard = async (
 export const addGiftCard = async (
 	request: AddGiftCardRequest
 ): Promise<GiftCard> => {
-	const response = await AuthorizedAxiosInstance.post(giftCardPath, {
-		request,
-	});
+	const response = await AuthorizedAxiosInstance.post(giftCardPath, request);
 
 	return response.data;
 };

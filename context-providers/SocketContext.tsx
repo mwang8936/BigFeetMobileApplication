@@ -8,6 +8,8 @@ const SocketIDContext = createContext<{
 	setSocketID: () => null,
 });
 
+//TODO add PUSHER
+
 export function useSocket() {
 	const value = useContext(SocketIDContext);
 	if (process.env.NODE_ENV !== 'production') {

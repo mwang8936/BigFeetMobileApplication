@@ -1,12 +1,12 @@
+import * as Localization from 'expo-localization';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import * as Localization from 'expo-localization';
 
 import english_translation from '@/locales/en/translation.json';
 import chinese_simplified_translation from '@/locales/cn_simp/translation.json';
 import chinese_traditional_translation from '@/locales/cn_trad/translation.json';
 
-import { Language } from '../models/enums';
+import { Language } from '@/models/enums';
 
 /**
  * Returns the language code for the specified Language enum value.

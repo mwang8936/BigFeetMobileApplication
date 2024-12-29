@@ -7,10 +7,10 @@ import {
 	LoginResponse,
 } from '@/models/requests/Login.Request.Model';
 
-export const login = async (data: LoginRequest): Promise<LoginResponse> => {
+export const login = async (request: LoginRequest): Promise<LoginResponse> => {
 	const response = await UnauthorizedAxiosInstance.post<LoginResponse>(
 		loginPath,
-		data
+		request
 	);
 
 	return response.data;

@@ -15,6 +15,7 @@ import {
 import Payroll from '@/models/Payroll.Model';
 import Schedule from '@/models/Schedule.Model';
 import User from '@/models/User.Model';
+import { DateTime } from 'luxon';
 
 export const getProfile = async (): Promise<User> => {
 	const response = await AuthorizedAxiosInstance.get(profilePath);
@@ -48,9 +49,7 @@ export const getProfileAcupunctureReports = async (
 ): Promise<AcupunctureReport[]> => {
 	const response = await AuthorizedAxiosInstance.get(
 		`${profilePath}/acupuncture-report`,
-		{
-			params,
-		}
+		{ params }
 	);
 
 	return response.data;
@@ -69,15 +68,17 @@ export const changeProfilePassword = async (
 ): Promise<User> => {
 	const response = await AuthorizedAxiosInstance.patch(
 		`${profilePath}/change_password`,
-		{ request }
+		request
 	);
 
 	return response.data;
 };
 
-export const signProfileSchedule = async (date: Date): Promise<Schedule> => {
+export const signProfileSchedule = async (
+	date: DateTime
+): Promise<Schedule> => {
 	const response = await AuthorizedAxiosInstance.patch(
-		`${profilePath}/sign/${date.toISOString()}`
+		`${profilePath}/sign/${date.toISO()}`
 	);
 
 	return response.data;

@@ -27,7 +27,7 @@ export const updateSchedule = async (
 ): Promise<Schedule> => {
 	const response = await AuthorizedAxiosInstance.patch(
 		`${schedulePath}/${date.toISOString()}/employee/${employee_id}`,
-		{ request }
+		request
 	);
 
 	return response.data;
@@ -40,7 +40,7 @@ export const signSchedule = async (
 ): Promise<Schedule> => {
 	const response = await AuthorizedAxiosInstance.patch(
 		`${schedulePath}/${date.toISOString()}/employee/${employee_id}/sign`,
-		{ request }
+		request
 	);
 
 	return response.data;
@@ -49,9 +49,7 @@ export const signSchedule = async (
 export const addSchedule = async (
 	request: AddScheduleRequest
 ): Promise<Schedule> => {
-	const response = await AuthorizedAxiosInstance.post(schedulePath, {
-		request,
-	});
+	const response = await AuthorizedAxiosInstance.post(schedulePath, request);
 
 	return response.data;
 };

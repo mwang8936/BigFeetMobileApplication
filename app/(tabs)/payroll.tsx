@@ -6,7 +6,7 @@ import Swiper from 'react-native-swiper';
 import { createContext, useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, StyleSheet } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { PayrollOption, PayrollPart } from '@/models/enums';
 
@@ -18,24 +18,40 @@ import Payroll from '@/models/Payroll.Model';
 import StoreEmployeeWithCashAndTipsPayroll from '@/components/(tabs)/payroll/StoreEmployeeWithCashAndTipsPayroll';
 import AcupuncturistPayroll from '@/components/(tabs)/payroll/AcupuncturistPayroll';
 import ReceptionistPayroll from '@/components/(tabs)/payroll/ReceptionistPayroll';
-import { usePayrollYearMonth } from '@/context-providers/PayrollYearMonthContext';
+import { usePayrollDate } from '@/context-providers/PayrollDateContext';
 import AcupunctureReportTable from '@/components/(tabs)/payroll/AcupunctureReportTable';
+import { useIsFetching, useQueryClient } from '@tanstack/react-query';
+import { Toast } from 'toastify-react-native';
+import {
+	acupunctureReportsQueryKey,
+	payrollsQueryKey,
+	userQueryKey,
+} from '@/constants/Query.constants';
 
 export default function PayrollScreen() {
+	const queryClient = useQueryClient();
 	const { t } = useTranslation();
 
 	const textColor = useThemeColor({}, 'text');
 
-	const { yearMonth, setYearMonth } = usePayrollYearMonth();
+	const { date, setDate } = usePayrollDate();
 
-	const payrollsQuery = useUserPayrollsQuery(yearMonth.year, yearMonth.month);
+	const payrollsQuery = useUserPayrollsQuery(date.year, date.month);
 	const payrolls = payrollsQuery.data || [];
 
 	const acupunctureReportsQuery = useUserAcupunctureReportsQuery(
-		yearMonth.year,
-		yearMonth.month
+		date.year,
+		date.month
 	);
 	const acupunctureReports = acupunctureReportsQuery.data;
+
+	if (payrollsQuery.isError) {
+		Toast.error(t('Error Getting Payrolls'));
+	}
+
+	if (acupunctureReportsQuery.isError) {
+		Toast.error(t('Error Getting Acupuncture Reports'));
+	}
 
 	const isLoading =
 		payrollsQuery.isLoading || acupunctureReportsQuery.isLoading;
@@ -55,6 +71,28 @@ export default function PayrollScreen() {
 		}
 	};
 
+	const isAcupunctureReportFetching = useIsFetching({
+		queryKey: [userQueryKey, acupunctureReportsQueryKey, date.year, date.month],
+	});
+	const isPayrollFetching = useIsFetching({
+		queryKey: [userQueryKey, payrollsQueryKey, date.year, date.month],
+	});
+
+	const isFetching = isAcupunctureReportFetching && isPayrollFetching;
+	const onRefresh = async () => {
+		queryClient.invalidateQueries({
+			queryKey: [
+				userQueryKey,
+				acupunctureReportsQueryKey,
+				date.year,
+				date.month,
+			],
+		});
+		queryClient.invalidateQueries({
+			queryKey: [userQueryKey, payrollsQueryKey, date.year, date.month],
+		});
+	};
+
 	const payrollPart1 = payrolls.find(
 		(payroll) => payroll.part === PayrollPart.PART_1
 	);
@@ -63,6 +101,12 @@ export default function PayrollScreen() {
 			key={payrollPart1.part}
 			style={styles.scrollView}
 			contentContainerStyle={styles.scrollViewContent}
+			refreshControl={
+				<RefreshControl
+					refreshing={Boolean(isFetching)}
+					onRefresh={onRefresh}
+				/>
+			}
 		>
 			{payrollElement(payrollPart1)}
 		</ScrollView>
@@ -76,6 +120,12 @@ export default function PayrollScreen() {
 			key={payrollPart2.part}
 			style={styles.scrollView}
 			contentContainerStyle={styles.scrollViewContent}
+			refreshControl={
+				<RefreshControl
+					refreshing={Boolean(isFetching)}
+					onRefresh={onRefresh}
+				/>
+			}
 		>
 			{payrollElement(payrollPart2)}
 		</ScrollView>
@@ -83,13 +133,19 @@ export default function PayrollScreen() {
 
 	const acupunctureReport = acupunctureReports?.find(
 		(acupunctureReport) =>
-			acupunctureReport.year === yearMonth.year &&
-			acupunctureReport.month === yearMonth.month
+			acupunctureReport.year === date.year &&
+			acupunctureReport.month === date.month
 	);
 	const acupunctureReportElement = acupunctureReport && (
 		<ScrollView
 			style={styles.scrollView}
 			contentContainerStyle={styles.scrollViewContent}
+			refreshControl={
+				<RefreshControl
+					refreshing={Boolean(isFetching)}
+					onRefresh={onRefresh}
+				/>
+			}
 		>
 			<AcupunctureReportTable acupunctureReport={acupunctureReport} />
 		</ScrollView>
@@ -99,16 +155,27 @@ export default function PayrollScreen() {
 		!payrollPart1Element &&
 		!payrollPart2Element &&
 		!acupunctureReportElement ? (
-			<Text style={[styles.textContent, { color: textColor }]}>
-				{t('No Payrolls')}
-			</Text>
+			<ScrollView
+				style={styles.scrollView}
+				contentContainerStyle={styles.scrollViewContent}
+				refreshControl={
+					<RefreshControl
+						refreshing={Boolean(isFetching)}
+						onRefresh={onRefresh}
+					/>
+				}
+			>
+				<Text style={[styles.textContent, { color: textColor }]}>
+					{t('No Payrolls')}
+				</Text>
+			</ScrollView>
 		) : undefined;
 
 	return (
 		<SafeAreaProvider>
 			<SafeAreaView style={styles.container} edges={['top']}>
 				{isLoading ? (
-					<BallIndicator />
+					<BallIndicator color={textColor} />
 				) : (
 					<Swiper loop={false} dotColor={textColor}>
 						{noPayrollsElement}
@@ -118,14 +185,10 @@ export default function PayrollScreen() {
 					</Swiper>
 				)}
 				<YearMonthPicker
-					year={yearMonth.year}
-					setYear={(year: number) =>
-						setYearMonth({ year, month: yearMonth.month })
-					}
-					month={yearMonth.month}
-					setMonth={(month: number) =>
-						setYearMonth({ year: yearMonth.year, month })
-					}
+					year={date.year}
+					setYear={(year: number) => setDate({ year, month: date.month })}
+					month={date.month}
+					setMonth={(month: number) => setDate({ year: date.year, month })}
 				/>
 			</SafeAreaView>
 		</SafeAreaProvider>

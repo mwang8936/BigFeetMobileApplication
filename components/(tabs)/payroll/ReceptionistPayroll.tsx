@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { DateTime } from 'luxon';
 
-import { usePayrollYearMonth } from '@/context-providers/PayrollYearMonthContext';
+import { usePayrollDate } from '@/context-providers/PayrollDateContext';
 
 import { useThemeColor } from '@/hooks/colors/useThemeColor';
 import { useUserQuery } from '@/hooks/react-query/profile.hooks';
@@ -43,7 +43,7 @@ const ReceptionistPayroll: React.FC<ReceptionistPayrollProp> = ({
 }) => {
 	const { t } = useTranslation();
 
-	const { yearMonth } = usePayrollYearMonth();
+	const { date } = usePayrollDate();
 
 	const userQuery = useUserQuery();
 	const user = userQuery.data;
@@ -63,7 +63,7 @@ const ReceptionistPayroll: React.FC<ReceptionistPayrollProp> = ({
 	const [isMinimized, setIsMinimized] = useState(true);
 
 	const dateText =
-		getShortMonthString(yearMonth.month, language) +
+		getShortMonthString(date.month, language) +
 		' ' +
 		(payroll.part === PayrollPart.PART_1 ? t('(1/2)') : t('(2/2)'));
 
@@ -89,8 +89,8 @@ const ReceptionistPayroll: React.FC<ReceptionistPayrollProp> = ({
 			const hours_minus_sessions = Math.max(hours - body - feet, 0);
 
 			const holiday = isHoliday({
-				year: yearMonth.year,
-				month: yearMonth.month,
+				year: date.year,
+				month: date.month,
 				day,
 			});
 
@@ -120,8 +120,8 @@ const ReceptionistPayroll: React.FC<ReceptionistPayrollProp> = ({
 				feet: 0,
 				hours_minus_sessions: 0,
 				holiday: isHoliday({
-					year: yearMonth.year,
-					month: yearMonth.month,
+					year: date.year,
+					month: date.month,
 					day,
 				}),
 				total_hours: 0,

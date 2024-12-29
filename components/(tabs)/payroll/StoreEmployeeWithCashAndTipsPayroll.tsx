@@ -4,8 +4,6 @@ import { DataTable } from 'react-native-paper';
 
 import { useTranslation } from 'react-i18next';
 
-import { usePayrollYearMonth } from '@/context-providers/PayrollYearMonthContext';
-
 import { useThemeColor } from '@/hooks/colors/useThemeColor';
 import { useUserQuery } from '@/hooks/react-query/profile.hooks';
 
@@ -18,6 +16,7 @@ import {
 	moneyToString,
 	padStringOrNumber,
 } from '@/utils/string.utils';
+import { usePayrollDate } from '@/context-providers/PayrollDateContext';
 
 interface StoreEmployeeWithCashAndTipsPayrollProp {
 	payroll: Payroll;
@@ -36,7 +35,7 @@ const StoreEmployeeWithCashAndTipsPayroll: React.FC<
 > = ({ payroll }) => {
 	const { t } = useTranslation();
 
-	const { yearMonth } = usePayrollYearMonth();
+	const { date } = usePayrollDate();
 
 	const userQuery = useUserQuery();
 	const user = userQuery.data;
@@ -56,7 +55,7 @@ const StoreEmployeeWithCashAndTipsPayroll: React.FC<
 	const redRowColor = useThemeColor({}, 'redRow');
 
 	const dateText =
-		getShortMonthString(yearMonth.month, language) +
+		getShortMonthString(date.month, language) +
 		' ' +
 		(payroll.part === PayrollPart.PART_1 ? t('(1/2)') : t('(2/2)'));
 
@@ -80,8 +79,8 @@ const StoreEmployeeWithCashAndTipsPayroll: React.FC<
 				scheduleData.requested_feet_sessions;
 
 			const holidayPay = isHoliday({
-				year: yearMonth.year,
-				month: yearMonth.month,
+				year: date.year,
+				month: date.month,
 				day,
 			})
 				? 2 * totalSessions
@@ -224,8 +223,8 @@ const StoreEmployeeWithCashAndTipsPayroll: React.FC<
 					{cellElement(row.day)}
 					{cellElement(row.body)}
 					{cellElement(row.feet)}
-					{cellElement(row.tips)}
-					{cellElement(row.cash)}
+					{cellElement(moneyToString(row.tips))}
+					{cellElement(moneyToString(row.cash))}
 				</DataTable.Row>
 			))}
 

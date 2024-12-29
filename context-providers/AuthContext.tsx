@@ -1,13 +1,19 @@
 import { useContext, createContext, type PropsWithChildren } from 'react';
-import { useStorageState } from '@/hooks/storage/useStorageState';
-import { LoginRequest } from '@/models/requests/Login.Request.Model';
-import { login } from '@/api/public/services/login.service';
-import { useTranslation } from 'react-i18next';
 
+import * as Localization from 'expo-localization';
+import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
+
+import { login } from '@/api/public/services/login.service';
+
+import { profileQueryKey, userQueryKey } from '@/constants/Query.constants';
+
+import { useStorageState } from '@/hooks/storage/useStorageState';
+
+import { LoginRequest } from '@/models/requests/Login.Request.Model';
+
 import { getLanguageFile } from '@/utils/i18n.utils';
-import { Language } from '@/models/enums';
-import { userQueryKey } from '@/hooks/react-query/profile.hooks';
+
 const AuthContext = createContext<{
 	signIn: (credentials: LoginRequest) => void;
 	signOut: () => void;
@@ -32,8 +38,10 @@ export function useSession() {
 	return value;
 }
 
+export const sessionKey = 'session';
+
 export function SessionProvider({ children }: PropsWithChildren) {
-	const [[isLoading, session], setSession] = useStorageState('session');
+	const [[isLoading, session], setSession] = useStorageState(sessionKey);
 
 	const queryClient = useQueryClient();
 	const { i18n } = useTranslation();
@@ -49,7 +57,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
 		const { user, accessToken } = data;
 
 		// Add user data to cache
-		queryClient.setQueryData([userQueryKey], user);
+		queryClient.setQueryData([userQueryKey, profileQueryKey], user);
 
 		// Change language to user setting
 		i18n.changeLanguage(getLanguageFile(user.language));
@@ -63,7 +71,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
 		queryClient.clear();
 
 		// Revert language to default language
-		i18n.changeLanguage(undefined);
+		i18n.changeLanguage(Localization?.getLocales?.()[0]?.languageTag);
 
 		// Remove token from session state and secure storage
 		setSession(null);

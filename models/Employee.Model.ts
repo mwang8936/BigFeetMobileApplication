@@ -1,4 +1,5 @@
 import { DateTime } from 'luxon';
+
 import { Gender, Permissions, Role } from './enums';
 
 export default interface Employee {

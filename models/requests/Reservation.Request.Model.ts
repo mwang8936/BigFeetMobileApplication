@@ -1,7 +1,9 @@
+import { DateTime } from 'luxon';
+
 import { Gender, TipMethod } from '../enums';
 
 export interface UpdateReservationRequest {
-	reserved_date?: Date;
+	reserved_date?: DateTime;
 	employee_id?: number;
 	service_id?: number;
 	time?: number | null;

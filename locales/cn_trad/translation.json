@@ -257,7 +257,7 @@
 	"Username Invalid": "無效",
 	"Password cannot be empty.": "不能為空",
 	"Password Invalid": "無效",
-	"Passwords must match.": "密碼錯誤",
+	"Passwords must match": "密碼錯誤",
 	"First Name cannot be empty.": "不能為空",
 	"First Name Invalid": "無效",
 	"Last Name cannot be empty.": "不能為空",
@@ -575,5 +575,8 @@
 	"Select Year and Month": "選擇年份和月份",
 	"Pick Year and Month": "選擇年份和月份",
 	"Done": "完成",
-	"No Payrolls": "尚未建立薪資單"
+	"No Payrolls": "尚未建立薪資單",
+	"Login": "登入",
+	"Language Updated Successfully": "語言更新成功",
+	"Error Updating Password": "更新密碼時出錯"
 }

@@ -3,22 +3,30 @@ import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Modal from 'react-native-modal';
 import { useUserQuery } from '@/hooks/react-query/profile.hooks';
-import { getFullMonthString, getYearMonthString } from '@/utils/string.utils';
+import {
+	getDateString,
+	getFullMonthString,
+	getShortMonthString,
+} from '@/utils/string.utils';
 import { useThemeColor } from '@/hooks/colors/useThemeColor';
 import { useTranslation } from 'react-i18next';
 
-interface YearMonthPickerProp {
+interface YearMonthDayPickerProp {
 	year: number;
 	setYear(year: number): void;
 	month: number;
 	setMonth(month: number): void;
+	day: number;
+	setDay(day: number): void;
 }
 
-const YearMonthPicker: React.FC<YearMonthPickerProp> = ({
+const YearMonthDayPicker: React.FC<YearMonthDayPickerProp> = ({
 	year,
 	setYear,
 	month,
 	setMonth,
+	day,
+	setDay,
 }) => {
 	const { t } = useTranslation();
 
@@ -56,8 +64,30 @@ const YearMonthPicker: React.FC<YearMonthPickerProp> = ({
 			return (
 				<Picker.Item
 					key={mn + 1}
-					label={getFullMonthString(mn + 1, language)}
+					label={getShortMonthString(mn + 1, language)}
 					value={mn + 1}
+				/>
+			);
+		});
+	};
+
+	const generateDayPickerItems = () => {
+		let numDays = 31;
+		if (month === 4 || month === 6 || month === 9 || month === 11) {
+			numDays = 30;
+		} else if (month === 2) {
+			numDays = 28;
+			if ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0) {
+				numDays = 29;
+			}
+		}
+
+		return [...Array(numDays).keys()].map((day) => {
+			return (
+				<Picker.Item
+					key={day + 1}
+					label={(day + 1).toString()}
+					value={day + 1}
 				/>
 			);
 		});
@@ -68,13 +98,13 @@ const YearMonthPicker: React.FC<YearMonthPickerProp> = ({
 	return (
 		<View style={[styles.container, { backgroundColor: backgroundColor }]}>
 			<Text style={[styles.text, { color: textColor }]}>
-				{`${t('Selected')}: ${getYearMonthString(year, month, language)}`}
+				{`${t('Selected')}: ${getDateString(year, month, day, language)}`}
 			</Text>
 			<TouchableOpacity
 				style={[styles.openButton, { backgroundColor: blueColor }]}
 				onPress={toggleModal}
 			>
-				<Text style={styles.buttonText}>{t('Select Year and Month')}</Text>
+				<Text style={styles.buttonText}>{t('Select Date')}</Text>
 			</TouchableOpacity>
 
 			<Modal
@@ -92,7 +122,7 @@ const YearMonthPicker: React.FC<YearMonthPickerProp> = ({
 					]}
 				>
 					<Text style={[styles.modalTitle, { color: modalTitleColor }]}>
-						{t('Pick Year and Month')}
+						{t('Pick Date')}
 					</Text>
 
 					<View style={styles.pickerContainer}>
@@ -101,6 +131,7 @@ const YearMonthPicker: React.FC<YearMonthPickerProp> = ({
 							<Text style={[styles.pickerLabel, { color: modalLabelColor }]}>
 								{t('Year')}
 							</Text>
+
 							<Picker
 								selectedValue={year}
 								onValueChange={(itemValue) => setYear(Number(itemValue))}
@@ -116,6 +147,7 @@ const YearMonthPicker: React.FC<YearMonthPickerProp> = ({
 							<Text style={[styles.pickerLabel, { color: modalLabelColor }]}>
 								{t('Month')}
 							</Text>
+
 							<Picker
 								selectedValue={month}
 								onValueChange={(itemValue) => setMonth(Number(itemValue))}
@@ -123,6 +155,22 @@ const YearMonthPicker: React.FC<YearMonthPickerProp> = ({
 								itemStyle={{ color: textColor }}
 							>
 								{generateMonthPickerItems()}
+							</Picker>
+						</View>
+
+						{/* Month Picker */}
+						<View style={styles.pickerWrapper}>
+							<Text style={[styles.pickerLabel, { color: modalLabelColor }]}>
+								{t('Day')}
+							</Text>
+
+							<Picker
+								selectedValue={day}
+								onValueChange={(itemValue) => setDay(Number(itemValue))}
+								style={styles.picker}
+								itemStyle={{ color: textColor }}
+							>
+								{generateDayPickerItems()}
 							</Picker>
 						</View>
 					</View>
@@ -167,8 +215,9 @@ const styles = StyleSheet.create({
 	},
 	modalContent: {
 		borderRadius: 20,
-		padding: 20,
-		marginHorizontal: 20,
+		paddingVertical: 20,
+		paddingHorizontal: 5,
+		marginHorizontal: 10,
 		alignItems: 'center',
 	},
 	modalTitle: {
@@ -202,4 +251,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default YearMonthPicker;
+export default YearMonthDayPicker;

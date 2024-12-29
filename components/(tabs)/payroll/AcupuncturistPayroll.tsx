@@ -3,7 +3,7 @@ import { DataTable } from 'react-native-paper';
 
 import { useTranslation } from 'react-i18next';
 
-import { usePayrollYearMonth } from '@/context-providers/PayrollYearMonthContext';
+import { usePayrollDate } from '@/context-providers/PayrollDateContext';
 
 import { useThemeColor } from '@/hooks/colors/useThemeColor';
 import { useUserQuery } from '@/hooks/react-query/profile.hooks';
@@ -33,7 +33,7 @@ const AcupuncturistPayroll: React.FC<AcupuncturistPayrollProp> = ({
 }) => {
 	const { t } = useTranslation();
 
-	const { yearMonth } = usePayrollYearMonth();
+	const { date } = usePayrollDate();
 
 	const userQuery = useUserQuery();
 	const user = userQuery.data;
@@ -51,7 +51,7 @@ const AcupuncturistPayroll: React.FC<AcupuncturistPayrollProp> = ({
 	const goldRowColor = useThemeColor({}, 'goldRow');
 
 	const dateText =
-		getShortMonthString(yearMonth.month, language) +
+		getShortMonthString(date.month, language) +
 		' ' +
 		(payroll.part === PayrollPart.PART_1 ? t('(1/2)') : t('(2/2)'));
 

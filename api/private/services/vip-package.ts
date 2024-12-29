@@ -25,7 +25,7 @@ export const updateVipPackage = async (
 ): Promise<VipPackage> => {
 	const response = await AuthorizedAxiosInstance.patch(
 		`${vipPackagePath}/${vip_package_id}`,
-		{ request }
+		request
 	);
 
 	return response.data;
@@ -34,9 +34,7 @@ export const updateVipPackage = async (
 export const addVipPackage = async (
 	request: AddVipPackageRequest
 ): Promise<VipPackage> => {
-	const response = await AuthorizedAxiosInstance.post(vipPackagePath, {
-		request,
-	});
+	const response = await AuthorizedAxiosInstance.post(vipPackagePath, request);
 
 	return response.data;
 };

@@ -16,7 +16,7 @@ import { ThemedDropdown } from '@/components/ThemedDropdown';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedTextInput } from '@/components/ThemedTextInput';
 
-import { Gender, Language, Permissions, Role } from '@/models/enums';
+import { Gender, Language, Role } from '@/models/enums';
 import {
 	genderDropDownItems,
 	languageDropDownItems,
@@ -24,22 +24,35 @@ import {
 } from '@/constants/Dropdowns';
 import PLACEHOLDERS from '@/constants/Placeholders';
 import LENGTHS from '@/constants/Lengths';
-import { userQueryKey, useUserQuery } from '@/hooks/react-query/profile.hooks';
+import {
+	useUpdateUserLanguageMutation,
+	useUserQuery,
+} from '@/hooks/react-query/profile.hooks';
 import { ThemedLoadingSpinner } from '@/components/ThemedLoadingSpinner';
 import { useTranslation } from 'react-i18next';
 import { useThemeColor } from '@/hooks/colors/useThemeColor';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { UpdateProfileRequest } from '@/models/requests/Profile.Request.Model';
-import { updateProfile } from '@/api/private/services/profile.service';
+import ChangePassword from '@/components/(tabs)/profile/ChangePassword';
+import { RefreshControl } from 'react-native';
+import { useIsFetching, useQueryClient } from '@tanstack/react-query';
+import { getProfile } from '@/api/private/services/profile.service';
+import { CustomAPIError } from '@/models/custom-errors/API.Error';
+import { Toast } from 'toastify-react-native';
+import { profileQueryKey, userQueryKey } from '@/constants/Query.constants';
 
 export default function ProfileScreen() {
-	const { signOut } = useSession();
 	const queryClient = useQueryClient();
-
 	const { t } = useTranslation();
+
+	const { signOut } = useSession();
+
 	const textColor = useThemeColor({}, 'text');
 
-	const { data: user } = useUserQuery();
+	const { data: user, isError } = useUserQuery();
+
+	if (isError) {
+		Toast.error(t('Error Getting Profile'));
+	}
 
 	useEffect(() => {
 		if (user) {
@@ -58,13 +71,6 @@ export default function ProfileScreen() {
 
 	const [isLoading, setIsLoading] = useState(false);
 
-	const [changePasswordModalVisible, setChangePasswordModalVisible] =
-		useState(false);
-
-	const convertStringToNum = (text: string): number | null => {
-		return !isNaN(parseFloat(text)) ? parseFloat(text) : null;
-	};
-
 	const [username, setUsername] = useState(user?.username ?? '');
 	const [firstName, setFirstName] = useState(user?.first_name ?? '');
 	const [lastName, setLastName] = useState(user?.last_name ?? '');
@@ -75,22 +81,22 @@ export default function ProfileScreen() {
 	const [bodyRateString, setBodyRateString] = useState(
 		user?.body_rate?.toFixed(2) ?? ''
 	);
-	const bodyRate = convertStringToNum(bodyRateString);
+	// const bodyRate = convertStringToFloat(bodyRateString);
 
 	const [feetRateString, setFeetRateString] = useState(
 		user?.feet_rate?.toFixed(2) ?? ''
 	);
-	const feetRate = convertStringToNum(feetRateString);
+	// const feetRate = convertStringToFloat(feetRateString);
 
 	const [acupunctureRateString, setAcupunctureRateString] = useState(
 		user?.acupuncture_rate?.toFixed(2) ?? ''
 	);
-	const acupunctureRate = convertStringToNum(acupunctureRateString);
+	// const acupunctureRate = convertStringToFloat(acupunctureRateString);
 
 	const [hourlyRateString, setHourlyRateString] = useState(
 		user?.per_hour?.toFixed(2) ?? ''
 	);
-	const hourlyRate = convertStringToNum(hourlyRateString);
+	// const hourlyRate = convertStringToFloat(hourlyRateString);
 
 	const [language, setLanguage] = useState<Language | null>(
 		user?.language ?? null
@@ -124,70 +130,46 @@ export default function ProfileScreen() {
 			(languageDropDownItems) => languageDropDownItems.value === language
 		) || languageDropDownItems[0];
 
-	const missingInput =
-		username.length === 0 ||
-		firstName.length === 0 ||
-		lastName.length === 0 ||
-		gender === null ||
-		role === null ||
-		language === null;
+	// TODO: Add in later when we add the ability to update users for people with permissions
+	// const missingInput =
+	// 	username.length === 0 ||
+	// 	firstName.length === 0 ||
+	// 	lastName.length === 0 ||
+	// 	gender === null ||
+	// 	role === null ||
+	// 	language === null;
 
-	const changesMade =
-		user?.username !== username ||
-		user?.first_name !== firstName ||
-		user?.last_name !== lastName ||
-		user?.gender !== gender ||
-		user?.role !== role ||
-		user?.body_rate !== bodyRate ||
-		user?.feet_rate !== feetRate ||
-		user?.acupuncture_rate !== acupunctureRate ||
-		user?.per_hour !== hourlyRate ||
-		user?.language !== language;
+	// const changesMade =
+	// 	user?.username !== username ||
+	// 	user?.first_name !== firstName ||
+	// 	user?.last_name !== lastName ||
+	// 	user?.gender !== gender ||
+	// 	user?.role !== role ||
+	// 	user?.body_rate !== bodyRate ||
+	// 	user?.feet_rate !== feetRate ||
+	// 	user?.acupuncture_rate !== acupunctureRate ||
+	// 	user?.per_hour !== hourlyRate ||
+	// 	user?.language !== language;
 
-	const invalidInput =
-		usernameInvalid ||
-		firstNameInvalid ||
-		lastNameInvalid ||
-		bodyRateInvalid ||
-		feetRateInvalid ||
-		acupunctureRateInvalid ||
-		hourlyRateInvalid;
+	// const invalidInput =
+	// 	usernameInvalid ||
+	// 	firstNameInvalid ||
+	// 	lastNameInvalid ||
+	// 	bodyRateInvalid ||
+	// 	feetRateInvalid ||
+	// 	acupunctureRateInvalid ||
+	// 	hourlyRateInvalid;
 
-	const editable = user?.permissions?.includes(
-		Permissions.PERMISSION_UPDATE_EMPLOYEE
-	);
+	const editable = false;
+	// user?.permissions?.includes(
+	// 	Permissions.PERMISSION_UPDATE_EMPLOYEE
+	// );
 
-	const disableEditButton =
-		!editable || missingInput || !changesMade || invalidInput;
+	// const disableEditButton =
+	// 	!editable || missingInput || !changesMade || invalidInput;
 
-	const updateProfileMutation = useMutation({
-		mutationFn: (data: { request: UpdateProfileRequest }) =>
-			updateProfile(data.request),
-		onMutate: async () => {
-			setIsLoading(true);
-		},
-		onSuccess: (_data, variables, context) => {
-			queryClient.invalidateQueries({ queryKey: [userQueryKey] });
-
-			// const updatedLanguage = variables.request.language;
-
-			// if (updatedLanguage)
-			// 	i18n.changeLanguage(getLanguageFile(updatedLanguage));
-
-			// if (onSuccess) onSuccess();
-
-			// successToast(context.toastId, t('Profile Updated Successfully'));
-		},
-		onError: (error, _variables, context) => {
-			// if (setError) setError(error.message);
-			// if (context)
-			// 	errorToast(
-			// 		context.toastId,
-			// 		t('Failed to Update Profile'),
-			// 		error.message
-			// 	);
-		},
-		onSettled: async () => setIsLoading(false),
+	const updateLanguageMutation = useUpdateUserLanguageMutation({
+		setLoading: setIsLoading,
 	});
 	const onLanguageChange = async (updatedLanguage: Language | null) => {
 		if (updatedLanguage === null || language === updatedLanguage) return;
@@ -195,7 +177,7 @@ export default function ProfileScreen() {
 		const request: UpdateProfileRequest = {
 			language: updatedLanguage,
 		};
-		updateProfileMutation.mutate({ request });
+		updateLanguageMutation.mutate({ request });
 	};
 
 	const handleLogout = () => {
@@ -206,11 +188,20 @@ export default function ProfileScreen() {
 		}
 	};
 
+	const isFetching = useIsFetching({
+		queryKey: [userQueryKey, profileQueryKey],
+	});
+	const onRefresh = async () => {
+		queryClient.invalidateQueries({
+			queryKey: [userQueryKey, profileQueryKey],
+		});
+	};
+
 	return (
 		<SafeAreaProvider>
 			<SafeAreaView style={styles.container} edges={['top']}>
 				<KeyboardAvoidingView
-					style={{ flex: 1 }}
+					style={styles.container}
 					behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
 					keyboardVerticalOffset={100}
 				>
@@ -219,16 +210,23 @@ export default function ProfileScreen() {
 						isLoading={isLoading}
 						message={t('Updating Profile')}
 					/>
+
 					<ScrollView
-						style={{ flex: 1 }}
+						style={styles.container}
 						contentContainerStyle={styles.scrollViewContent}
+						refreshControl={
+							<RefreshControl
+								refreshing={Boolean(isFetching)}
+								onRefresh={onRefresh}
+							/>
+						}
 					>
-						<View style={{ width: '80%', marginBottom: 16 }}>
+						<View style={styles.textInputView}>
 							<ThemedText type="subtitle">{t('Username')}</ThemedText>
 
 							<ThemedTextInput
 								type="mediumSemiBold"
-								style={{ marginTop: 8 }}
+								style={styles.textInput}
 								placeholder={t(PLACEHOLDERS.employee.username)}
 								textContentType="name"
 								autoCapitalize="words"
@@ -257,13 +255,13 @@ export default function ProfileScreen() {
 							)}
 						</View>
 
-						<View style={{ width: '80%', marginBottom: 16 }}>
+						<View style={styles.textInputView}>
 							<ThemedText type="subtitle">{t('First Name')}</ThemedText>
 
 							<ThemedTextInput
 								ref={firstNameInputRef}
 								type="mediumSemiBold"
-								style={{ marginTop: 8 }}
+								style={styles.textInput}
 								placeholder={t(PLACEHOLDERS.employee.first_name)}
 								textContentType="givenName"
 								autoCapitalize="words"
@@ -292,13 +290,13 @@ export default function ProfileScreen() {
 							)}
 						</View>
 
-						<View style={{ width: '80%', marginBottom: 16 }}>
+						<View style={styles.textInputView}>
 							<ThemedText type="subtitle">{t('Last Name')}</ThemedText>
 
 							<ThemedTextInput
 								ref={lastNameInputRef}
 								type="mediumSemiBold"
-								style={{ marginTop: 8 }}
+								style={styles.textInput}
 								placeholder={t(PLACEHOLDERS.employee.last_name)}
 								textContentType="familyName"
 								autoCapitalize="words"
@@ -327,12 +325,12 @@ export default function ProfileScreen() {
 							)}
 						</View>
 
-						<View style={{ width: '80%', marginBottom: 16 }}>
+						<View style={styles.textInputView}>
 							<ThemedText type="subtitle">{t('Gender')}</ThemedText>
 
 							<ThemedDropdown
 								type="mediumSemiBold"
-								style={{ marginTop: 8 }}
+								style={styles.textInput}
 								data={genderDropDownItems.map((option) => ({
 									value: option.value,
 									label: t(option.label),
@@ -358,12 +356,12 @@ export default function ProfileScreen() {
 							)}
 						</View>
 
-						<View style={{ width: '80%', marginBottom: 16 }}>
+						<View style={styles.textInputView}>
 							<ThemedText type="subtitle">{t('Role')}</ThemedText>
 
 							<ThemedDropdown
 								type="mediumSemiBold"
-								style={{ marginTop: 8 }}
+								style={styles.textInput}
 								data={roleDropDownItems.map((option) => ({
 									value: option.value,
 									label: t(option.label),
@@ -388,7 +386,7 @@ export default function ProfileScreen() {
 							)}
 						</View>
 
-						<View style={{ width: '80%', marginBottom: 16 }}>
+						<View style={styles.textInputView}>
 							<ThemedText type="subtitle">{t('Body Rate')}</ThemedText>
 
 							<View>
@@ -399,7 +397,7 @@ export default function ProfileScreen() {
 								<ThemedTextInput
 									ref={bodyRateInputRef}
 									type="mediumSemiBold"
-									style={{ marginTop: 8, paddingLeft: 24 }}
+									style={[styles.textInput, styles.textInputPadding]}
 									placeholder={t(PLACEHOLDERS.employee.body_rate)}
 									textContentType="none"
 									autoComplete="off"
@@ -425,7 +423,7 @@ export default function ProfileScreen() {
 							)}
 						</View>
 
-						<View style={{ width: '80%', marginBottom: 16 }}>
+						<View style={styles.textInputView}>
 							<ThemedText type="subtitle">{t('Feet Rate')}</ThemedText>
 
 							<View>
@@ -436,7 +434,7 @@ export default function ProfileScreen() {
 								<ThemedTextInput
 									ref={feetRateInputRef}
 									type="mediumSemiBold"
-									style={{ marginTop: 8, paddingLeft: 24 }}
+									style={[styles.textInput, styles.textInputPadding]}
 									placeholder={t(PLACEHOLDERS.employee.feet_rate)}
 									textContentType="none"
 									autoComplete="off"
@@ -464,7 +462,7 @@ export default function ProfileScreen() {
 							)}
 						</View>
 
-						<View style={{ width: '80%', marginBottom: 16 }}>
+						<View style={styles.textInputView}>
 							<ThemedText type="subtitle">{t('Acupuncture Rate')}</ThemedText>
 
 							<View>
@@ -475,7 +473,7 @@ export default function ProfileScreen() {
 								<ThemedTextInput
 									ref={acupunctureRateInputRef}
 									type="mediumSemiBold"
-									style={{ marginTop: 8, paddingLeft: 24 }}
+									style={[styles.textInput, styles.textInputPadding]}
 									placeholder={t(PLACEHOLDERS.employee.acupuncture_rate)}
 									textContentType="none"
 									autoComplete="off"
@@ -501,7 +499,7 @@ export default function ProfileScreen() {
 							)}
 						</View>
 
-						<View style={{ width: '80%', marginBottom: 16 }}>
+						<View style={styles.textInputView}>
 							<ThemedText type="subtitle">{t('Hourly Rate')}</ThemedText>
 
 							<View>
@@ -512,7 +510,7 @@ export default function ProfileScreen() {
 								<ThemedTextInput
 									ref={hourlyRateInputRef}
 									type="mediumSemiBold"
-									style={{ marginTop: 8, paddingLeft: 24 }}
+									style={[styles.textInput, styles.textInputPadding]}
 									placeholder={t(PLACEHOLDERS.employee.per_hour)}
 									textContentType="none"
 									autoComplete="off"
@@ -537,12 +535,12 @@ export default function ProfileScreen() {
 							)}
 						</View>
 
-						<View style={{ width: '80%', marginBottom: 16 }}>
+						<View style={styles.textInputView}>
 							<ThemedText type="subtitle">{t('Language')}</ThemedText>
 
 							<ThemedDropdown
 								type="mediumSemiBold"
-								style={{ marginTop: 8 }}
+								style={styles.textInput}
 								data={languageDropDownItems}
 								option={languageOption}
 								onChange={(option) =>
@@ -563,28 +561,14 @@ export default function ProfileScreen() {
 							)}
 						</View>
 
-						<ColouredButton
-							type="edit"
-							style={{
-								width: '80%',
-								marginVertical: 16,
-								borderRadius: 24,
-							}}
-							onPress={() => setChangePasswordModalVisible(true)}
-						>
-							<Text style={[styles.buttonText]}>{t('Change Password')}</Text>
-						</ColouredButton>
+						<ChangePassword setLoading={setIsLoading} />
 
 						<ColouredButton
 							type="default"
-							style={{
-								width: '80%',
-								marginTop: 16,
-								borderRadius: 24,
-							}}
+							style={styles.button}
 							onPress={handleLogout}
 						>
-							<Text style={[styles.buttonText]}>{t('Logout')}</Text>
+							<Text style={styles.buttonText}>{t('Logout')}</Text>
 						</ColouredButton>
 					</ScrollView>
 				</KeyboardAvoidingView>
@@ -602,6 +586,16 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',
 		paddingVertical: 20,
+	},
+	textInputView: {
+		width: '80%',
+		marginBottom: 16,
+	},
+	textInput: {
+		marginTop: 8,
+	},
+	textInputPadding: {
+		paddingLeft: 24,
 	},
 	errorText: {
 		color: 'red',
@@ -625,6 +619,11 @@ const styles = StyleSheet.create({
 		padding: 8,
 		right: 4,
 		top: '18%',
+	},
+	button: {
+		width: '80%',
+		marginTop: 16,
+		borderRadius: 24,
 	},
 	buttonText: {
 		color: '#fff',

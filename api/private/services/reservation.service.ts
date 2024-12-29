@@ -25,7 +25,7 @@ export const updateReservation = async (
 ): Promise<Reservation> => {
 	const response = await AuthorizedAxiosInstance.patch(
 		`${reservationPath}/${reservation_id}`,
-		{ request }
+		request
 	);
 
 	return response.data;
@@ -34,9 +34,7 @@ export const updateReservation = async (
 export const addReservation = async (
 	request: AddReservationRequest
 ): Promise<Reservation> => {
-	const response = await AuthorizedAxiosInstance.post(reservationPath, {
-		request,
-	});
+	const response = await AuthorizedAxiosInstance.post(reservationPath, request);
 
 	return response.data;
 };

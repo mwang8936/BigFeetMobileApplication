@@ -1,4 +1,5 @@
 import { DateTime } from 'luxon';
+
 import Employee from './Employee.Model';
 import { PayrollOption, PayrollPart } from './enums';
 
