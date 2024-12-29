@@ -33,7 +33,7 @@ const SchedulerFooter: React.FC<SchedulerFooterProp> = ({ schedule }) => {
 
 	const vipPackages = schedule?.vip_packages || [];
 
-	const addAwards = schedule?.add_award ?? false;
+	const award = schedule?.award ?? 0;
 
 	return (
 		<>
@@ -44,9 +44,9 @@ const SchedulerFooter: React.FC<SchedulerFooterProp> = ({ schedule }) => {
 			<Payout
 				reservations={completedReservations}
 				vipPackages={vipPackages}
-				addAwards={addAwards}
+				award={award}
 			/>
-			{schedule?.signed !== undefined && <Sign isSigned={schedule.signed} />}
+			{schedule && <Sign isSigned={schedule.signed} />}
 		</>
 	);
 };

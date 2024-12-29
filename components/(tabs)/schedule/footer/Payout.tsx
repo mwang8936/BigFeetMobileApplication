@@ -12,18 +12,15 @@ import { isHoliday } from '@/utils/date.utils';
 import { useScheduleDate } from '@/context-providers/ScheduleDateContext';
 import VipPackage from '@/models/Vip-Package.Model';
 import { TipMethod } from '@/models/enums';
+import STORES from '@/constants/Stores';
 
 interface PayoutProp {
 	reservations: Reservation[];
 	vipPackages: VipPackage[];
-	addAwards: boolean;
+	award: number;
 }
 
-const Payout: React.FC<PayoutProp> = ({
-	reservations,
-	vipPackages,
-	addAwards,
-}) => {
+const Payout: React.FC<PayoutProp> = ({ reservations, vipPackages, award }) => {
 	const { t } = useTranslation();
 
 	const { date } = useScheduleDate();
@@ -83,7 +80,7 @@ const Payout: React.FC<PayoutProp> = ({
 		)
 		.reduce((acc, curr) => acc + parseFloat(curr.toString()), 0);
 
-	const payoutTotal = moneyToString(
+	const payoutBeforeAward = moneyToString(
 		requestedTotal +
 			holidayTotal +
 			cashOutTotal +
@@ -91,12 +88,39 @@ const Payout: React.FC<PayoutProp> = ({
 			vipPackagesCommissionTotal
 	);
 
+	const awardMoney = Math.max(award - STORES.award_reservation_count, 0);
+
+	const payoutTotal = moneyToString(
+		requestedTotal +
+			holidayTotal +
+			cashOutTotal +
+			tipsTotal +
+			vipPackagesCommissionTotal +
+			awardMoney
+	);
+
+	const payoutElement = () => {
+		if (awardMoney > 0) {
+			return (
+				<Text style={[styles.text, { color: textColor }]}>
+					{t('Payout') + ': ' + payoutBeforeAward + ' + '}
+					<Text style={{ color: 'red' }}>{moneyToString(awardMoney)}</Text>
+					<Text style={{ fontWeight: '800' }}>{' = ' + payoutTotal}</Text>
+				</Text>
+			);
+		} else {
+			return (
+				<Text style={[styles.text, { color: textColor }]}>
+					{t('Payout') + ':'}
+					<Text style={{ fontWeight: '800' }}> {payoutTotal}</Text>
+				</Text>
+			);
+		}
+	};
+
 	return (
 		<View style={[styles.container, { borderBottomColor: borderColor }]}>
-			<Text style={[styles.text, { color: textColor }]}>
-				{t('Payout') + ':'}
-				<Text style={{ fontWeight: '800' }}> {payoutTotal}</Text>
-			</Text>
+			{payoutElement()}
 		</View>
 	);
 };
