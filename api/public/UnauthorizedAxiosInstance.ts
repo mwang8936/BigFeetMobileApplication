@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { DateTime } from 'luxon';
 
-import API_BASE_URL from '@/constants/API.constants';
+import API_BASE_URL, { dateKeys } from '@/constants/API.constants';
 import { CustomAPIError } from '@/models/custom-errors/API.Error';
 
 // The Axios Instance used for making unauthorized API calls (login, authenticate, etc.)
@@ -62,12 +62,12 @@ const parseDate = (input: string): DateTime | string => {
 const parseData = (data: any): any => {
 	if (data) {
 		if (Array.isArray(data)) {
-			data.map((object) => parseData(object));
+			data.forEach((object) => parseData(object));
 		} else {
 			Object.keys(data).forEach((key) => {
 				const property = data[key];
 
-				if (typeof property === 'string') {
+				if (typeof property === 'string' && dateKeys.has(key)) {
 					// Check to see if the property is a date or a string
 					data[key] = parseDate(property);
 				} else if (typeof property === 'object') {

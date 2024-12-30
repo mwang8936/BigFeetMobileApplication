@@ -18,3 +18,13 @@ export const reservationPath = 'reservation';
 export const schedulePath = 'schedule';
 export const servicePath = 'service';
 export const vipPackagePath = 'vip-package';
+
+export const dateKeys = new Set([
+	'created_at',
+	'updated_at',
+	'deleted_at',
+	'date',
+	'start',
+	'end',
+	'reserved_date',
+]);

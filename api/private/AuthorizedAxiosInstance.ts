@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 
 import { DateTime } from 'luxon';
 
-import API_BASE_URL from '@/constants/API.constants';
+import API_BASE_URL, { dateKeys } from '@/constants/API.constants';
 import { CustomAPIError } from '@/models/custom-errors/API.Error';
 
 // The Axios Instance used for making authorized API calls
@@ -63,13 +63,13 @@ const parseDate = (input: string): DateTime | string => {
 const parseData = (data: any): any => {
 	if (data) {
 		if (Array.isArray(data)) {
-			data.map((object) => parseData(object));
-		} else {
+			data.forEach((object) => parseData(object));
+		} else if (typeof data === 'object') {
 			Object.keys(data).forEach((key) => {
 				const property = data[key];
 
-				if (typeof property === 'string') {
-					// Check to see if the property is a date or a string
+				if (typeof property === 'string' && dateKeys.has(key)) {
+					// Format the date string properly
 					data[key] = parseDate(property);
 				} else if (typeof property === 'object') {
 					// Recurse on the object properties
