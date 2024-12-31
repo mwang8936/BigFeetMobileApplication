@@ -4,6 +4,7 @@ import { ActivityIndicator, useColorScheme, View } from 'react-native';
 import * as Localization from 'expo-localization';
 import { Redirect, Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { Colors } from '@/constants/Colors';
 
@@ -26,6 +27,8 @@ import { getLanguageFile } from '@/utils/i18n.utils';
 export default function TabLayout() {
 	const { i18n, t } = useTranslation();
 
+	const queryClient = useQueryClient();
+
 	const { session, isLoading: sessionLoading } = useSession();
 	const { interceptorsReady } = useAxiosContext();
 
@@ -35,11 +38,11 @@ export default function TabLayout() {
 
 	useEffect(() => {
 		if (!sessionLoading && interceptorsReady) {
-			prefetchUserSchedulesQuery();
-			prefetchUserAcupunctureReportsQuery();
-			prefetchUserPayrollsQuery();
+			prefetchUserSchedulesQuery(queryClient);
+			prefetchUserAcupunctureReportsQuery(queryClient);
+			prefetchUserPayrollsQuery(queryClient);
 		}
-	}, [sessionLoading, interceptorsReady]);
+	}, [queryClient, sessionLoading, interceptorsReady]);
 
 	useEffect(() => {
 		if (user) {
@@ -61,7 +64,7 @@ export default function TabLayout() {
 	}
 
 	// Show a loading indicator while checking auth status
-	if (userLoading) {
+	if (sessionLoading || !interceptorsReady || userLoading) {
 		return (
 			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
 				<ActivityIndicator size="large" color="#0000ff" />

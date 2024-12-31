@@ -63,18 +63,18 @@ export function SessionProvider({ children }: PropsWithChildren) {
 		i18n.changeLanguage(getLanguageFile(user.language));
 
 		// Save token in session state and secure storage
-		setSession(accessToken);
+		await setSession(accessToken);
 	};
 
-	const signOut = () => {
-		// Remove cached data
-		queryClient.clear();
+	const signOut = async () => {
+		// Remove token from session state and secure storage
+		await setSession(null);
 
 		// Revert language to default language
 		i18n.changeLanguage(Localization?.getLocales?.()[0]?.languageTag);
 
-		// Remove token from session state and secure storage
-		setSession(null);
+		// Remove cached data
+		queryClient.clear();
 	};
 
 	return (

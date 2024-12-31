@@ -51,6 +51,16 @@ const AxiosHandler: React.FC<AxiosHandlerProps> = ({ children }) => {
 			(error) => error
 		);
 
+		if (session) setInterceptorsReady(true);
+
+		return () => {
+			AuthorizedAxiosInstance.interceptors.request.eject(requestIntercepter);
+
+			setInterceptorsReady(false);
+		};
+	}, [session]);
+
+	useEffect(() => {
 		const onResponseError = (error: CustomAPIError) => {
 			// TODO add refresh token logic
 			if (error.status === 401) signOut();
@@ -63,14 +73,10 @@ const AxiosHandler: React.FC<AxiosHandlerProps> = ({ children }) => {
 				onResponseError
 			);
 
-		if (session) setInterceptorsReady(true);
 		return () => {
-			AuthorizedAxiosInstance.interceptors.request.eject(requestIntercepter);
 			AuthorizedAxiosInstance.interceptors.response.eject(responseInterceptor);
-
-			setInterceptorsReady(false);
 		};
-	}, [session, signOut]);
+	}, [signOut]);
 
 	useEffect(() => {
 		const onRequest = (config: InternalAxiosRequestConfig) => {

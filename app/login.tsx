@@ -13,7 +13,7 @@ import {
 	useColorScheme,
 } from 'react-native';
 
-import { router } from 'expo-router';
+import { Redirect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -35,7 +35,7 @@ import { CustomAPIError } from '@/models/custom-errors/API.Error';
 export default function LoginScreen() {
 	const { t } = useTranslation();
 
-	const { signIn } = useSession();
+	const { session, signIn } = useSession();
 
 	const colorScheme = useColorScheme();
 
@@ -59,7 +59,6 @@ export default function LoginScreen() {
 
 		try {
 			await signIn({ username, password });
-			router.replace('/');
 		} catch (error) {
 			console.error('Login Failed:', error);
 
@@ -69,6 +68,10 @@ export default function LoginScreen() {
 			setIsLoading(false);
 		}
 	};
+
+	if (session) {
+		return <Redirect href="/" />;
+	}
 
 	return (
 		<TouchableWithoutFeedback

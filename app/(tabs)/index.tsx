@@ -118,7 +118,7 @@ export default function SchedulerScreen() {
 			}
 		}
 
-		scrollViewRef.current?.scrollTo({ animated: true, y: height });
+		scrollViewRef.current?.scrollTo({ animated: true, y: height, x: 0 });
 	};
 
 	useEffect(() => {

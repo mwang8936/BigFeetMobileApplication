@@ -1,6 +1,11 @@
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+	QueryClient,
+	useMutation,
+	useQuery,
+	useQueryClient,
+} from '@tanstack/react-query';
 import { Toast } from 'toastify-react-native';
 
 import {
@@ -161,7 +166,7 @@ export const useUserAcupunctureReportsQuery = ({
 	return useQuery({
 		queryKey: [userQueryKey, acupunctureReportsQueryKey, year, month],
 		queryFn: () => getProfileAcupunctureReports(params),
-		enabled,
+		enabled: enabled && date.isValid,
 		staleTime: 1000 * 60 * 15,
 		gcTime: 1000 * 60 * 60,
 		refetchOnReconnect: false,
@@ -188,7 +193,7 @@ export const useUserPayrollsQuery = ({
 	return useQuery({
 		queryKey: [userQueryKey, payrollsQueryKey, year, month],
 		queryFn: () => getProfilePayrolls(params),
-		enabled,
+		enabled: enabled && date.isValid,
 		staleTime: 1000 * 60 * 15,
 		gcTime: 1000 * 60 * 60,
 		refetchOnReconnect: false,
@@ -216,7 +221,7 @@ export const useUserSchedulesQuery = ({
 	return useQuery({
 		queryKey: [userQueryKey, schedulesQueryKey, year, month, day],
 		queryFn: () => getProfileSchedules(params),
-		enabled,
+		enabled: enabled && date.isValid,
 		staleTime: 1000 * 60 * 15,
 		gcTime: 1000 * 60 * 60,
 		refetchOnReconnect: false,
@@ -225,13 +230,13 @@ export const useUserSchedulesQuery = ({
 	});
 };
 
-export const prefetchUserPayrollsQuery = async () => {
-	const queryClient = useQueryClient();
-
+export const prefetchUserPayrollsQuery = async (queryClient: QueryClient) => {
 	let currentDate = DateTime.now();
 	currentDate = currentDate.setZone('America/Los_Angeles', {
 		keepLocalTime: true,
 	}) as DateTime;
+
+	if (!currentDate.isValid) return;
 
 	const year = currentDate.year;
 	const month = currentDate.month;
@@ -241,7 +246,7 @@ export const prefetchUserPayrollsQuery = async () => {
 		end: currentDate,
 	};
 
-	queryClient.prefetchQuery({
+	await queryClient.prefetchQuery({
 		queryKey: [userQueryKey, payrollsQueryKey, year, month],
 		queryFn: () => getProfilePayrolls(params),
 		staleTime: 0,
@@ -250,13 +255,15 @@ export const prefetchUserPayrollsQuery = async () => {
 	});
 };
 
-export const prefetchUserAcupunctureReportsQuery = async () => {
-	const queryClient = useQueryClient();
-
+export const prefetchUserAcupunctureReportsQuery = async (
+	queryClient: QueryClient
+) => {
 	let currentDate = DateTime.now();
 	currentDate = currentDate.setZone('America/Los_Angeles', {
 		keepLocalTime: true,
 	}) as DateTime;
+
+	if (!currentDate.isValid) return;
 
 	const year = currentDate.year;
 	const month = currentDate.month;
@@ -266,7 +273,7 @@ export const prefetchUserAcupunctureReportsQuery = async () => {
 		end: currentDate,
 	};
 
-	queryClient.prefetchQuery({
+	await queryClient.prefetchQuery({
 		queryKey: [userQueryKey, acupunctureReportsQueryKey, year, month],
 		queryFn: () => getProfileAcupunctureReports(params),
 		staleTime: 0,
@@ -275,13 +282,13 @@ export const prefetchUserAcupunctureReportsQuery = async () => {
 	});
 };
 
-export const prefetchUserSchedulesQuery = async () => {
-	const queryClient = useQueryClient();
-
+export const prefetchUserSchedulesQuery = async (queryClient: QueryClient) => {
 	let currentDate = DateTime.now();
 	currentDate = currentDate.setZone('America/Los_Angeles', {
 		keepLocalTime: true,
 	}) as DateTime;
+
+	if (!currentDate.isValid) return;
 
 	const year = currentDate.year;
 	const month = currentDate.month;
@@ -292,7 +299,7 @@ export const prefetchUserSchedulesQuery = async () => {
 		end: currentDate,
 	};
 
-	queryClient.prefetchQuery({
+	await queryClient.prefetchQuery({
 		queryKey: [userQueryKey, schedulesQueryKey, year, month, day],
 		queryFn: () => getProfileSchedules(params),
 		staleTime: 0,
