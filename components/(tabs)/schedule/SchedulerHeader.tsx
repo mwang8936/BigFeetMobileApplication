@@ -1,10 +1,13 @@
+import { StyleSheet, Text, View } from 'react-native';
+
+import { useTranslation } from 'react-i18next';
+
 import { useThemeColor } from '@/hooks/colors/useThemeColor';
 import { useUserQuery } from '@/hooks/react-query/profile.hooks';
+
 import Schedule from '@/models/Schedule.Model';
+
 import { getTimeString } from '@/utils/string.utils';
-import { useTranslation } from 'react-i18next';
-import { StyleSheet } from 'react-native';
-import { Text, View } from 'react-native';
 
 interface SchedulerHeaderProp {
 	schedule?: Schedule;
@@ -17,13 +20,13 @@ const SchedulerHeader: React.FC<SchedulerHeaderProp> = ({
 }) => {
 	const { t } = useTranslation();
 
+	const { data: user } = useUserQuery({});
+
 	const textColor = useThemeColor({}, 'text');
 	const blueColor = useThemeColor({}, 'blue');
 	const redColor = useThemeColor({}, 'red');
 
 	const borderColor = useThemeColor({}, 'border');
-
-	const { data: user } = useUserQuery();
 
 	const startText = schedule?.start ? getTimeString(schedule.start) : '';
 	const endText = schedule?.end ? getTimeString(schedule.end) : '';
@@ -54,6 +57,7 @@ const SchedulerHeader: React.FC<SchedulerHeaderProp> = ({
 			<Text style={[styles.text, { color: statusColor }]}>
 				{schedule?.employee.username || user?.username}
 			</Text>
+
 			<Text style={[styles.text, { color: statusColor }]}>{statusText}</Text>
 		</View>
 	);

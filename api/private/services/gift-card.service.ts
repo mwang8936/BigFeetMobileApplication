@@ -1,6 +1,6 @@
 import AuthorizedAxiosInstance from '../AuthorizedAxiosInstance';
 
-import { giftCardPath } from '@/constants/API.constants';
+import { giftCardPath } from '@/constants/API';
 
 import { GetGiftCardsParam } from '@/models/params/Gift-Card.Param';
 import {

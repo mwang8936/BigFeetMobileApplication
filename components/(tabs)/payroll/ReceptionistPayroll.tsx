@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
-import { DataTable } from 'react-native-paper';
-
-import { useTranslation } from 'react-i18next';
 
 import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
+import { DataTable } from 'react-native-paper';
 
 import { usePayrollDate } from '@/context-providers/PayrollDateContext';
 
@@ -45,7 +44,7 @@ const ReceptionistPayroll: React.FC<ReceptionistPayrollProp> = ({
 
 	const { date } = usePayrollDate();
 
-	const userQuery = useUserQuery();
+	const userQuery = useUserQuery({});
 	const user = userQuery.data;
 
 	const language = user?.language;
@@ -221,8 +220,11 @@ const ReceptionistPayroll: React.FC<ReceptionistPayrollProp> = ({
 					]}
 				>
 					{titleElement(dateText)}
+
 					{titleElement(t('Body'))}
+
 					{titleElement(t('Feet'))}
+
 					{titleElement(t('Total Hours'), 2)}
 				</DataTable.Header>
 
@@ -239,8 +241,11 @@ const ReceptionistPayroll: React.FC<ReceptionistPayrollProp> = ({
 						]}
 					>
 						{cellElement(row.day)}
+
 						{cellElement(row.body)}
+
 						{cellElement(row.feet)}
+
 						{cellElement(hoursToString(row.total_hours))}
 					</DataTable.Row>
 				))}
@@ -252,8 +257,11 @@ const ReceptionistPayroll: React.FC<ReceptionistPayrollProp> = ({
 					]}
 				>
 					{leftAlignBoldCellElement(t('SUM'))}
+
 					{boldCellElement(totalBodySessions)}
+
 					{boldCellElement(totalFeetSessions)}
+
 					{boldCellElement(hoursToString(totalHoursFinal))}
 				</DataTable.Row>
 
@@ -264,8 +272,11 @@ const ReceptionistPayroll: React.FC<ReceptionistPayrollProp> = ({
 					]}
 				>
 					{leftAlignBoldCellElement(t('PAY/PER'))}
+
 					{boldCellElement(moneyToString(bodyRate) + '/B')}
+
 					{boldCellElement(moneyToString(feetRate) + '/F')}
+
 					{boldCellElement(moneyToString(hourlyRate) + '/hr')}
 				</DataTable.Row>
 
@@ -276,8 +287,11 @@ const ReceptionistPayroll: React.FC<ReceptionistPayrollProp> = ({
 					]}
 				>
 					{leftAlignBoldCellElement(t('TOTAL'))}
+
 					{boldCellElement(moneyToString(totalBodyMoney))}
+
 					{boldCellElement(moneyToString(totalFeetMoney))}
+
 					{boldCellElement(moneyToString(totalHourlyMoney))}
 				</DataTable.Row>
 
@@ -314,13 +328,21 @@ const ReceptionistPayroll: React.FC<ReceptionistPayrollProp> = ({
 					]}
 				>
 					{titleElement(dateText)}
+
 					{titleElement(t('Start'))}
+
 					{titleElement(t('End'))}
+
 					{titleElement(t('Hours'))}
+
 					{titleElement(t('Body'))}
+
 					{titleElement(t('Feet'))}
+
 					{titleElement(t('Counted Hours'), 2)}
+
 					{titleElement(t('Holiday Rate'), 2)}
+
 					{titleElement(t('Total Hours'), 2)}
 				</DataTable.Header>
 
@@ -337,13 +359,21 @@ const ReceptionistPayroll: React.FC<ReceptionistPayrollProp> = ({
 						]}
 					>
 						{cellElement(row.day)}
+
 						{cellElement(row.start ? getTimeString(row.start) : '-')}
+
 						{cellElement(row.end ? getTimeString(row.end) : '-')}
+
 						{cellElement(hoursToString(row.hours))}
+
 						{cellElement(row.body)}
+
 						{cellElement(row.feet)}
+
 						{cellElement(hoursToString(row.hours_minus_sessions))}
+
 						{cellElement(row.holiday ? '× 1.5' : '× 1')}
+
 						{cellElement(hoursToString(row.total_hours))}
 					</DataTable.Row>
 				))}
@@ -355,13 +385,21 @@ const ReceptionistPayroll: React.FC<ReceptionistPayrollProp> = ({
 					]}
 				>
 					{leftAlignBoldCellElement(t('SUM'))}
+
 					{boldCellElement('-')}
+
 					{boldCellElement('-')}
+
 					{boldCellElement(hoursToString(totalHours))}
+
 					{boldCellElement(totalBodySessions)}
+
 					{boldCellElement(totalFeetSessions)}
+
 					{boldCellElement(hoursToString(totalHoursMinusSessions))}
+
 					{boldCellElement('-')}
+
 					{boldCellElement(hoursToString(totalHoursFinal))}
 				</DataTable.Row>
 
@@ -372,13 +410,21 @@ const ReceptionistPayroll: React.FC<ReceptionistPayrollProp> = ({
 					]}
 				>
 					{leftAlignBoldCellElement(t('PAY/PER'))}
+
 					{boldCellElement('-')}
+
 					{boldCellElement('-')}
+
 					{boldCellElement('-')}
+
 					{boldCellElement(moneyToString(bodyRate) + '/B')}
+
 					{boldCellElement(moneyToString(feetRate) + '/F')}
+
 					{boldCellElement('-')}
+
 					{boldCellElement('-')}
+
 					{boldCellElement(moneyToString(hourlyRate) + '/hr')}
 				</DataTable.Row>
 
@@ -389,13 +435,21 @@ const ReceptionistPayroll: React.FC<ReceptionistPayrollProp> = ({
 					]}
 				>
 					{leftAlignBoldCellElement(t('TOTAL'))}
+
 					{boldCellElement('-')}
+
 					{boldCellElement('-')}
+
 					{boldCellElement('-')}
+
 					{boldCellElement(moneyToString(totalBodyMoney))}
+
 					{boldCellElement(moneyToString(totalFeetMoney))}
+
 					{boldCellElement('-')}
+
 					{boldCellElement('-')}
+
 					{boldCellElement(moneyToString(totalHourlyMoney))}
 				</DataTable.Row>
 

@@ -1,18 +1,20 @@
-import { useThemeColor } from '@/hooks/colors/useThemeColor';
 import * as React from 'react';
-import { useUserQuery } from '@/hooks/react-query/profile.hooks';
-import Schedule from '@/models/Schedule.Model';
-import { getTimeString, moneyToString } from '@/utils/string.utils';
+import { StyleSheet, Text, View } from 'react-native';
+
 import { useTranslation } from 'react-i18next';
-import { StyleSheet } from 'react-native';
-import { Text, View } from 'react-native';
-import { DateTime } from 'luxon';
-import Reservation from '@/models/Reservation.Model';
-import { isHoliday } from '@/utils/date.utils';
-import { useScheduleDate } from '@/context-providers/ScheduleDateContext';
-import VipPackage from '@/models/Vip-Package.Model';
-import { TipMethod } from '@/models/enums';
+
 import STORES from '@/constants/Stores';
+
+import { useScheduleDate } from '@/context-providers/ScheduleDateContext';
+
+import { useThemeColor } from '@/hooks/colors/useThemeColor';
+
+import { TipMethod } from '@/models/enums';
+import Reservation from '@/models/Reservation.Model';
+import VipPackage from '@/models/Vip-Package.Model';
+
+import { isHoliday } from '@/utils/date.utils';
+import { moneyToString } from '@/utils/string.utils';
 
 interface PayoutProp {
 	reservations: Reservation[];

@@ -1,15 +1,13 @@
-import { useThemeColor } from '@/hooks/colors/useThemeColor';
 import * as React from 'react';
-import { useUserQuery } from '@/hooks/react-query/profile.hooks';
-import Schedule from '@/models/Schedule.Model';
-import { getTimeString, moneyToString } from '@/utils/string.utils';
+import { StyleSheet, Text, View } from 'react-native';
+
 import { useTranslation } from 'react-i18next';
-import { StyleSheet } from 'react-native';
-import { Text, View } from 'react-native';
-import { DateTime } from 'luxon';
+
+import { useThemeColor } from '@/hooks/colors/useThemeColor';
+
 import Reservation from '@/models/Reservation.Model';
-import { isHoliday } from '@/utils/date.utils';
-import { useScheduleDate } from '@/context-providers/ScheduleDateContext';
+
+import { moneyToString } from '@/utils/string.utils';
 
 interface CashOutProp {
 	reservations: Reservation[];

@@ -1,16 +1,14 @@
-import { useThemeColor } from '@/hooks/colors/useThemeColor';
 import * as React from 'react';
-import { useUserQuery } from '@/hooks/react-query/profile.hooks';
-import Schedule from '@/models/Schedule.Model';
-import { getTimeString, moneyToString } from '@/utils/string.utils';
+import { StyleSheet, Text, View } from 'react-native';
+
 import { useTranslation } from 'react-i18next';
-import { StyleSheet } from 'react-native';
-import { Text, View } from 'react-native';
-import { DateTime } from 'luxon';
-import Reservation from '@/models/Reservation.Model';
-import { isHoliday } from '@/utils/date.utils';
-import { useScheduleDate } from '@/context-providers/ScheduleDateContext';
+
+import { useThemeColor } from '@/hooks/colors/useThemeColor';
+
 import { TipMethod } from '@/models/enums';
+import Reservation from '@/models/Reservation.Model';
+
+import { moneyToString } from '@/utils/string.utils';
 
 interface TipsProp {
 	reservations: Reservation[];
@@ -49,6 +47,7 @@ const Tips: React.FC<TipsProp> = ({ reservations }) => {
 	return (
 		<View style={[styles.container, { borderBottomColor: borderColor }]}>
 			<Text style={[styles.text, { color: textColor }]}>{t('Tips') + ':'}</Text>
+
 			<Text
 				adjustsFontSizeToFit
 				numberOfLines={1}
@@ -57,6 +56,7 @@ const Tips: React.FC<TipsProp> = ({ reservations }) => {
 				{tipsText}
 				<Text style={{ fontWeight: '800' }}>{tipsTotalText}</Text>
 			</Text>
+
 			<Text style={[styles.text, { color: textColor, fontWeight: '800' }]}>
 				{`${tipsTotalText} X 90% = ${tipsPayoutText}`}
 			</Text>

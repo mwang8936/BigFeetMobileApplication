@@ -1,48 +1,52 @@
-import {
-	useUserAcupunctureReportsQuery,
-	useUserPayrollsQuery,
-} from '@/hooks/react-query/profile.hooks';
-import Swiper from 'react-native-swiper';
-import { createContext, useContext, useState } from 'react';
+import { StyleSheet, Text } from 'react-native';
+
 import { useTranslation } from 'react-i18next';
-import { Text, StyleSheet } from 'react-native';
+import { BallIndicator } from 'react-native-indicators';
 import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { PayrollOption, PayrollPart } from '@/models/enums';
-
-import { BallIndicator } from 'react-native-indicators';
-import YearMonthPicker from '@/components/(tabs)/payroll/YearMonthPicker';
-import { useThemeColor } from '@/hooks/colors/useThemeColor';
-import StoreEmployeePayroll from '@/components/(tabs)/payroll/StoreEmployeePayroll';
-import Payroll from '@/models/Payroll.Model';
-import StoreEmployeeWithCashAndTipsPayroll from '@/components/(tabs)/payroll/StoreEmployeeWithCashAndTipsPayroll';
-import AcupuncturistPayroll from '@/components/(tabs)/payroll/AcupuncturistPayroll';
-import ReceptionistPayroll from '@/components/(tabs)/payroll/ReceptionistPayroll';
-import { usePayrollDate } from '@/context-providers/PayrollDateContext';
-import AcupunctureReportTable from '@/components/(tabs)/payroll/AcupunctureReportTable';
+import Swiper from 'react-native-swiper';
 import { useIsFetching, useQueryClient } from '@tanstack/react-query';
 import { Toast } from 'toastify-react-native';
+
 import {
 	acupunctureReportsQueryKey,
 	payrollsQueryKey,
 	userQueryKey,
-} from '@/constants/Query.constants';
+} from '@/constants/Query';
+
+import { usePayrollDate } from '@/context-providers/PayrollDateContext';
+
+import AcupuncturistPayroll from '@/components/(tabs)/payroll/AcupuncturistPayroll';
+import AcupunctureReportTable from '@/components/(tabs)/payroll/AcupunctureReportTable';
+import ReceptionistPayroll from '@/components/(tabs)/payroll/ReceptionistPayroll';
+import StoreEmployeePayroll from '@/components/(tabs)/payroll/StoreEmployeePayroll';
+import StoreEmployeeWithCashAndTipsPayroll from '@/components/(tabs)/payroll/StoreEmployeeWithCashAndTipsPayroll';
+import YearMonthPicker from '@/components/(tabs)/payroll/YearMonthPicker';
+
+import { useThemeColor } from '@/hooks/colors/useThemeColor';
+import {
+	useUserAcupunctureReportsQuery,
+	useUserPayrollsQuery,
+} from '@/hooks/react-query/profile.hooks';
+
+import { PayrollOption, PayrollPart } from '@/models/enums';
+import Payroll from '@/models/Payroll.Model';
 
 export default function PayrollScreen() {
-	const queryClient = useQueryClient();
 	const { t } = useTranslation();
 
-	const textColor = useThemeColor({}, 'text');
+	const queryClient = useQueryClient();
 
 	const { date, setDate } = usePayrollDate();
 
-	const payrollsQuery = useUserPayrollsQuery(date.year, date.month);
+	const textColor = useThemeColor({}, 'text');
+
+	const payrollsQuery = useUserPayrollsQuery({ ...date });
 	const payrolls = payrollsQuery.data || [];
 
-	const acupunctureReportsQuery = useUserAcupunctureReportsQuery(
-		date.year,
-		date.month
-	);
+	const acupunctureReportsQuery = useUserAcupunctureReportsQuery({
+		...date,
+	});
 	const acupunctureReports = acupunctureReportsQuery.data;
 
 	if (payrollsQuery.isError) {
@@ -55,21 +59,6 @@ export default function PayrollScreen() {
 
 	const isLoading =
 		payrollsQuery.isLoading || acupunctureReportsQuery.isLoading;
-
-	const payrollElement = (payroll: Payroll) => {
-		switch (payroll.option) {
-			case PayrollOption.ACUPUNCTURIST:
-				return <AcupuncturistPayroll payroll={payroll} />;
-			case PayrollOption.RECEPTIONIST:
-				return <ReceptionistPayroll payroll={payroll} />;
-			case PayrollOption.STORE_EMPLOYEE:
-				return <StoreEmployeePayroll payroll={payroll} />;
-			case PayrollOption.STORE_EMPLOYEE_WITH_TIPS_AND_CASH:
-				return <StoreEmployeeWithCashAndTipsPayroll payroll={payroll} />;
-			default:
-				return <StoreEmployeePayroll payroll={payroll} />;
-		}
-	};
 
 	const isAcupunctureReportFetching = useIsFetching({
 		queryKey: [userQueryKey, acupunctureReportsQueryKey, date.year, date.month],
@@ -91,6 +80,21 @@ export default function PayrollScreen() {
 		queryClient.invalidateQueries({
 			queryKey: [userQueryKey, payrollsQueryKey, date.year, date.month],
 		});
+	};
+
+	const payrollElement = (payroll: Payroll) => {
+		switch (payroll.option) {
+			case PayrollOption.ACUPUNCTURIST:
+				return <AcupuncturistPayroll payroll={payroll} />;
+			case PayrollOption.RECEPTIONIST:
+				return <ReceptionistPayroll payroll={payroll} />;
+			case PayrollOption.STORE_EMPLOYEE:
+				return <StoreEmployeePayroll payroll={payroll} />;
+			case PayrollOption.STORE_EMPLOYEE_WITH_TIPS_AND_CASH:
+				return <StoreEmployeeWithCashAndTipsPayroll payroll={payroll} />;
+			default:
+				return <StoreEmployeePayroll payroll={payroll} />;
+		}
 	};
 
 	const payrollPart1 = payrolls.find(
@@ -184,6 +188,7 @@ export default function PayrollScreen() {
 						{acupunctureReportElement}
 					</Swiper>
 				)}
+
 				<YearMonthPicker
 					year={date.year}
 					setYear={(year: number) => setDate({ year, month: date.month })}

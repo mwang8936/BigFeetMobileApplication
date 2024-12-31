@@ -1,7 +1,7 @@
 import { StyleSheet, Text } from 'react-native';
-import { DataTable } from 'react-native-paper';
 
 import { useTranslation } from 'react-i18next';
+import { DataTable } from 'react-native-paper';
 
 import { usePayrollDate } from '@/context-providers/PayrollDateContext';
 
@@ -34,7 +34,7 @@ const StoreEmployeePayroll: React.FC<StoreEmployeePayrollProp> = ({
 
 	const { date } = usePayrollDate();
 
-	const userQuery = useUserQuery();
+	const userQuery = useUserQuery({});
 	const user = userQuery.data;
 
 	const language = user?.language;
@@ -157,7 +157,9 @@ const StoreEmployeePayroll: React.FC<StoreEmployeePayrollProp> = ({
 				]}
 			>
 				{titleElement(dateText)}
+
 				{titleElement(t('Body'))}
+
 				{titleElement(t('Feet'))}
 			</DataTable.Header>
 
@@ -174,7 +176,9 @@ const StoreEmployeePayroll: React.FC<StoreEmployeePayrollProp> = ({
 					]}
 				>
 					{cellElement(row.day)}
+
 					{cellElement(row.body)}
+
 					{cellElement(row.feet)}
 				</DataTable.Row>
 			))}
@@ -186,7 +190,9 @@ const StoreEmployeePayroll: React.FC<StoreEmployeePayrollProp> = ({
 				]}
 			>
 				{leftAlignBoldCellElement(t('SUM'))}
+
 				{boldCellElement(totalBodySessions)}
+
 				{boldCellElement(totalFeetSessions)}
 			</DataTable.Row>
 
@@ -197,7 +203,9 @@ const StoreEmployeePayroll: React.FC<StoreEmployeePayrollProp> = ({
 				]}
 			>
 				{leftAlignBoldCellElement(t('PAY/PER'))}
+
 				{boldCellElement(moneyToString(bodyRate) + '/B')}
+
 				{boldCellElement(moneyToString(feetRate) + '/F')}
 			</DataTable.Row>
 
@@ -208,7 +216,9 @@ const StoreEmployeePayroll: React.FC<StoreEmployeePayrollProp> = ({
 				]}
 			>
 				{leftAlignBoldCellElement(t('TOTAL'))}
+
 				{boldCellElement(moneyToString(bodyRate) + '/B')}
+
 				{boldCellElement(moneyToString(feetRate) + '/F')}
 			</DataTable.Row>
 

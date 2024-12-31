@@ -1,6 +1,6 @@
 import AuthorizedAxiosInstance from '../AuthorizedAxiosInstance';
 
-import { vipPackagePath } from '@/constants/API.constants';
+import { vipPackagePath } from '@/constants/API';
 
 import { GetVipPackagesParam } from '@/models/params/Vip-Package.Param';
 import {

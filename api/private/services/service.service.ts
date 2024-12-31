@@ -1,6 +1,6 @@
 import AuthorizedAxiosInstance from '../AuthorizedAxiosInstance';
 
-import { servicePath } from '@/constants/API.constants';
+import { servicePath } from '@/constants/API';
 
 import { GetServicesParam } from '@/models/params/Service.Param';
 import Service from '@/models/Service.Model';

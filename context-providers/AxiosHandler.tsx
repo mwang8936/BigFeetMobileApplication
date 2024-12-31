@@ -15,10 +15,8 @@ interface AxiosHandlerProps {
 
 const AxiosReadyContext = createContext<{
 	interceptorsReady: boolean;
-	setInterceptorsReady: (interceptors: boolean) => void;
 }>({
 	interceptorsReady: false,
-	setInterceptorsReady: () => null,
 });
 
 export function useAxiosContext() {
@@ -54,6 +52,7 @@ const AxiosHandler: React.FC<AxiosHandlerProps> = ({ children }) => {
 		);
 
 		const onResponseError = (error: CustomAPIError) => {
+			// TODO add refresh token logic
 			if (error.status === 401) signOut();
 			return Promise.reject(error);
 		};
@@ -94,9 +93,7 @@ const AxiosHandler: React.FC<AxiosHandlerProps> = ({ children }) => {
 	}, [socketID]);
 
 	return (
-		<AxiosReadyContext.Provider
-			value={{ interceptorsReady, setInterceptorsReady }}
-		>
+		<AxiosReadyContext.Provider value={{ interceptorsReady }}>
 			{children}
 		</AxiosReadyContext.Provider>
 	);

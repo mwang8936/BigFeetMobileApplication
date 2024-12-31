@@ -12,28 +12,32 @@ import {
 	TextInput,
 	useColorScheme,
 } from 'react-native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { useTranslation } from 'react-i18next';
 
 import { router } from 'expo-router';
-
 import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
+import { Toast } from 'toastify-react-native';
 
 import { useSession } from '@/context-providers/AuthContext';
+
+import LENGTHS from '@/constants/Lengths';
+import PLACEHOLDERS from '@/constants/Placeholders';
+
 import { ColouredButton } from '@/components/ColouredButton';
 import { ThemedLoadingSpinner } from '@/components/ThemedLoadingSpinner';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedTextInput } from '@/components/ThemedTextInput';
 import { ThemedView } from '@/components/ThemedView';
 
-import LENGTHS from '@/constants/Lengths';
-import PLACEHOLDERS from '@/constants/Placeholders';
+import { CustomAPIError } from '@/models/custom-errors/API.Error';
 
 export default function LoginScreen() {
+	const { t } = useTranslation();
+
 	const { signIn } = useSession();
 
 	const colorScheme = useColorScheme();
-	const { t } = useTranslation();
 
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
@@ -58,6 +62,9 @@ export default function LoginScreen() {
 			router.replace('/');
 		} catch (error) {
 			console.error('Login Failed:', error);
+
+			if (error instanceof CustomAPIError)
+				Toast.error(t('Login Failed') + ': ' + error.messages[0]);
 		} finally {
 			setIsLoading(false);
 		}
@@ -65,14 +72,14 @@ export default function LoginScreen() {
 
 	return (
 		<TouchableWithoutFeedback
-			style={{ height: '100%' }}
+			style={styles.touchableContainer}
 			accessible={false}
 			onPress={Keyboard.dismiss}
 		>
 			<SafeAreaProvider>
-				<SafeAreaView style={{ flex: 1 }} edges={['top']}>
+				<SafeAreaView style={styles.wrapper} edges={['top']}>
 					<KeyboardAvoidingView
-						style={{ flex: 1 }}
+						style={styles.wrapper}
 						behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
 					>
 						<ThemedView style={styles.container}>
@@ -84,16 +91,16 @@ export default function LoginScreen() {
 
 							<Image
 								source={require('../assets/images/logo.png')}
-								style={{ resizeMode: 'center' }}
+								style={styles.image}
 							/>
 
-							<View style={{ width: '80%', marginBottom: 16 }}>
+							<View style={[styles.textInputContainer, { marginBottom: 16 }]}>
 								<ThemedText type="subtitle">{t('Username')}</ThemedText>
 
 								<ThemedTextInput
 									ref={usernameInputRef}
 									type="mediumSemiBold"
-									style={{ marginTop: 8 }}
+									style={styles.textInput}
 									placeholder={t(PLACEHOLDERS.login.username)}
 									autoCorrect={false}
 									autoComplete="username"
@@ -115,13 +122,13 @@ export default function LoginScreen() {
 								/>
 							</View>
 
-							<View style={{ width: '80%', marginVertical: 8 }}>
+							<View style={[styles.textInputContainer, { marginVertical: 8 }]}>
 								<ThemedText type="subtitle">{t('Password')}</ThemedText>
 
 								<ThemedTextInput
 									ref={passwordInputRef}
 									type="mediumSemiBold"
-									style={{ marginTop: 8 }}
+									style={styles.textInput}
 									placeholder={t(PLACEHOLDERS.login.password)}
 									autoCorrect={false}
 									autoComplete="password"
@@ -154,17 +161,18 @@ export default function LoginScreen() {
 
 							<ColouredButton
 								type="default"
-								style={{
-									width: '80%',
-									marginTop: 16,
-									backgroundColor: !invalidInput
-										? colorScheme === 'dark'
-											? '#fff'
-											: '#32CD32'
-										: colorScheme === 'dark'
-										? '#666' // Dark mode disabled color
-										: '#a9a9a9', // Light mode disabled color
-								}}
+								style={[
+									styles.button,
+									{
+										backgroundColor: !invalidInput
+											? colorScheme === 'dark'
+												? '#fff'
+												: '#32CD32'
+											: colorScheme === 'dark'
+											? '#666' // Dark mode disabled color
+											: '#a9a9a9', // Light mode disabled color
+									},
+								]}
 								disabled={invalidInput}
 								onPress={handleLogin}
 							>
@@ -186,16 +194,31 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
+	touchableContainer: {
+		height: '100%',
+	},
+	wrapper: {
+		flex: 1,
+	},
 	container: {
 		flex: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
 	},
+	image: {
+		resizeMode: 'center',
+	},
+	textInputContainer: { width: '80%' },
+	textInput: { marginTop: 8 },
 	iconContainer: {
 		position: 'absolute',
 		padding: 8,
 		right: 4,
 		top: '45%',
+	},
+	button: {
+		width: '80%',
+		marginTop: 16,
 	},
 	buttonText: {
 		fontSize: 32,

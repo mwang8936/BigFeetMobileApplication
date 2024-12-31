@@ -1,7 +1,8 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { DateTime } from 'luxon';
 
-import API_BASE_URL, { dateKeys } from '@/constants/API.constants';
+import API_BASE_URL, { dateKeys } from '@/constants/API';
+
 import { CustomAPIError } from '@/models/custom-errors/API.Error';
 
 // The Axios Instance used for making unauthorized API calls (login, authenticate, etc.)

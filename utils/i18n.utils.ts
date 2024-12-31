@@ -9,10 +9,26 @@ import chinese_traditional_translation from '@/locales/cn_trad/translation.json'
 import { Language } from '@/models/enums';
 
 /**
- * Returns the language code for the specified Language enum value.
+ * Returns the language code corresponding to a given Language enum value.
  *
- * @param language - The Language enum value to convert to a language code.
- * @returns A string representing the language code.
+ * This function converts a provided `Language` enum value into its respective language code string,
+ * which can then be used to reference language-specific resources (e.g., translation files).
+ *
+ * @param {Language} language - The `Language` enum value to convert to a language code.
+ *                              It can be one of the following values:
+ *                              - `Language.ENGLISH`
+ *                              - `Language.SIMPLIFIED_CHINESE`
+ *                              - `Language.TRADITIONAL_CHINESE`
+ *
+ * @returns {string} - A string representing the language code:
+ *                      - `'en'` for English.
+ *                      - `'cn_simp'` for Simplified Chinese.
+ *                      - `'cn_trad'` for Traditional Chinese.
+ *                      - Defaults to `'en'` if the provided `language` does not match any predefined values.
+ *
+ * Example usage:
+ * const languageCode = getLanguageFile(Language.SIMPLIFIED_CHINESE);
+ * console.log(languageCode); // Outputs: 'cn_simp'
  */
 export const getLanguageFile = (language: Language): string => {
 	if (language === Language.ENGLISH) {

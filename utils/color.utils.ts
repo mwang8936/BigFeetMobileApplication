@@ -1,3 +1,28 @@
+/**
+ * Computes a lighter and less saturated version of a given color to simulate a disabled appearance.
+ *
+ * This function takes a hexadecimal color value and returns a new color in the same format
+ * that has reduced saturation and increased lightness to make the color appear "disabled".
+ * The lightness and saturation adjustments are controlled by the `lightnessFactor` and
+ * `saturationFactor` parameters, respectively.
+ *
+ * @param {string} hex - The hexadecimal color string to modify (e.g., `#FF5733`).
+ * @param {number} [lightnessFactor=0.5] - A factor to adjust the lightness of the color.
+ *                                             A value between 0 (no change) and 1 (full increase).
+ * @param {number} [saturationFactor=0.5] - A factor to adjust the saturation of the color.
+ *                                            A value between 0 (no saturation) and 1 (no change).
+ *
+ * @returns {string} - A new hexadecimal color string representing the modified color.
+ *                     The result is a color with reduced saturation and increased lightness.
+ *
+ * @example
+ * const disabledColor = getDisabledColor('#FF5733');
+ * console.log(disabledColor); // Output: A lighter, less saturated version of #FF5733.
+ *
+ * // With custom factors:
+ * const disabledColorWithCustomFactors = getDisabledColor('#FF5733', 0.3, 0.2);
+ * console.log(disabledColorWithCustomFactors); // Output: A lighter and less saturated version with the custom factors.
+ */
 export function getDisabledColor(
 	hex: string,
 	lightnessFactor: number = 0.5,

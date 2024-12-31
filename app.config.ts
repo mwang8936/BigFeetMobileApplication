@@ -40,6 +40,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
 			typedRoutes: true,
 		},
 		extra: {
+			eas: {
+				projectId: 'e3b798be-6136-4f73-858b-9911e367ec72',
+			},
 			environment: process.env.NODE_ENV,
 			apiUrl: process.env.BASE_API_URL,
 			pusherKey: process.env.PUSHER_KEY,

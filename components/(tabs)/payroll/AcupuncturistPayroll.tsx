@@ -1,7 +1,7 @@
 import { StyleSheet, Text } from 'react-native';
-import { DataTable } from 'react-native-paper';
 
 import { useTranslation } from 'react-i18next';
+import { DataTable } from 'react-native-paper';
 
 import { usePayrollDate } from '@/context-providers/PayrollDateContext';
 
@@ -35,7 +35,7 @@ const AcupuncturistPayroll: React.FC<AcupuncturistPayrollProp> = ({
 
 	const { date } = usePayrollDate();
 
-	const userQuery = useUserQuery();
+	const userQuery = useUserQuery({});
 	const user = userQuery.data;
 
 	const language = user?.language;
@@ -165,8 +165,11 @@ const AcupuncturistPayroll: React.FC<AcupuncturistPayrollProp> = ({
 				]}
 			>
 				{titleElement(dateText)}
+
 				{titleElement(t('Body'))}
+
 				{titleElement(t('Feet'))}
+
 				{titleElement(t('Acu'))}
 			</DataTable.Header>
 
@@ -183,8 +186,11 @@ const AcupuncturistPayroll: React.FC<AcupuncturistPayrollProp> = ({
 					]}
 				>
 					{cellElement(row.day)}
+
 					{cellElement(row.body)}
+
 					{cellElement(row.feet)}
+
 					{cellElement(row.acupuncture)}
 				</DataTable.Row>
 			))}
@@ -196,8 +202,11 @@ const AcupuncturistPayroll: React.FC<AcupuncturistPayrollProp> = ({
 				]}
 			>
 				{leftAlignBoldCellElement(t('SUM'))}
+
 				{boldCellElement(totalBodySessions)}
+
 				{boldCellElement(totalFeetSessions)}
+
 				{boldCellElement(totalAcupunctureSessions)}
 			</DataTable.Row>
 
@@ -208,8 +217,11 @@ const AcupuncturistPayroll: React.FC<AcupuncturistPayrollProp> = ({
 				]}
 			>
 				{leftAlignBoldCellElement(t('PAY/PER'))}
+
 				{boldCellElement(moneyToString(bodyRate) + '/B')}
+
 				{boldCellElement(moneyToString(feetRate) + '/F')}
+
 				{boldCellElement(moneyToString(acupunctureRate) + '/A')}
 			</DataTable.Row>
 
@@ -220,8 +232,11 @@ const AcupuncturistPayroll: React.FC<AcupuncturistPayrollProp> = ({
 				]}
 			>
 				{leftAlignBoldCellElement(t('TOTAL/PER'))}
+
 				{boldCellElement(moneyToString(totalBodyMoney))}
+
 				{boldCellElement(moneyToString(totalFeetMoney))}
+
 				{boldCellElement(moneyToString(totalAcupunctureMoney))}
 			</DataTable.Row>
 

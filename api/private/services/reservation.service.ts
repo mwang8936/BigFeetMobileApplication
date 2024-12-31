@@ -1,6 +1,6 @@
 import AuthorizedAxiosInstance from '../AuthorizedAxiosInstance';
 
-import { reservationPath } from '@/constants/API.constants';
+import { reservationPath } from '@/constants/API';
 
 import { GetReservationsParam } from '@/models/params/Reservation.Param';
 import {

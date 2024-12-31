@@ -45,7 +45,9 @@ export const ThemedTextInput = forwardRef<TextInput, ThemedTextProps>(
 		ref
 	) => {
 		const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+
 		const disabledBackgroundColor = useThemeColor({}, 'disabledBackground');
+
 		const borderColor = useThemeColor({}, 'border');
 
 		const [isFocused, setIsFocused] = useState(false);

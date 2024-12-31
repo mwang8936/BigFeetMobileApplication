@@ -28,7 +28,7 @@ export interface UpdateReservationRequest {
 }
 
 export interface AddReservationRequest {
-	reserved_date: Date;
+	reserved_date: DateTime;
 	employee_id: number;
 	service_id: number;
 	time?: number;

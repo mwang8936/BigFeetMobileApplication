@@ -1,6 +1,6 @@
-import Spinner, {
-	SpinnerPropTypes,
-} from 'react-native-loading-spinner-overlay';
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+
 import {
 	BallIndicator,
 	BarIndicator,
@@ -13,10 +13,8 @@ import {
 	UIActivityIndicator,
 	WaveIndicator,
 } from 'react-native-indicators';
-import { useThemeColor } from '@/hooks/colors/useThemeColor';
 
-import React from 'react';
-import { ActivityIndicator, StyleSheet, View, Text } from 'react-native';
+import { useThemeColor } from '@/hooks/colors/useThemeColor';
 
 export type ThemedLoadingSpinnerProps = BaseIndicatorProps & {
 	isLoading: boolean;
@@ -76,6 +74,7 @@ export const ThemedLoadingSpinner: React.FC<ThemedLoadingSpinnerProps> = ({
 		<View style={styles.overlay}>
 			<View style={styles.container}>
 				{renderIndicator()}
+
 				{message && (
 					<Text style={[styles.message, { color: color }]}>{message}</Text>
 				)}

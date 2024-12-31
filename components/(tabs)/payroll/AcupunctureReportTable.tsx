@@ -1,7 +1,7 @@
 import { StyleSheet, Text } from 'react-native';
-import { DataTable } from 'react-native-paper';
 
 import { useTranslation } from 'react-i18next';
+import { DataTable } from 'react-native-paper';
 
 import { usePayrollDate } from '@/context-providers/PayrollDateContext';
 
@@ -36,7 +36,7 @@ const AcupunctureReportTable: React.FC<AcupunctureReportProp> = ({
 
 	const { date } = usePayrollDate();
 
-	const userQuery = useUserQuery();
+	const userQuery = useUserQuery({});
 	const user = userQuery.data;
 
 	const language = user?.language;
@@ -171,9 +171,13 @@ const AcupunctureReportTable: React.FC<AcupunctureReportProp> = ({
 				]}
 			>
 				{titleElement(dateText)}
+
 				{titleElement(t('Acu'))}
+
 				{titleElement(t('Massage'))}
+
 				{titleElement(t('Insurance'))}
+
 				{titleElement(t('Total'))}
 			</DataTable.Header>
 
@@ -190,9 +194,13 @@ const AcupunctureReportTable: React.FC<AcupunctureReportProp> = ({
 					]}
 				>
 					{cellElement(row.day)}
+
 					{cellElement(moneyToString(row.acupuncture))}
+
 					{cellElement(moneyToString(row.massage))}
+
 					{cellElement(moneyToString(row.insurance))}
+
 					{cellElement(moneyToString(row.total))}
 				</DataTable.Row>
 			))}
@@ -204,9 +212,13 @@ const AcupunctureReportTable: React.FC<AcupunctureReportProp> = ({
 				]}
 			>
 				{leftAlignBoldCellElement(t('SUM'))}
+
 				{boldCellElement(moneyToString(totalAcupuncture))}
+
 				{boldCellElement(moneyToString(totalMassage))}
+
 				{boldCellElement(moneyToString(totalInsurance))}
+
 				{boldCellElement('-')}
 			</DataTable.Row>
 
@@ -217,9 +229,13 @@ const AcupunctureReportTable: React.FC<AcupunctureReportProp> = ({
 				]}
 			>
 				{leftAlignBoldCellElement(t('PERCENT'))}
+
 				{boldCellElement(percentageToString(acupuncturePercentage))}
+
 				{boldCellElement(percentageToString(massagePercentage))}
+
 				{boldCellElement('-' + percentageToString(insurancePercentage))}
+
 				{boldCellElement('-')}
 			</DataTable.Row>
 
@@ -230,13 +246,17 @@ const AcupunctureReportTable: React.FC<AcupunctureReportProp> = ({
 				]}
 			>
 				{leftAlignBoldCellElement(t('TOTAL'))}
+
 				{boldCellElement(moneyToString(totalAcupunctureMoney))}
+
 				{boldCellElement(moneyToString(totalMassageMoney))}
+
 				{boldCellElement(
 					totalInsuranceMoney === 0
 						? moneyToString(0)
 						: '-' + moneyToString(totalInsuranceMoney)
 				)}
+
 				{boldCellElement('-')}
 			</DataTable.Row>
 

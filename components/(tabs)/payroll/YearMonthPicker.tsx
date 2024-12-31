@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import Modal from 'react-native-modal';
-import { useUserQuery } from '@/hooks/react-query/profile.hooks';
-import { getFullMonthString, getYearMonthString } from '@/utils/string.utils';
-import { useThemeColor } from '@/hooks/colors/useThemeColor';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
 import { useTranslation } from 'react-i18next';
+import Modal from 'react-native-modal';
+import { Picker } from '@react-native-picker/picker';
+
+import { useThemeColor } from '@/hooks/colors/useThemeColor';
+import { useUserQuery } from '@/hooks/react-query/profile.hooks';
+
+import { getFullMonthString, getYearMonthString } from '@/utils/string.utils';
 
 interface YearMonthPickerProp {
 	year: number;
@@ -35,7 +38,7 @@ const YearMonthPicker: React.FC<YearMonthPickerProp> = ({
 
 	const [isModalVisible, setModalVisible] = useState(false);
 
-	const userQuery = useUserQuery();
+	const userQuery = useUserQuery({});
 	const user = userQuery.data;
 
 	const language = user?.language;
@@ -70,6 +73,7 @@ const YearMonthPicker: React.FC<YearMonthPickerProp> = ({
 			<Text style={[styles.text, { color: textColor }]}>
 				{`${t('Selected')}: ${getYearMonthString(year, month, language)}`}
 			</Text>
+
 			<TouchableOpacity
 				style={[styles.openButton, { backgroundColor: blueColor }]}
 				onPress={toggleModal}
@@ -101,6 +105,7 @@ const YearMonthPicker: React.FC<YearMonthPickerProp> = ({
 							<Text style={[styles.pickerLabel, { color: modalLabelColor }]}>
 								{t('Year')}
 							</Text>
+
 							<Picker
 								selectedValue={year}
 								onValueChange={(itemValue) => setYear(Number(itemValue))}
@@ -116,6 +121,7 @@ const YearMonthPicker: React.FC<YearMonthPickerProp> = ({
 							<Text style={[styles.pickerLabel, { color: modalLabelColor }]}>
 								{t('Month')}
 							</Text>
+
 							<Picker
 								selectedValue={month}
 								onValueChange={(itemValue) => setMonth(Number(itemValue))}

@@ -1,24 +1,25 @@
-import { useThemeColor } from '@/hooks/colors/useThemeColor';
 import * as React from 'react';
-import { useUserQuery } from '@/hooks/react-query/profile.hooks';
-import Schedule from '@/models/Schedule.Model';
-import { getTimeString, moneyToString } from '@/utils/string.utils';
-import { useTranslation } from 'react-i18next';
-import { StyleSheet } from 'react-native';
-import { Text, View } from 'react-native';
+
 import { DateTime } from 'luxon';
-import Total from './footer/Total';
+
+import Schedule from '@/models/Schedule.Model';
+
 import CashOut from './footer/CashOut';
-import Tips from './footer/Tips';
-import VIP from './footer/VIP';
 import Payout from './footer/Payout';
+import Tips from './footer/Tips';
+import Total from './footer/Total';
 import Sign from './footer/Sign';
+import VIP from './footer/VIP';
 
 interface SchedulerFooterProp {
 	schedule?: Schedule;
+	setLoading(loading: boolean): void;
 }
 
-const SchedulerFooter: React.FC<SchedulerFooterProp> = ({ schedule }) => {
+const SchedulerFooter: React.FC<SchedulerFooterProp> = ({
+	schedule,
+	setLoading,
+}) => {
 	const reservations = schedule?.reservations || [];
 
 	const completedReservations = reservations.filter((reservation) => {
@@ -38,29 +39,22 @@ const SchedulerFooter: React.FC<SchedulerFooterProp> = ({ schedule }) => {
 	return (
 		<>
 			<Total reservations={completedReservations} />
+
 			<CashOut reservations={completedReservations} />
+
 			<Tips reservations={completedReservations} />
+
 			<VIP vipPackages={vipPackages} />
+
 			<Payout
 				reservations={completedReservations}
 				vipPackages={vipPackages}
 				award={award}
 			/>
-			{schedule && <Sign isSigned={schedule.signed} />}
+
+			{schedule && <Sign isSigned={schedule.signed} setLoading={setLoading} />}
 		</>
 	);
 };
-
-const styles = StyleSheet.create({
-	container: {
-		height: 'auto',
-		padding: 20,
-		borderBottomWidth: 5,
-	},
-	text: {
-		fontSize: 20,
-		fontWeight: 'bold',
-	},
-});
 
 export default SchedulerFooter;

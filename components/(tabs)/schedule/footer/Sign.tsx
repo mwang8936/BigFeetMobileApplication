@@ -1,35 +1,33 @@
-import { useThemeColor } from '@/hooks/colors/useThemeColor';
 import * as React from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import { DateTime } from 'luxon';
 import Modal from 'react-native-modal';
+import { useTranslation } from 'react-i18next';
+
+import { ColouredButton } from '@/components/ColouredButton';
+
+import { useScheduleDate } from '@/context-providers/ScheduleDateContext';
+
+import { useThemeColor } from '@/hooks/colors/useThemeColor';
 import {
 	useSignProfileScheduleMutation,
 	useUserQuery,
 } from '@/hooks/react-query/profile.hooks';
-import Schedule from '@/models/Schedule.Model';
-import {
-	getDateString,
-	getTimeString,
-	moneyToString,
-} from '@/utils/string.utils';
-import { useTranslation } from 'react-i18next';
-import { StyleSheet, TouchableOpacity } from 'react-native';
-import { Text, View } from 'react-native';
-import { DateTime } from 'luxon';
-import Reservation from '@/models/Reservation.Model';
-import { isHoliday } from '@/utils/date.utils';
-import { useScheduleDate } from '@/context-providers/ScheduleDateContext';
-import { ColouredButton } from '@/components/ColouredButton';
+
+import { getDateString } from '@/utils/string.utils';
 
 interface SignProp {
 	isSigned: boolean;
+	setLoading(loading: boolean): void;
 }
 
-const Sign: React.FC<SignProp> = ({ isSigned }) => {
+const Sign: React.FC<SignProp> = ({ isSigned, setLoading }) => {
 	const { t } = useTranslation();
 
 	const { date } = useScheduleDate();
 
-	const { data: user } = useUserQuery();
+	const { data: user } = useUserQuery({});
 	const language = user?.language;
 
 	const textColor = useThemeColor({}, 'text');
@@ -49,8 +47,8 @@ const Sign: React.FC<SignProp> = ({ isSigned }) => {
 	const toggleModal = () => setModalVisible(!isModalVisible);
 
 	const signScheduleMutation = useSignProfileScheduleMutation({
+		setLoading,
 		onSuccess: toggleModal,
-		setLoading: () => {},
 	});
 	const onSign = () => {
 		const signDate = DateTime.fromObject(
@@ -62,19 +60,6 @@ const Sign: React.FC<SignProp> = ({ isSigned }) => {
 
 		signScheduleMutation.mutate({ date: signDate });
 	};
-
-	// const changePasswordMutation = useChangePasswordMutation({
-	//     onSuccess: toggleModal,
-	//     setLoading,
-	// });
-	// const onChangePassword = () => {
-	//     const request: ChangeProfilePasswordRequest = {
-	//         old_password: oldPassword,
-	//         new_password: newPassword,
-	//     };
-
-	//     changePasswordMutation.mutate({ request });
-	// };
 
 	return (
 		<View style={[styles.container, { borderBottomColor: borderColor }]}>

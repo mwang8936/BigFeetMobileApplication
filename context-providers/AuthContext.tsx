@@ -6,7 +6,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { login } from '@/api/public/services/login.service';
 
-import { profileQueryKey, userQueryKey } from '@/constants/Query.constants';
+import { profileQueryKey, userQueryKey } from '@/constants/Query';
 
 import { useStorageState } from '@/hooks/storage/useStorageState';
 

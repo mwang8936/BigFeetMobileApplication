@@ -1,6 +1,6 @@
 import UnauthorizedAxiosInstance from '../UnauthorizedAxiosInstance';
 
-import { loginPath } from '@/constants/API.constants';
+import { loginPath } from '@/constants/API';
 
 import {
 	LoginRequest,

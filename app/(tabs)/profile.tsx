@@ -5,54 +5,66 @@ import {
 	Platform,
 	ScrollView,
 	View,
+	RefreshControl,
 	TextInput,
 	Text,
 } from 'react-native';
+
+import { useTranslation } from 'react-i18next';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { useIsFetching, useQueryClient } from '@tanstack/react-query';
+import { Toast } from 'toastify-react-native';
 
 import { useSession } from '@/context-providers/AuthContext';
+
+import ChangePassword from '@/components/(tabs)/profile/ChangePassword';
 import { ColouredButton } from '@/components/ColouredButton';
 import { ThemedDropdown } from '@/components/ThemedDropdown';
+import { ThemedLoadingSpinner } from '@/components/ThemedLoadingSpinner';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedTextInput } from '@/components/ThemedTextInput';
 
-import { Gender, Language, Role } from '@/models/enums';
 import {
 	genderDropDownItems,
 	languageDropDownItems,
 	roleDropDownItems,
 } from '@/constants/Dropdowns';
-import PLACEHOLDERS from '@/constants/Placeholders';
 import LENGTHS from '@/constants/Lengths';
+import PLACEHOLDERS from '@/constants/Placeholders';
+import { profileQueryKey, userQueryKey } from '@/constants/Query';
+
+import { useThemeColor } from '@/hooks/colors/useThemeColor';
 import {
 	useUpdateUserLanguageMutation,
 	useUserQuery,
 } from '@/hooks/react-query/profile.hooks';
-import { ThemedLoadingSpinner } from '@/components/ThemedLoadingSpinner';
-import { useTranslation } from 'react-i18next';
-import { useThemeColor } from '@/hooks/colors/useThemeColor';
+
 import { UpdateProfileRequest } from '@/models/requests/Profile.Request.Model';
-import ChangePassword from '@/components/(tabs)/profile/ChangePassword';
-import { RefreshControl } from 'react-native';
-import { useIsFetching, useQueryClient } from '@tanstack/react-query';
-import { getProfile } from '@/api/private/services/profile.service';
-import { CustomAPIError } from '@/models/custom-errors/API.Error';
-import { Toast } from 'toastify-react-native';
-import { profileQueryKey, userQueryKey } from '@/constants/Query.constants';
+import { Gender, Language, Role } from '@/models/enums';
 
 export default function ProfileScreen() {
-	const queryClient = useQueryClient();
 	const { t } = useTranslation();
+
+	const queryClient = useQueryClient();
 
 	const { signOut } = useSession();
 
 	const textColor = useThemeColor({}, 'text');
 
-	const { data: user, isError } = useUserQuery();
+	const { data: user, isError } = useUserQuery({});
 
 	if (isError) {
 		Toast.error(t('Error Getting Profile'));
 	}
+
+	const isFetching = useIsFetching({
+		queryKey: [userQueryKey, profileQueryKey],
+	});
+	const onRefresh = async () => {
+		queryClient.invalidateQueries({
+			queryKey: [userQueryKey, profileQueryKey],
+		});
+	};
 
 	useEffect(() => {
 		if (user) {
@@ -188,15 +200,6 @@ export default function ProfileScreen() {
 		}
 	};
 
-	const isFetching = useIsFetching({
-		queryKey: [userQueryKey, profileQueryKey],
-	});
-	const onRefresh = async () => {
-		queryClient.invalidateQueries({
-			queryKey: [userQueryKey, profileQueryKey],
-		});
-	};
-
 	return (
 		<SafeAreaProvider>
 			<SafeAreaView style={styles.container} edges={['top']}>
@@ -208,7 +211,7 @@ export default function ProfileScreen() {
 					<ThemedLoadingSpinner
 						indicator="ball"
 						isLoading={isLoading}
-						message={t('Updating Profile')}
+						message={t('Updating Profile...')}
 					/>
 
 					<ScrollView

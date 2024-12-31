@@ -1,15 +1,14 @@
-import React, { useState } from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import Modal from 'react-native-modal';
-import { useUserQuery } from '@/hooks/react-query/profile.hooks';
-import {
-	getDateString,
-	getFullMonthString,
-	getShortMonthString,
-} from '@/utils/string.utils';
-import { useThemeColor } from '@/hooks/colors/useThemeColor';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+
 import { useTranslation } from 'react-i18next';
+import Modal from 'react-native-modal';
+import { Picker } from '@react-native-picker/picker';
+
+import { useThemeColor } from '@/hooks/colors/useThemeColor';
+import { useUserQuery } from '@/hooks/react-query/profile.hooks';
+
+import { getDateString, getShortMonthString } from '@/utils/string.utils';
 
 interface YearMonthDayPickerProp {
 	year: number;
@@ -43,10 +42,31 @@ const YearMonthDayPicker: React.FC<YearMonthDayPickerProp> = ({
 
 	const [isModalVisible, setModalVisible] = useState(false);
 
-	const userQuery = useUserQuery();
+	const userQuery = useUserQuery({});
 	const user = userQuery.data;
 
 	const language = user?.language;
+
+	const calculateNumDays = (month: number) => {
+		let numDays = 31;
+		if (month === 4 || month === 6 || month === 9 || month === 11) {
+			numDays = 30;
+		} else if (month === 2) {
+			numDays = 28;
+			if ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0) {
+				numDays = 29;
+			}
+		}
+		return numDays;
+	};
+
+	useEffect(() => {
+		const numDays = calculateNumDays(month);
+
+		if (day > numDays) {
+			setDay(numDays);
+		}
+	}, [month]);
 
 	const generateYearPickerItems = (start: number, end: number) => {
 		const years = [];
@@ -72,17 +92,7 @@ const YearMonthDayPicker: React.FC<YearMonthDayPickerProp> = ({
 	};
 
 	const generateDayPickerItems = () => {
-		let numDays = 31;
-		if (month === 4 || month === 6 || month === 9 || month === 11) {
-			numDays = 30;
-		} else if (month === 2) {
-			numDays = 28;
-			if ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0) {
-				numDays = 29;
-			}
-		}
-
-		return [...Array(numDays).keys()].map((day) => {
+		return [...Array(calculateNumDays(month)).keys()].map((day) => {
 			return (
 				<Picker.Item
 					key={day + 1}
@@ -100,6 +110,7 @@ const YearMonthDayPicker: React.FC<YearMonthDayPickerProp> = ({
 			<Text style={[styles.text, { color: textColor }]}>
 				{`${t('Selected')}: ${getDateString(year, month, day, language)}`}
 			</Text>
+
 			<TouchableOpacity
 				style={[styles.openButton, { backgroundColor: blueColor }]}
 				onPress={toggleModal}
@@ -158,7 +169,7 @@ const YearMonthDayPicker: React.FC<YearMonthDayPickerProp> = ({
 							</Picker>
 						</View>
 
-						{/* Month Picker */}
+						{/* Day Picker */}
 						<View style={styles.pickerWrapper}>
 							<Text style={[styles.pickerLabel, { color: modalLabelColor }]}>
 								{t('Day')}

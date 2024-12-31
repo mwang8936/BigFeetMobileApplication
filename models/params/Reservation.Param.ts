@@ -1,5 +1,7 @@
+import { DateTime } from 'luxon';
+
 export interface GetReservationsParam {
-	start?: Date;
-	end?: Date;
+	start?: DateTime;
+	end?: DateTime;
 	employee_ids?: string[];
 }

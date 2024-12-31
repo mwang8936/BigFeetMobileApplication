@@ -1,17 +1,13 @@
-import { useThemeColor } from '@/hooks/colors/useThemeColor';
 import * as React from 'react';
-import { useUserQuery } from '@/hooks/react-query/profile.hooks';
-import Schedule from '@/models/Schedule.Model';
-import { getTimeString, moneyToString } from '@/utils/string.utils';
+import { StyleSheet, Text, View } from 'react-native';
+
 import { useTranslation } from 'react-i18next';
-import { StyleSheet } from 'react-native';
-import { Text, View } from 'react-native';
-import { DateTime } from 'luxon';
-import Reservation from '@/models/Reservation.Model';
-import { isHoliday } from '@/utils/date.utils';
-import { useScheduleDate } from '@/context-providers/ScheduleDateContext';
-import { TipMethod } from '@/models/enums';
+
+import { useThemeColor } from '@/hooks/colors/useThemeColor';
+
 import VipPackage from '@/models/Vip-Package.Model';
+
+import { moneyToString } from '@/utils/string.utils';
 
 interface VIPProp {
 	vipPackages: VipPackage[];
@@ -65,14 +61,7 @@ const VIP: React.FC<VIPProp> = ({ vipPackages }) => {
 			);
 
 			views.push(
-				<View
-					key={`pair-${i}`}
-					style={{
-						flex: 1,
-						flexDirection: 'row',
-						justifyContent: 'space-evenly',
-					}}
-				>
+				<View key={`pair-${i}`} style={styles.vipContainer}>
 					{element1}
 					{element2}
 				</View>
@@ -85,7 +74,9 @@ const VIP: React.FC<VIPProp> = ({ vipPackages }) => {
 	return (
 		<View style={[styles.container, { borderBottomColor: borderColor }]}>
 			<Text style={[styles.text, { color: textColor }]}>{t('VIP') + ':'}</Text>
+
 			{createVIPElements()}
+
 			<Text style={[styles.text, { color: textColor, paddingTop: 10 }]}>
 				{t('Total') + ':'}
 				<Text style={{ fontWeight: '800' }}>
@@ -102,6 +93,11 @@ const styles = StyleSheet.create({
 		height: 'auto',
 		padding: 20,
 		borderBottomWidth: 5,
+	},
+	vipContainer: {
+		flex: 1,
+		flexDirection: 'row',
+		justifyContent: 'space-evenly',
 	},
 	text: {
 		fontSize: 20,

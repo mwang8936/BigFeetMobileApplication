@@ -1,6 +1,6 @@
 import AuthorizedAxiosInstance from '../AuthorizedAxiosInstance';
 
-import { customerPath } from '@/constants/API.constants';
+import { customerPath } from '@/constants/API';
 
 import { GetCustomersParam } from '@/models/params/Customer.Param';
 import Customer from '@/models/Customer.Model';

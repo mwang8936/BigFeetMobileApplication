@@ -1,6 +1,6 @@
 import AuthorizedAxiosInstance from '../AuthorizedAxiosInstance';
 
-import { employeePath } from '@/constants/API.constants';
+import { employeePath } from '@/constants/API';
 
 import { GetEmployeesParam } from '@/models/params/Employee.Param';
 import Employee from '@/models/Employee.Model';

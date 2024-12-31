@@ -1,24 +1,27 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { ActivityIndicator, useColorScheme, View } from 'react-native';
+
 import * as Localization from 'expo-localization';
-import { Redirect, Stack } from 'expo-router';
-import { useSession } from '@/context-providers/AuthContext';
-import { ActivityIndicator, Text, useColorScheme, View } from 'react-native';
-import { ThemedText } from '@/components/ThemedText';
+import { Redirect, Tabs } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+
 import { Colors } from '@/constants/Colors';
-import { Tabs } from 'expo-router';
 
 import { TabBarIcon } from '@/components/(tabs)/TabBarIcon';
-import { PayrollDateProvider } from '@/context-providers/PayrollDateContext';
-import { useTranslation } from 'react-i18next';
+
+import { useSession } from '@/context-providers/AuthContext';
 import { useAxiosContext } from '@/context-providers/AxiosHandler';
+import { PayrollDateProvider } from '@/context-providers/PayrollDateContext';
+import { ScheduleDateProvider } from '@/context-providers/ScheduleDateContext';
+
 import {
 	prefetchUserAcupunctureReportsQuery,
 	prefetchUserPayrollsQuery,
 	prefetchUserSchedulesQuery,
 	useUserQuery,
 } from '@/hooks/react-query/profile.hooks';
+
 import { getLanguageFile } from '@/utils/i18n.utils';
-import { ScheduleDateProvider } from '@/context-providers/ScheduleDateContext';
 
 export default function TabLayout() {
 	const { i18n, t } = useTranslation();
@@ -26,9 +29,9 @@ export default function TabLayout() {
 	const { session, isLoading: sessionLoading } = useSession();
 	const { interceptorsReady } = useAxiosContext();
 
-	const { data: user, isLoading: userLoading } = useUserQuery(
-		!sessionLoading && interceptorsReady
-	);
+	const { data: user, isLoading: userLoading } = useUserQuery({
+		enabled: !sessionLoading && interceptorsReady,
+	});
 
 	useEffect(() => {
 		if (!sessionLoading && interceptorsReady) {
@@ -45,6 +48,7 @@ export default function TabLayout() {
 			i18n.changeLanguage(Localization?.getLocales?.()[0]?.languageTag);
 		}
 	}, [user]);
+
 	const colorScheme = useColorScheme();
 	const color = Colors[colorScheme ?? 'light'];
 

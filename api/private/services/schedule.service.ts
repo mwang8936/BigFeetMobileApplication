@@ -1,6 +1,6 @@
 import AuthorizedAxiosInstance from '../AuthorizedAxiosInstance';
 
-import { schedulePath } from '@/constants/API.constants';
+import { schedulePath } from '@/constants/API';
 
 import { GetSchedulesParam } from '@/models/params/Schedule.Param';
 import {
@@ -9,6 +9,7 @@ import {
 	UpdateScheduleRequest,
 } from '@/models/requests/Schedule.Request.Model';
 import Schedule from '@/models/Schedule.Model';
+import { DateTime } from 'luxon';
 
 export const geSchedules = async (
 	params: GetSchedulesParam
@@ -21,12 +22,12 @@ export const geSchedules = async (
 };
 
 export const updateSchedule = async (
-	date: Date,
+	date: DateTime,
 	employee_id: number,
 	request: UpdateScheduleRequest
 ): Promise<Schedule> => {
 	const response = await AuthorizedAxiosInstance.patch(
-		`${schedulePath}/${date.toISOString()}/employee/${employee_id}`,
+		`${schedulePath}/${date.toISO()}/employee/${employee_id}`,
 		request
 	);
 
@@ -34,12 +35,12 @@ export const updateSchedule = async (
 };
 
 export const signSchedule = async (
-	date: Date,
+	date: DateTime,
 	employee_id: number,
 	request: SignScheduleRequest
 ): Promise<Schedule> => {
 	const response = await AuthorizedAxiosInstance.patch(
-		`${schedulePath}/${date.toISOString()}/employee/${employee_id}/sign`,
+		`${schedulePath}/${date.toISO()}/employee/${employee_id}/sign`,
 		request
 	);
 

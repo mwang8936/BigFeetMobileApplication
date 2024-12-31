@@ -1,7 +1,8 @@
-import AcupunctureReport from '@/models/Acupuncture-Report.Model';
+import { DateTime } from 'luxon';
+
 import AuthorizedAxiosInstance from '../AuthorizedAxiosInstance';
 
-import { profilePath } from '@/constants/API.constants';
+import { profilePath } from '@/constants/API';
 
 import {
 	GetProfileAcupunctureReportsParam,
@@ -12,10 +13,10 @@ import {
 	ChangeProfilePasswordRequest,
 	UpdateProfileRequest,
 } from '@/models/requests/Profile.Request.Model';
+import AcupunctureReport from '@/models/Acupuncture-Report.Model';
 import Payroll from '@/models/Payroll.Model';
 import Schedule from '@/models/Schedule.Model';
 import User from '@/models/User.Model';
-import { DateTime } from 'luxon';
 
 export const getProfile = async (): Promise<User> => {
 	const response = await AuthorizedAxiosInstance.get(profilePath);

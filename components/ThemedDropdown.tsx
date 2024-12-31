@@ -1,10 +1,12 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Dropdown } from 'react-native-element-dropdown';
-import { useThemeColor } from '@/hooks/colors/useThemeColor';
-import { DropdownProps } from 'react-native-element-dropdown/lib/typescript/components/Dropdown/model';
+
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import { Dropdown } from 'react-native-element-dropdown';
+import { DropdownProps } from 'react-native-element-dropdown/lib/typescript/components/Dropdown/model';
+
+import { useThemeColor } from '@/hooks/colors/useThemeColor';
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -49,9 +51,12 @@ export function ThemedDropdown({
 	...rest
 }: ThemedDropDownProps) {
 	const { t } = useTranslation();
+
 	const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+
 	const backgroundColor = useThemeColor({}, 'background');
 	const disabledBackgroundColor = useThemeColor({}, 'disabledBackground');
+
 	const borderColor = useThemeColor({}, 'border');
 
 	const [isFocused, setIsFocused] = useState(false);
@@ -60,6 +65,7 @@ export function ThemedDropdown({
 
 	const renderItem = (item: Option) => {
 		const selected = item.value === option.value;
+
 		return (
 			<View
 				style={[
@@ -68,6 +74,7 @@ export function ThemedDropdown({
 				]}
 			>
 				<Ionicons name={item.icon} size={20} style={[{ color }, styles.icon]} />
+
 				<Text style={[{ color }, styles.label]}>{item.label}</Text>
 			</View>
 		);
@@ -76,6 +83,7 @@ export function ThemedDropdown({
 	return (
 		<Dropdown
 			style={[
+				styles.dropdown,
 				{
 					backgroundColor: disable ? disabledBackgroundColor : undefined,
 					borderColor: missingRequired
@@ -84,7 +92,6 @@ export function ThemedDropdown({
 						? '#007AFF'
 						: borderColor,
 				},
-				styles.dropdown,
 				style,
 			]}
 			containerStyle={{ backgroundColor }}
@@ -112,13 +119,13 @@ export function ThemedDropdown({
 				type === 'largeSemiBold' ? styles.largeSemiBold : undefined,
 				type === 'largeBold' ? styles.largeBold : undefined,
 			]}
-			inputSearchStyle={[{ color }, styles.inputSearchStyle]}
+			inputSearchStyle={[styles.inputSearchStyle, { color }]}
 			iconStyle={styles.iconStyle}
 			data={data}
 			search
 			maxHeight={300}
-			placeholder={!isFocused ? placeholderText ?? t('Select item') : '...'}
-			searchPlaceholder={t('Search...')}
+			placeholder={!isFocused ? placeholderText ?? t('Select Item') : '...'}
+			searchPlaceholder={t('Search') + '...'}
 			value={option}
 			disable={disable}
 			onFocus={() => setIsFocused(true)}

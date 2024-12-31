@@ -1,21 +1,22 @@
 import React, { useRef, useState } from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import Modal from 'react-native-modal';
-import {
-	useChangePasswordMutation,
-	useUserQuery,
-} from '@/hooks/react-query/profile.hooks';
-import { getFullMonthString, getYearMonthString } from '@/utils/string.utils';
-import { useThemeColor } from '@/hooks/colors/useThemeColor';
-import { useTranslation } from 'react-i18next';
-import { ColouredButton } from '@/components/ColouredButton';
-import { ThemedTextInput } from '@/components/ThemedTextInput';
-import { TextInput } from 'react-native-gesture-handler';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
 import { Ionicons } from '@expo/vector-icons';
+import { TextInput } from 'react-native-gesture-handler';
+import { useTranslation } from 'react-i18next';
+import Modal from 'react-native-modal';
+
 import LENGTHS from '@/constants/Lengths';
 import PLACEHOLDERS from '@/constants/Placeholders';
+
+import { ColouredButton } from '@/components/ColouredButton';
+import { ThemedTextInput } from '@/components/ThemedTextInput';
+
+import { useThemeColor } from '@/hooks/colors/useThemeColor';
+import { useChangePasswordMutation } from '@/hooks/react-query/profile.hooks';
+
 import { ChangeProfilePasswordRequest } from '@/models/requests/Profile.Request.Model';
+
 import { getDisabledColor } from '@/utils/color.utils';
 
 interface ChangePasswordProp {

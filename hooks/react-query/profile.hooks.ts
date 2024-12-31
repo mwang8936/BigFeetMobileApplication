@@ -13,6 +13,14 @@ import {
 	updateProfile,
 } from '@/api/private/services/profile.service';
 
+import {
+	acupunctureReportsQueryKey,
+	payrollsQueryKey,
+	profileQueryKey,
+	schedulesQueryKey,
+	userQueryKey,
+} from '@/constants/Query';
+
 import { CustomAPIError } from '@/models/custom-errors/API.Error';
 import {
 	GetProfileAcupunctureReportsParam,
@@ -23,15 +31,16 @@ import {
 	ChangeProfilePasswordRequest,
 	UpdateProfileRequest,
 } from '@/models/requests/Profile.Request.Model';
-import {
-	acupunctureReportsQueryKey,
-	payrollsQueryKey,
-	profileQueryKey,
-	schedulesQueryKey,
-	userQueryKey,
-} from '@/constants/Query.constants';
 
-export const useUserQuery = (enabled: boolean = true) => {
+import {
+	AcupunctureReportQueryProp,
+	MutationProp,
+	PayrollQueryProp,
+	QueryProp,
+	ScheduleQueryProp,
+} from './prop.hooks';
+
+export const useUserQuery = ({ enabled = true }: QueryProp) => {
 	return useQuery({
 		queryKey: [userQueryKey, profileQueryKey],
 		queryFn: getProfile,
@@ -44,13 +53,7 @@ export const useUserQuery = (enabled: boolean = true) => {
 	});
 };
 
-interface UpdateLanguageMutation {
-	setLoading: (loading: boolean) => void;
-}
-
-export const useUpdateUserLanguageMutation = ({
-	setLoading,
-}: UpdateLanguageMutation) => {
+export const useUpdateUserLanguageMutation = ({ setLoading }: MutationProp) => {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 
@@ -58,7 +61,7 @@ export const useUpdateUserLanguageMutation = ({
 		mutationFn: (data: { request: UpdateProfileRequest }) =>
 			updateProfile(data.request),
 		onMutate: async () => {
-			setLoading(true);
+			if (setLoading) setLoading(true);
 		},
 		onSuccess: (_data, _variables, _context) => {
 			queryClient.invalidateQueries({
@@ -72,30 +75,25 @@ export const useUpdateUserLanguageMutation = ({
 			Toast.error(`${t('Error Updating Language')}: ${error.messages[0]}`);
 		},
 		onSettled: async () => {
-			setLoading(false);
+			if (setLoading) setLoading(false);
 		},
 	});
 };
 
-interface ChangePasswordMutation {
-	setLoading: (loading: boolean) => void;
-	onSuccess: () => void;
-}
-
 export const useChangePasswordMutation = ({
 	setLoading,
 	onSuccess,
-}: ChangePasswordMutation) => {
+}: MutationProp) => {
 	const { t } = useTranslation();
 
 	return useMutation({
 		mutationFn: (data: { request: ChangeProfilePasswordRequest }) =>
 			changeProfilePassword(data.request),
 		onMutate: async () => {
-			setLoading(true);
+			if (setLoading) setLoading(true);
 		},
 		onSuccess: (_data, _variables, _context) => {
-			onSuccess();
+			if (onSuccess) onSuccess();
 			Toast.success(t('Password Updated Successfully'));
 		},
 		onError: (error: CustomAPIError, _variables, _context) => {
@@ -103,30 +101,25 @@ export const useChangePasswordMutation = ({
 			Toast.error(`${t('Error Updating Password')}: ${error.messages[0]}`);
 		},
 		onSettled: async () => {
-			setLoading(false);
+			if (setLoading) setLoading(false);
 		},
 	});
 };
 
-interface SignProfileScheduleMutation {
-	setLoading: (loading: boolean) => void;
-	onSuccess: () => void;
-}
-
 export const useSignProfileScheduleMutation = ({
 	setLoading,
 	onSuccess,
-}: SignProfileScheduleMutation) => {
+}: MutationProp) => {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 
 	return useMutation({
 		mutationFn: (data: { date: DateTime }) => signProfileSchedule(data.date),
 		onMutate: async () => {
-			setLoading(true);
+			if (setLoading) setLoading(true);
 		},
 		onSuccess: (data, _variables, _context) => {
-			onSuccess();
+			if (onSuccess) onSuccess();
 
 			queryClient.invalidateQueries({
 				queryKey: [
@@ -137,6 +130,7 @@ export const useSignProfileScheduleMutation = ({
 					data.date.day,
 				],
 			});
+
 			Toast.success(t('Schedule Signed Successfully'));
 		},
 		onError: (error: CustomAPIError, _variables, _context) => {
@@ -144,12 +138,16 @@ export const useSignProfileScheduleMutation = ({
 			Toast.error(`${t('Error Signing Schedule')}: ${error.messages[0]}`);
 		},
 		onSettled: async () => {
-			setLoading(false);
+			if (setLoading) setLoading(false);
 		},
 	});
 };
 
-export const useUserAcupunctureReportsQuery = (year: number, month: number) => {
+export const useUserAcupunctureReportsQuery = ({
+	enabled = true,
+	year,
+	month,
+}: AcupunctureReportQueryProp) => {
 	const date = DateTime.fromObject(
 		{ year, month },
 		{ zone: 'America/Los_Angeles' }
@@ -163,6 +161,7 @@ export const useUserAcupunctureReportsQuery = (year: number, month: number) => {
 	return useQuery({
 		queryKey: [userQueryKey, acupunctureReportsQueryKey, year, month],
 		queryFn: () => getProfileAcupunctureReports(params),
+		enabled,
 		staleTime: 1000 * 60 * 15,
 		gcTime: 1000 * 60 * 60,
 		refetchOnReconnect: false,
@@ -171,7 +170,11 @@ export const useUserAcupunctureReportsQuery = (year: number, month: number) => {
 	});
 };
 
-export const useUserPayrollsQuery = (year: number, month: number) => {
+export const useUserPayrollsQuery = ({
+	enabled = true,
+	year,
+	month,
+}: PayrollQueryProp) => {
 	const date = DateTime.fromObject(
 		{ year, month },
 		{ zone: 'America/Los_Angeles' }
@@ -185,6 +188,7 @@ export const useUserPayrollsQuery = (year: number, month: number) => {
 	return useQuery({
 		queryKey: [userQueryKey, payrollsQueryKey, year, month],
 		queryFn: () => getProfilePayrolls(params),
+		enabled,
 		staleTime: 1000 * 60 * 15,
 		gcTime: 1000 * 60 * 60,
 		refetchOnReconnect: false,
@@ -193,11 +197,12 @@ export const useUserPayrollsQuery = (year: number, month: number) => {
 	});
 };
 
-export const useUserSchedulesQuery = (
-	year: number,
-	month: number,
-	day: number
-) => {
+export const useUserSchedulesQuery = ({
+	enabled = true,
+	year,
+	month,
+	day,
+}: ScheduleQueryProp) => {
 	const date = DateTime.fromObject(
 		{ year, month, day },
 		{ zone: 'America/Los_Angeles' }
@@ -211,6 +216,7 @@ export const useUserSchedulesQuery = (
 	return useQuery({
 		queryKey: [userQueryKey, schedulesQueryKey, year, month, day],
 		queryFn: () => getProfileSchedules(params),
+		enabled,
 		staleTime: 1000 * 60 * 15,
 		gcTime: 1000 * 60 * 60,
 		refetchOnReconnect: false,

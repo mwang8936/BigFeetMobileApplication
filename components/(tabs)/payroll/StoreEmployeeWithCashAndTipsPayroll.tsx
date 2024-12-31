@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { StyleSheet, Text } from 'react-native';
-import { DataTable } from 'react-native-paper';
 
 import { useTranslation } from 'react-i18next';
+import { DataTable } from 'react-native-paper';
 
 import { useThemeColor } from '@/hooks/colors/useThemeColor';
 import { useUserQuery } from '@/hooks/react-query/profile.hooks';
@@ -37,7 +37,7 @@ const StoreEmployeeWithCashAndTipsPayroll: React.FC<
 
 	const { date } = usePayrollDate();
 
-	const userQuery = useUserQuery();
+	const userQuery = useUserQuery({});
 	const user = userQuery.data;
 
 	const language = user?.language;
@@ -202,9 +202,13 @@ const StoreEmployeeWithCashAndTipsPayroll: React.FC<
 				]}
 			>
 				{titleElement(dateText)}
+
 				{titleElement(t('Body'))}
+
 				{titleElement(t('Feet'))}
+
 				{titleElement(t('Tips'))}
+
 				{titleElement(t('Cash'))}
 			</DataTable.Header>
 
@@ -221,9 +225,13 @@ const StoreEmployeeWithCashAndTipsPayroll: React.FC<
 					]}
 				>
 					{cellElement(row.day)}
+
 					{cellElement(row.body)}
+
 					{cellElement(row.feet)}
+
 					{cellElement(moneyToString(row.tips))}
+
 					{cellElement(moneyToString(row.cash))}
 				</DataTable.Row>
 			))}
@@ -235,9 +243,13 @@ const StoreEmployeeWithCashAndTipsPayroll: React.FC<
 				]}
 			>
 				{leftAlignBoldCellElement(t('SUM'))}
+
 				{boldCellElement(totalBodySessions)}
+
 				{boldCellElement(totalFeetSessions)}
+
 				{boldCellElement(moneyToString(totalTips))}
+
 				{boldCellElement(moneyToString(totalCash))}
 			</DataTable.Row>
 
@@ -248,9 +260,13 @@ const StoreEmployeeWithCashAndTipsPayroll: React.FC<
 				]}
 			>
 				{leftAlignBoldCellElement(t('PAY/PER'))}
+
 				{boldCellElement(moneyToString(bodyRate) + '/B')}
+
 				{boldCellElement(moneyToString(feetRate) + '/F')}
+
 				{boldCellElement('-')}
+
 				{boldCellElement('-')}
 			</DataTable.Row>
 
@@ -261,9 +277,13 @@ const StoreEmployeeWithCashAndTipsPayroll: React.FC<
 				]}
 			>
 				{leftAlignBoldCellElement(t('TOTAL/PER'))}
+
 				{boldCellElement(moneyToString(totalBodyMoney))}
+
 				{boldCellElement(moneyToString(totalFeetMoney))}
+
 				{boldCellElement(moneyToString(totalTips))}
+
 				{boldCellElement(moneyToString(totalCash))}
 			</DataTable.Row>
 

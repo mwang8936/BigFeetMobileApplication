@@ -1,49 +1,50 @@
+import { useEffect, useRef, useState } from 'react';
+import { Text, View, StyleSheet, FlatList } from 'react-native';
+
+import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
+import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
+import { BallIndicator } from 'react-native-indicators';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { useIsFetching, useQueryClient } from '@tanstack/react-query';
+import { Toast } from 'toastify-react-native';
+
+import { schedulesQueryKey, userQueryKey } from '@/constants/Query';
+import STORES from '@/constants/Stores';
+
 import ReservationTag from '@/components/(tabs)/schedule/ReservationTag';
 import SchedulerFooter from '@/components/(tabs)/schedule/SchedulerFooter';
 import SchedulerHeader from '@/components/(tabs)/schedule/SchedulerHeader';
 import YearMonthDayPicker from '@/components/(tabs)/schedule/YearMonthDayPicker';
-import { schedulesQueryKey, userQueryKey } from '@/constants/Query.constants';
-import STORES from '@/constants/Stores';
+import { ThemedLoadingSpinner } from '@/components/ThemedLoadingSpinner';
+
 import { useScheduleDate } from '@/context-providers/ScheduleDateContext';
+
 import { useThemeColor } from '@/hooks/colors/useThemeColor';
 import { useUserSchedulesQuery } from '@/hooks/react-query/profile.hooks';
-import Customer from '@/models/Customer.Model';
-import { Gender, ServiceColor, TipMethod } from '@/models/enums';
-import Reservation from '@/models/Reservation.Model';
+
 import Schedule from '@/models/Schedule.Model';
-import Service from '@/models/Service.Model';
+
 import { getTimeString } from '@/utils/string.utils';
-import { useIsFetching, useQueryClient } from '@tanstack/react-query';
-import { DateTime } from 'luxon';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import {
-	Text,
-	View,
-	StyleSheet,
-	FlatList,
-	TouchableOpacity,
-} from 'react-native';
-import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
-import { BallIndicator } from 'react-native-indicators';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { Toast } from 'toastify-react-native';
 
 export default function SchedulerScreen() {
 	const { t } = useTranslation();
 
 	const queryClient = useQueryClient();
+
+	const { date, setDate } = useScheduleDate();
+
 	const textColor = useThemeColor({}, 'text');
 
 	const yellowRowColor = useThemeColor({}, 'yellowRow');
 
 	const [headerHeight, setHeaderHeight] = useState(0);
 	const [itemHeights, setItemHeights] = useState<number[]>([]);
-	const flatListRef = useRef<FlatList>(null);
+	const [isSigning, setIsSigning] = useState(false);
 
-	const { date, setDate } = useScheduleDate();
+	const scrollViewRef = useRef<ScrollView>(null);
 
-	const schedulesQuery = useUserSchedulesQuery(date.year, date.month, date.day);
+	const schedulesQuery = useUserSchedulesQuery({ ...date });
 	const schedules = schedulesQuery.data || [];
 
 	if (schedulesQuery.isError) {
@@ -51,6 +52,27 @@ export default function SchedulerScreen() {
 	}
 
 	const isLoading = schedulesQuery.isLoading;
+
+	const isFetching = useIsFetching({
+		queryKey: [
+			userQueryKey,
+			schedulesQueryKey,
+			date.year,
+			date.month,
+			date.day,
+		],
+	});
+	const onRefresh = async () => {
+		queryClient.invalidateQueries({
+			queryKey: [
+				userQueryKey,
+				schedulesQueryKey,
+				date.year,
+				date.month,
+				date.day,
+			],
+		});
+	};
 
 	const schedule: Schedule | undefined = schedules[0];
 	const reservations = schedule?.reservations || [];
@@ -73,6 +95,7 @@ export default function SchedulerScreen() {
 		}
 	}
 
+	// TODO Fix Scrolling
 	const data: { date: DateTime; name: string }[] = [];
 	for (
 		let currTime = STORES.start.set({ ...date });
@@ -85,11 +108,17 @@ export default function SchedulerScreen() {
 		});
 	}
 
-	const scrollToItem = (index: number) => {
-		flatListRef.current?.scrollToIndex({
-			animated: true,
-			index,
-		});
+	const scrollToItem = (index?: number) => {
+		let height = 0;
+
+		if (index) {
+			height = headerHeight;
+			for (let i = 0; i < index; i++) {
+				height += itemHeights[i];
+			}
+		}
+
+		scrollViewRef.current?.scrollTo({ animated: true, y: height });
 	};
 
 	useEffect(() => {
@@ -109,17 +138,17 @@ export default function SchedulerScreen() {
 
 			const timeout = setTimeout(() => {
 				scrollToItem(indexToScrollTo);
-			}, 5000);
+			}, 100);
 
 			return () => clearTimeout(timeout);
 		} else {
 			const timeout = setTimeout(() => {
-				scrollToItem(0);
-			}, 5000);
+				scrollToItem();
+			}, 100);
 
 			return () => clearTimeout(timeout);
 		}
-	}, [date]);
+	}, [date, headerHeight, itemHeights]);
 
 	// Function to capture the height of each item
 	const handleLayout = (index: number) => (event: any) => {
@@ -186,88 +215,20 @@ export default function SchedulerScreen() {
 		));
 	};
 
-	const isFetching = useIsFetching({
-		queryKey: [
-			userQueryKey,
-			schedulesQueryKey,
-			date.year,
-			date.month,
-			date.day,
-		],
-	});
-	const onRefresh = async () => {
-		queryClient.invalidateQueries({
-			queryKey: [
-				userQueryKey,
-				schedulesQueryKey,
-				date.year,
-				date.month,
-				date.day,
-			],
-		});
-	};
-
-	const service: Service = {
-		service_id: 1,
-		service_name: 'Full Body Massage',
-		shorthand: 'FBM',
-		time: 60,
-		money: 120,
-		body: 1,
-		feet: 0,
-		acupuncture: 0,
-		beds_required: 1,
-		color: ServiceColor.RED,
-		created_at: DateTime.local(2024, 12, 20, 14, 0),
-		updated_at: DateTime.local(2024, 12, 26, 10, 0),
-		deleted_at: null,
-	};
-
-	const customer: Customer = {
-		customer_id: 301,
-		phone_number: '1235551234',
-		vip_serial: '202401',
-		customer_name: 'John Doe',
-		notes: 'Allergic to lavender oil',
-		created_at: DateTime.local(2024, 1, 15, 9, 0),
-		updated_at: DateTime.local(2024, 12, 26, 8, 0),
-		deleted_at: null,
-	};
-
-	const reservation: Reservation = {
-		reservation_id: 101,
-		employee_id: 5,
-		date: DateTime.now(), // Reservation date and time
-		reserved_date: DateTime.now().minus({ minutes: 0 }), // Date the reservation was made
-		service, // Example Service object
-		time: 35, // Duration in minutes
-		beds_required: 1,
-		customer, // Example Customer object
-		requested_gender: Gender.MALE, // Example Gender value
-		requested_employee: true,
-		cash: 50.55,
-		machine: null,
-		vip: null,
-		gift_card: 20.5,
-		insurance: null,
-		cash_out: 120.12,
-		tips: 20,
-		tip_method: TipMethod.CASH, // Example TipMethod value
-		message:
-			'Please prepare a warm blanket. Very long message just to test what it will look like with multiple 3 lines safj;lkdadsfjlk;fasdjlk;fd',
-		created_by: 'admin',
-		created_at: DateTime.local(2024, 12, 24, 14, 45),
-		updated_by: 'admin',
-		updated_at: DateTime.local(2024, 12, 25, 9, 0),
-	};
-
 	return (
 		<SafeAreaProvider>
 			<SafeAreaView style={styles.container} edges={['top']}>
+				<ThemedLoadingSpinner
+					indicator="ball"
+					isLoading={isSigning}
+					message={t('Signing Schedule...')}
+				/>
+
 				{isLoading ? (
 					<BallIndicator color={textColor} />
 				) : (
 					<ScrollView
+						ref={scrollViewRef}
 						style={styles.container}
 						refreshControl={
 							<RefreshControl
@@ -277,7 +238,6 @@ export default function SchedulerScreen() {
 						}
 					>
 						<FlatList
-							ref={flatListRef}
 							style={{ width: '100%' }}
 							scrollEnabled={false}
 							data={data}
@@ -292,11 +252,18 @@ export default function SchedulerScreen() {
 									setHeaderHeight={setHeaderHeight}
 								/>
 							}
-							ListFooterComponent={<SchedulerFooter schedule={schedule} />}
+							ListFooterComponent={
+								<SchedulerFooter
+									schedule={schedule}
+									setLoading={setIsSigning}
+								/>
+							}
 						/>
+
 						{generateReservations()}
 					</ScrollView>
 				)}
+
 				<YearMonthDayPicker
 					year={date.year}
 					setYear={(year: number) =>

@@ -1,20 +1,24 @@
+import * as React from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
+import { ScrollView } from 'react-native-gesture-handler';
+import Modal from 'react-native-modal';
+
 import STORES from '@/constants/Stores';
+
 import { useThemeColor } from '@/hooks/colors/useThemeColor';
+import { useUserQuery } from '@/hooks/react-query/profile.hooks';
+
 import { ServiceColor, TipMethod } from '@/models/enums';
 import Reservation from '@/models/Reservation.Model';
+
 import {
 	formatPhoneNumber,
 	getTimeString,
 	moneyToString,
 } from '@/utils/string.utils';
-import { DateTime } from 'luxon';
-import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
-import { StyleSheet, TouchableOpacity } from 'react-native';
-import * as React from 'react';
-import Modal from 'react-native-modal';
-import { useUserQuery } from '@/hooks/react-query/profile.hooks';
-import { ScrollView } from 'react-native-gesture-handler';
 
 interface ReservationTagProp {
 	reservation: Reservation;
@@ -29,7 +33,7 @@ const ReservationTag: React.FC<ReservationTagProp> = ({
 }) => {
 	const { t } = useTranslation();
 
-	const { data: user } = useUserQuery();
+	const { data: user } = useUserQuery({});
 
 	const blue = useThemeColor({}, 'blue');
 	const green = useThemeColor({}, 'green');
@@ -301,12 +305,14 @@ const ReservationTag: React.FC<ReservationTagProp> = ({
 									style={[styles.modalText, { color: textColor }]}
 								>
 									{t('Requested Gender') + ':'}
+
 									<Text style={{ fontWeight: 'bold' }}>
 										{' '}
 										{reservation.requested_gender}
 									</Text>
 								</Text>
 							)}
+
 							{reservation.requested_employee && (
 								<Text
 									adjustsFontSizeToFit
@@ -314,12 +320,14 @@ const ReservationTag: React.FC<ReservationTagProp> = ({
 									style={[styles.modalText, { color: textColor }]}
 								>
 									{t('Requested Employee') + ':'}
+
 									<Text style={{ fontWeight: 'bold' }}>
 										{' '}
 										{user?.username ?? t('Requested')}
 									</Text>
 								</Text>
 							)}
+
 							{reservation.cash && (
 								<Text
 									adjustsFontSizeToFit
@@ -327,12 +335,14 @@ const ReservationTag: React.FC<ReservationTagProp> = ({
 									style={[styles.modalText, { color: textColor }]}
 								>
 									{t('Cash') + ':'}
+
 									<Text style={{ fontWeight: 'bold' }}>
 										{' '}
 										{moneyToString(reservation.cash)}
 									</Text>
 								</Text>
 							)}
+
 							{reservation.machine && (
 								<Text
 									adjustsFontSizeToFit
@@ -340,12 +350,14 @@ const ReservationTag: React.FC<ReservationTagProp> = ({
 									style={[styles.modalText, { color: textColor }]}
 								>
 									{t('Machine') + ':'}
+
 									<Text style={{ fontWeight: 'bold' }}>
 										{' '}
 										{moneyToString(reservation.machine)}
 									</Text>
 								</Text>
 							)}
+
 							{reservation.vip && (
 								<Text
 									adjustsFontSizeToFit
@@ -353,12 +365,14 @@ const ReservationTag: React.FC<ReservationTagProp> = ({
 									style={[styles.modalText, { color: textColor }]}
 								>
 									{t('VIP') + ':'}
+
 									<Text style={{ fontWeight: 'bold' }}>
 										{' '}
 										{moneyToString(reservation.vip)}
 									</Text>
 								</Text>
 							)}
+
 							{reservation.gift_card && (
 								<Text
 									adjustsFontSizeToFit
@@ -366,12 +380,14 @@ const ReservationTag: React.FC<ReservationTagProp> = ({
 									style={[styles.modalText, { color: textColor }]}
 								>
 									{t('Gift Card') + ':'}
+
 									<Text style={{ fontWeight: 'bold' }}>
 										{' '}
 										{moneyToString(reservation.gift_card)}
 									</Text>
 								</Text>
 							)}
+
 							{reservation.insurance && (
 								<Text
 									adjustsFontSizeToFit
@@ -379,12 +395,14 @@ const ReservationTag: React.FC<ReservationTagProp> = ({
 									style={[styles.modalText, { color: textColor }]}
 								>
 									{t('Insurance') + ':'}
+
 									<Text style={{ fontWeight: 'bold' }}>
 										{' '}
 										{moneyToString(reservation.insurance)}
 									</Text>
 								</Text>
 							)}
+
 							{reservation.cash_out && (
 								<Text
 									adjustsFontSizeToFit
@@ -392,12 +410,14 @@ const ReservationTag: React.FC<ReservationTagProp> = ({
 									style={[styles.modalText, { color: textColor }]}
 								>
 									{t('Cash Out') + ':'}
+
 									<Text style={{ fontWeight: 'bold' }}>
 										{' '}
 										{moneyToString(reservation.cash_out)}
 									</Text>
 								</Text>
 							)}
+
 							{tipValueText && (
 								<Text
 									adjustsFontSizeToFit
@@ -405,12 +425,15 @@ const ReservationTag: React.FC<ReservationTagProp> = ({
 									style={[styles.modalText, { color: textColor }]}
 								>
 									{t('Tips') + ':'}
+
 									<Text style={{ fontWeight: 'bold' }}> {tipValueText}</Text>
 								</Text>
 							)}
+
 							{reservation.message && (
 								<Text style={[styles.modalText, { color: textColor }]}>
 									{t('Message') + ':'}
+
 									<Text style={{ fontWeight: 'bold' }}>
 										{' '}
 										{reservation.message}
@@ -426,6 +449,7 @@ const ReservationTag: React.FC<ReservationTagProp> = ({
 								>
 									{t('Customer')}
 								</Text>
+
 								<View style={styles.modalTextContainer}>
 									{customer.customer_name && (
 										<Text
@@ -434,6 +458,7 @@ const ReservationTag: React.FC<ReservationTagProp> = ({
 											style={[styles.modalText, { color: textColor }]}
 										>
 											{t('Customer Name') + ':'}
+
 											<Text style={{ fontWeight: 'bold' }}>
 												{' '}
 												{customer.customer_name}
@@ -448,6 +473,7 @@ const ReservationTag: React.FC<ReservationTagProp> = ({
 											style={[styles.modalText, { color: textColor }]}
 										>
 											{t('Phone Number') + ':'}
+
 											<Text style={{ fontWeight: 'bold' }}>
 												{' '}
 												{formatPhoneNumber(customer.phone_number, true)}
@@ -462,6 +488,7 @@ const ReservationTag: React.FC<ReservationTagProp> = ({
 											style={[styles.modalText, { color: textColor }]}
 										>
 											{t('VIP Serial') + ':'}
+
 											<Text style={{ fontWeight: 'bold' }}>
 												{' '}
 												{customer.vip_serial}
@@ -472,6 +499,7 @@ const ReservationTag: React.FC<ReservationTagProp> = ({
 									{customer.notes && (
 										<Text style={[styles.modalText, { color: textColor }]}>
 											{t('Notes') + ':'}
+
 											<Text style={{ fontWeight: 'bold' }}>
 												{' '}
 												{customer.notes}
@@ -485,6 +513,7 @@ const ReservationTag: React.FC<ReservationTagProp> = ({
 						<Text style={[styles.modalSubTitle, { color: modalLabelColor }]}>
 							{t('Service')}
 						</Text>
+
 						<View style={styles.modalTextContainer}>
 							{service.service_name && (
 								<Text
@@ -493,6 +522,7 @@ const ReservationTag: React.FC<ReservationTagProp> = ({
 									style={[styles.modalText, { color: textColor }]}
 								>
 									{t('Service Name') + ':'}
+
 									<Text style={{ fontWeight: 'bold' }}>
 										{' '}
 										{service.service_name}
@@ -507,6 +537,7 @@ const ReservationTag: React.FC<ReservationTagProp> = ({
 									style={[styles.modalText, { color: textColor }]}
 								>
 									{t('B') + ':'}
+
 									<Text style={{ fontWeight: 'bold' }}> {service.body}</Text>
 								</Text>
 							)}
@@ -518,6 +549,7 @@ const ReservationTag: React.FC<ReservationTagProp> = ({
 									style={[styles.modalText, { color: textColor }]}
 								>
 									{t('F') + ':'}
+
 									<Text style={{ fontWeight: 'bold' }}> {service.feet}</Text>
 								</Text>
 							)}
@@ -529,6 +561,7 @@ const ReservationTag: React.FC<ReservationTagProp> = ({
 									style={[styles.modalText, { color: textColor }]}
 								>
 									{t('A') + ':'}
+
 									<Text style={{ fontWeight: 'bold' }}>
 										{' '}
 										{service.acupuncture}
@@ -543,6 +576,7 @@ const ReservationTag: React.FC<ReservationTagProp> = ({
 									style={[styles.modalText, { color: textColor }]}
 								>
 									{t('Beds Required') + ':'}
+
 									<Text style={{ fontWeight: 'bold' }}>
 										{' '}
 										{service.beds_required}
@@ -554,6 +588,7 @@ const ReservationTag: React.FC<ReservationTagProp> = ({
 						<Text style={[styles.modalSubTitle, { color: modalLabelColor }]}>
 							{t('History')}
 						</Text>
+
 						<View style={styles.modalTextContainer}>
 							<Text
 								adjustsFontSizeToFit
@@ -561,6 +596,7 @@ const ReservationTag: React.FC<ReservationTagProp> = ({
 								style={[styles.modalText, { color: textColor }]}
 							>
 								{t('Updated By') + ':'}
+
 								<Text style={{ fontWeight: 'bold' }}>
 									{' '}
 									{reservation.updated_by +
@@ -574,6 +610,7 @@ const ReservationTag: React.FC<ReservationTagProp> = ({
 								style={[styles.modalText, { color: textColor }]}
 							>
 								{t('Created By') + ':'}
+
 								<Text style={{ fontWeight: 'bold' }}>
 									{' '}
 									{reservation.created_by +
