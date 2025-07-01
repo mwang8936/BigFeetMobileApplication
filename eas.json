@@ -1,21 +1,48 @@
 {
-  "cli": {
-    "version": ">= 14.2.0",
-    "appVersionSource": "remote"
-  },
-  "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal"
-    },
-    "preview": {
-      "distribution": "internal"
-    },
-    "production": {
-      "autoIncrement": true
-    }
-  },
-  "submit": {
-    "production": {}
-  }
+	"cli": {
+		"version": ">= 14.2.0",
+		"appVersionSource": "remote"
+	},
+	"build": {
+		"development:simulator": {
+			"developmentClient": true,
+			"distribution": "internal",
+			"ios": {
+				"simulator": true
+			},
+			"environment": "development",
+			"env": {
+				"APP_VARIANT": "development",
+				"EXPO_PUBLIC_BASE_API_URL": "http://localhost:7000/api"
+			}
+		},
+		"development": {
+			"developmentClient": true,
+			"distribution": "internal",
+			"environment": "development",
+			"env": {
+				"APP_VARIANT": "development",
+				"EXPO_PUBLIC_BASE_API_URL": "http://localhost:7000/api"
+			}
+		},
+		"preview": {
+			"distribution": "internal",
+			"environment": "preview",
+			"env": {
+				"APP_VARIANT": "preview",
+				"EXPO_PUBLIC_BASE_API_URL": "https://bfc-backend-app-stage-365691f90a2b.herokuapp.com/api"
+			}
+		},
+		"production": {
+			"autoIncrement": true,
+			"environment": "production",
+			"env": {
+				"APP_VARIANT": "production",
+				"EXPO_PUBLIC_BASE_API_URL": "https://bfc-backend-app-stage-365691f90a2b.herokuapp.com/api"
+			}
+		}
+	},
+	"submit": {
+		"production": {}
+	}
 }
