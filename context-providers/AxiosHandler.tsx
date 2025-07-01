@@ -34,7 +34,7 @@ const AxiosHandler: React.FC<AxiosHandlerProps> = ({ children }) => {
 	const [interceptorsReady, setInterceptorsReady] = useState(false);
 
 	const { socketID } = useSocket();
-	const { session, signOut } = useSession();
+	const { session, refresh } = useSession();
 
 	useEffect(() => {
 		const onRequest = (config: InternalAxiosRequestConfig) => {
@@ -62,8 +62,7 @@ const AxiosHandler: React.FC<AxiosHandlerProps> = ({ children }) => {
 
 	useEffect(() => {
 		const onResponseError = (error: CustomAPIError) => {
-			// TODO add refresh token logic
-			if (error.status === 401) signOut();
+			if (error.status === 401 && error.path !== 'profile/refresh') refresh();
 			return Promise.reject(error);
 		};
 
@@ -76,7 +75,7 @@ const AxiosHandler: React.FC<AxiosHandlerProps> = ({ children }) => {
 		return () => {
 			AuthorizedAxiosInstance.interceptors.response.eject(responseInterceptor);
 		};
-	}, [signOut]);
+	}, [refresh]);
 
 	useEffect(() => {
 		const onRequest = (config: InternalAxiosRequestConfig) => {

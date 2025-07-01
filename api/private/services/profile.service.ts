@@ -11,6 +11,7 @@ import {
 } from '@/models/params/Profile.Param';
 import {
 	ChangeProfilePasswordRequest,
+	RegisterDeviceRequest,
 	UpdateProfileRequest,
 } from '@/models/requests/Profile.Request.Model';
 import AcupunctureReport from '@/models/Acupuncture-Report.Model';
@@ -80,6 +81,25 @@ export const signProfileSchedule = async (
 ): Promise<Schedule> => {
 	const response = await AuthorizedAxiosInstance.patch(
 		`${profilePath}/sign/${date.toISO()}`
+	);
+
+	return response.data;
+};
+
+export const registerDevice = async (
+	request: RegisterDeviceRequest
+): Promise<void> => {
+	const response = await AuthorizedAxiosInstance.post(
+		`${profilePath}/register_device`,
+		request
+	);
+
+	return response.data;
+};
+
+export const unregisterDevice = async (deviceId: string): Promise<void> => {
+	const response = await AuthorizedAxiosInstance.delete(
+		`${profilePath}/unregister_device/${deviceId}`
 	);
 
 	return response.data;

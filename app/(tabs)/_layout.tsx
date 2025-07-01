@@ -23,11 +23,15 @@ import {
 } from '@/hooks/react-query/profile.hooks';
 
 import { getLanguageFile } from '@/utils/i18n.utils';
+import { registerDevice } from '@/api/private/services/profile.service';
+import { useDeviceInfo } from '@/context-providers/DeviceInfoContext';
 
 export default function TabLayout() {
 	const { i18n, t } = useTranslation();
 
 	const queryClient = useQueryClient();
+
+	const { deviceId, deviceModel, deviceName } = useDeviceInfo();
 
 	const { session, isLoading: sessionLoading } = useSession();
 	const { interceptorsReady } = useAxiosContext();
@@ -38,6 +42,14 @@ export default function TabLayout() {
 
 	useEffect(() => {
 		if (!sessionLoading && interceptorsReady) {
+			if (deviceId) {
+				registerDevice({
+					device_id: deviceId,
+					device_model: deviceModel || undefined,
+					device_name: deviceName || undefined,
+				});
+			}
+
 			prefetchUserSchedulesQuery(queryClient);
 			prefetchUserAcupunctureReportsQuery(queryClient);
 			prefetchUserPayrollsQuery(queryClient);

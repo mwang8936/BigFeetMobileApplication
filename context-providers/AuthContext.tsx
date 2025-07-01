@@ -1,10 +1,12 @@
 import { useContext, createContext, type PropsWithChildren } from 'react';
 
+import { AxiosError } from 'axios';
 import * as Localization from 'expo-localization';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { login } from '@/api/public/services/login.service';
+import { refresh as refreshAPI } from '@/api/public/services/refresh.service';
 
 import { profileQueryKey, userQueryKey } from '@/constants/Query';
 
@@ -13,15 +15,19 @@ import { useStorageState } from '@/hooks/storage/useStorageState';
 import { LoginRequest } from '@/models/requests/Login.Request.Model';
 
 import { getLanguageFile } from '@/utils/i18n.utils';
+import { unregisterDevice } from '@/api/private/services/profile.service';
+import { useDeviceInfo } from './DeviceInfoContext';
 
 const AuthContext = createContext<{
 	signIn: (credentials: LoginRequest) => void;
 	signOut: () => void;
+	refresh: () => void;
 	session?: string | null;
 	isLoading: boolean;
 }>({
 	signIn: () => null,
 	signOut: () => null,
+	refresh: () => null,
 	session: null,
 	isLoading: false,
 });
@@ -45,6 +51,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
 
 	const queryClient = useQueryClient();
 	const { i18n } = useTranslation();
+	const { deviceId } = useDeviceInfo();
 
 	const signIn = async (credentials: {
 		username: string;
@@ -67,6 +74,9 @@ export function SessionProvider({ children }: PropsWithChildren) {
 	};
 
 	const signOut = async () => {
+		if (deviceId) {
+			await unregisterDevice(deviceId);
+		}
 		// Remove token from session state and secure storage
 		await setSession(null);
 
@@ -77,11 +87,43 @@ export function SessionProvider({ children }: PropsWithChildren) {
 		queryClient.clear();
 	};
 
+	const refresh = async () => {
+		try {
+			// Perform API refresh request
+			const data = await refreshAPI();
+
+			// Extract token from the response
+			const { user, accessToken } = data;
+
+			// Add user data to cache
+			queryClient.setQueryData([userQueryKey, profileQueryKey], user);
+
+			// Change language to user setting
+			i18n.changeLanguage(getLanguageFile(user.language));
+
+			// Save token in session state and secure storage
+			await setSession(accessToken);
+		} catch (error) {
+			if (error instanceof AxiosError) {
+				console.error('Refresh Failed', error.message);
+			}
+			// Remove token from session state and secure storage
+			await setSession(null);
+
+			// Revert language to default language
+			i18n.changeLanguage(Localization?.getLocales?.()[0]?.languageTag);
+
+			// Remove cached data
+			queryClient.clear();
+		}
+	};
+
 	return (
 		<AuthContext.Provider
 			value={{
 				signIn,
 				signOut,
+				refresh,
 				session,
 				isLoading,
 			}}
