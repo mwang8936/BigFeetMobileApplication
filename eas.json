@@ -13,7 +13,7 @@
 			"environment": "development",
 			"env": {
 				"APP_VARIANT": "development",
-				"EXPO_PUBLIC_BASE_API_URL": "http://localhost:7000/api"
+				"EXPO_PUBLIC_BASE_API_URL": "https://bigfeetwebserver.onrender.com/api"
 			}
 		},
 		"development": {
@@ -22,7 +22,7 @@
 			"environment": "development",
 			"env": {
 				"APP_VARIANT": "development",
-				"EXPO_PUBLIC_BASE_API_URL": "http://localhost:7000/api"
+				"EXPO_PUBLIC_BASE_API_URL": "https://bigfeetwebserver.onrender.com/api"
 			}
 		},
 		"preview": {
@@ -30,7 +30,7 @@
 			"environment": "preview",
 			"env": {
 				"APP_VARIANT": "preview",
-				"EXPO_PUBLIC_BASE_API_URL": "https://bfc-backend-app-stage-365691f90a2b.herokuapp.com/api"
+				"EXPO_PUBLIC_BASE_API_URL": "https://bigfeetwebserver.onrender.com/api"
 			}
 		},
 		"production": {
@@ -38,7 +38,7 @@
 			"environment": "production",
 			"env": {
 				"APP_VARIANT": "production",
-				"EXPO_PUBLIC_BASE_API_URL": "https://bfc-backend-app-stage-365691f90a2b.herokuapp.com/api"
+				"EXPO_PUBLIC_BASE_API_URL": "https://bigfeetwebserver-t0ia.onrender.com/api"
 			}
 		}
 	},

@@ -16,9 +16,10 @@ const UnauthorizedAxiosInstance: AxiosInstance = axios.create({
 
 const parseDate = (input: string): DateTime | string => {
 	// Check if the input is in 'yyyy-mm-dd' format
-	if (/^\d{4}-\d{2}-\d{1,2}$/.test(input)) {
-		// Pad a 0 before the day value if it is single digit
-		const normalizedInput = input.replace(/-(\d)$/, '-0$1');
+	if (/^\d{4}-\d{1,2}-\d{1,2}$/.test(input)) {
+		const normalizedInput = input
+			.replace(/^(\d{4})-(\d)-/, '$1-0$2-') // Pad month
+			.replace(/-(\d)$/, '-0$1');
 
 		// Parse as a date in the beginning of the day in PST (America/Los_Angeles)
 		const isoDate = DateTime.fromISO(normalizedInput, {

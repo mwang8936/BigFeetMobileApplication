@@ -18,7 +18,6 @@ import AxiosHandler from '@/context-providers/AxiosHandler';
 import { SocketProvider } from '@/context-providers/SocketContext';
 
 import i18n from '@/utils/i18n.utils';
-import { DeviceInfoProvider } from '@/context-providers/DeviceInfoContext';
 import { NotificationHandler } from '@/context-providers/NotificationHandler';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -48,34 +47,30 @@ export default function RootLayout() {
 		<I18nextProvider i18n={i18n}>
 			<QueryClientProvider client={queryClient}>
 				<NotificationHandler>
-					<DeviceInfoProvider>
-						<SessionProvider>
-							<SocketProvider>
-								<AxiosHandler>
-									<GestureHandlerRootView
-										style={{
-											flex: 1,
-											backgroundColor: isDarkMode ? '#000' : '#fff',
-										}}
-									>
-										<ThemeProvider
-											value={isDarkMode ? DarkTheme : DefaultTheme}
-										>
-											<ToastManager
-												textStyle={{ color: isDarkMode ? '#fff' : '#000' }}
-												style={{
-													height: 'auto',
-													backgroundColor: isDarkMode ? '#333' : '#fff',
-												}}
-											/>
+					<SessionProvider>
+						<SocketProvider>
+							<AxiosHandler>
+								<GestureHandlerRootView
+									style={{
+										flex: 1,
+										backgroundColor: isDarkMode ? '#000' : '#fff',
+									}}
+								>
+									<ThemeProvider value={isDarkMode ? DarkTheme : DefaultTheme}>
+										<ToastManager
+											textStyle={{ color: isDarkMode ? '#fff' : '#000' }}
+											style={{
+												height: 'auto',
+												backgroundColor: isDarkMode ? '#333' : '#fff',
+											}}
+										/>
 
-											<Slot />
-										</ThemeProvider>
-									</GestureHandlerRootView>
-								</AxiosHandler>
-							</SocketProvider>
-						</SessionProvider>
-					</DeviceInfoProvider>
+										<Slot />
+									</ThemeProvider>
+								</GestureHandlerRootView>
+							</AxiosHandler>
+						</SocketProvider>
+					</SessionProvider>
 				</NotificationHandler>
 			</QueryClientProvider>
 		</I18nextProvider>

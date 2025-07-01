@@ -11,6 +11,7 @@ import {
 } from '@/models/params/Profile.Param';
 import {
 	ChangeProfilePasswordRequest,
+	LogoutRequest,
 	UpdateProfileRequest,
 } from '@/models/requests/Profile.Request.Model';
 import AcupunctureReport from '@/models/Acupuncture-Report.Model';
@@ -80,6 +81,15 @@ export const signProfileSchedule = async (
 ): Promise<Schedule> => {
 	const response = await AuthorizedAxiosInstance.patch(
 		`${profilePath}/sign/${date.toISO()}`
+	);
+
+	return response.data;
+};
+
+export const logout = async (request: LogoutRequest): Promise<void> => {
+	const response = await AuthorizedAxiosInstance.post(
+		`${profilePath}/logout`,
+		request
 	);
 
 	return response.data;

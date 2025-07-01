@@ -1,12 +1,10 @@
-import Constants from 'expo-constants';
-
-const constants = Constants.expoConfig?.extra;
-
-const API_BASE_URL = constants?.apiUrl ?? 'http://localhost:7000/api';
+const API_BASE_URL =
+	process.env.EXPO_PUBLIC_BASE_API_URL ?? 'http://localhost:7000/api';
 
 export default API_BASE_URL;
 
 export const loginPath = 'login';
+export const refreshPath = 'refresh';
 export const authenticatePath = 'authenticate';
 export const acupunctureReportPath = 'acupuncture-report';
 export const customerPath = 'customer';
