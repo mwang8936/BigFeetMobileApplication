@@ -7,7 +7,6 @@ import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
 import { BallIndicator } from 'react-native-indicators';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useIsFetching, useQueryClient } from '@tanstack/react-query';
-import { Toast } from 'toastify-react-native';
 
 import { schedulesQueryKey, userQueryKey } from '@/constants/Query';
 import STORES from '@/constants/Stores';
@@ -22,6 +21,7 @@ import { useScheduleDate } from '@/context-providers/ScheduleDateContext';
 
 import { useThemeColor } from '@/hooks/colors/useThemeColor';
 import { useUserSchedulesQuery } from '@/hooks/react-query/profile.hooks';
+import { useToast } from '@/hooks/toast/useToast';
 
 import Schedule from '@/models/Schedule.Model';
 
@@ -38,6 +38,8 @@ export default function SchedulerScreen() {
 
 	const yellowRowColor = useThemeColor({}, 'yellowRow');
 
+	const { showErrorToast } = useToast();
+
 	const [headerHeight, setHeaderHeight] = useState(0);
 	const [itemHeights, setItemHeights] = useState<number[]>([]);
 	const [isSigning, setIsSigning] = useState(false);
@@ -48,7 +50,7 @@ export default function SchedulerScreen() {
 	const schedules = schedulesQuery.data || [];
 
 	if (schedulesQuery.isError) {
-		Toast.error(t('Error Getting Schedules'));
+		showErrorToast(t('Error Getting Schedules'));
 	}
 
 	const isLoading = schedulesQuery.isLoading;

@@ -6,7 +6,6 @@ import {
 	useQuery,
 	useQueryClient,
 } from '@tanstack/react-query';
-import { Toast } from 'toastify-react-native';
 
 import {
 	changeProfilePassword,
@@ -44,6 +43,7 @@ import {
 	QueryProp,
 	ScheduleQueryProp,
 } from './prop.hooks';
+import { useToast } from '../toast/useToast';
 
 export const useUserQuery = ({ enabled = true }: QueryProp) => {
 	return useQuery({
@@ -61,6 +61,7 @@ export const useUserQuery = ({ enabled = true }: QueryProp) => {
 export const useUpdateUserLanguageMutation = ({ setLoading }: MutationProp) => {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
+	const { showSuccessToast, showErrorToast } = useToast();
 
 	return useMutation({
 		mutationFn: (data: { request: UpdateProfileRequest }) =>
@@ -73,11 +74,11 @@ export const useUpdateUserLanguageMutation = ({ setLoading }: MutationProp) => {
 				queryKey: [userQueryKey, profileQueryKey],
 			});
 
-			Toast.success(t('Language Updated Successfully'));
+			showSuccessToast(t('Language Updated Successfully'));
 		},
 		onError: (error: CustomAPIError, _variables, _context) => {
 			console.error('Error Updating Language:', error);
-			Toast.error(`${t('Error Updating Language')}: ${error.messages[0]}`);
+			showErrorToast(t('Error Updating Language'), error.messages[0]);
 		},
 		onSettled: async () => {
 			if (setLoading) setLoading(false);
@@ -90,6 +91,7 @@ export const useChangePasswordMutation = ({
 	onSuccess,
 }: MutationProp) => {
 	const { t } = useTranslation();
+	const { showSuccessToast, showErrorToast } = useToast();
 
 	return useMutation({
 		mutationFn: (data: { request: ChangeProfilePasswordRequest }) =>
@@ -99,11 +101,11 @@ export const useChangePasswordMutation = ({
 		},
 		onSuccess: (_data, _variables, _context) => {
 			if (onSuccess) onSuccess();
-			Toast.success(t('Password Updated Successfully'));
+			showSuccessToast(t('Password Updated Successfully'));
 		},
 		onError: (error: CustomAPIError, _variables, _context) => {
 			console.error('Error Updating Password:', error);
-			Toast.error(`${t('Error Updating Password')}: ${error.messages[0]}`);
+			showErrorToast(t('Error Updating Password'), error.messages[0]);
 		},
 		onSettled: async () => {
 			if (setLoading) setLoading(false);
@@ -117,6 +119,7 @@ export const useSignProfileScheduleMutation = ({
 }: MutationProp) => {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
+	const { showSuccessToast, showErrorToast } = useToast();
 
 	return useMutation({
 		mutationFn: (data: { date: DateTime }) => signProfileSchedule(data.date),
@@ -136,11 +139,11 @@ export const useSignProfileScheduleMutation = ({
 				],
 			});
 
-			Toast.success(t('Schedule Signed Successfully'));
+			showSuccessToast(t('Schedule Signed Successfully'));
 		},
 		onError: (error: CustomAPIError, _variables, _context) => {
 			console.error('Error Signing Schedule:', error);
-			Toast.error(`${t('Error Signing Schedule')}: ${error.messages[0]}`);
+			showErrorToast(t('Error Signing Schedule'), error.messages[0]);
 		},
 		onSettled: async () => {
 			if (setLoading) setLoading(false);

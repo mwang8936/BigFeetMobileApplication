@@ -63,10 +63,12 @@ export default ({ config }: ConfigContext): ExpoConfig => {
 			favicon: './assets/images/favicon.png',
 		},
 		plugins: [
+			'expo-web-browser',
 			'expo-router',
 			'expo-secure-store',
 			'expo-font',
 			'expo-localization',
+			'expo-notifications',
 		],
 		experiments: {
 			typedRoutes: true,

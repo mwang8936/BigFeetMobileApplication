@@ -1,7 +1,10 @@
 import { useContext, createContext, type PropsWithChildren } from 'react';
 
 import { AxiosError } from 'axios';
+import * as Crypto from 'expo-crypto';
+import * as Device from 'expo-device';
 import * as Localization from 'expo-localization';
+import * as SecureStore from 'expo-secure-store';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -19,7 +22,7 @@ import { LogoutRequest } from '@/models/requests/Profile.Request.Model';
 
 import { getLanguageFile } from '@/utils/i18n.utils';
 
-import { useDeviceInfo } from '../hooks/device-info/useDeviceInfo';
+import { useNotification } from './NotificationHandler';
 
 const AuthContext = createContext<{
 	signIn: (credentials: { username: string; password: string }) => void;
@@ -51,21 +54,38 @@ export const sessionKey = 'session';
 
 export function SessionProvider({ children }: PropsWithChildren) {
 	const [[isLoading, session], setSession] = useStorageState(sessionKey);
+	const { expoPushToken, hasPermission } = useNotification();
+
+	const getDeviceInfo = async () => {
+		let deviceId = await SecureStore.getItemAsync('device_id');
+		if (!deviceId) {
+			deviceId = Crypto.randomUUID();
+			await SecureStore.setItemAsync('device_id', deviceId);
+		}
+
+		return {
+			deviceId,
+			deviceModel: Device.modelName || 'Unknown device model',
+			deviceName: Device.deviceName || 'Unknown device name',
+		};
+	};
 
 	const queryClient = useQueryClient();
 	const { i18n } = useTranslation();
-	const { deviceId, deviceModel, deviceName } = useDeviceInfo();
 
 	const signIn = async (credentials: {
 		username: string;
 		password: string;
 	}) => {
+		const { deviceId, deviceModel, deviceName } = await getDeviceInfo();
+
 		const request: LoginRequest = {
 			username: credentials.username,
 			password: credentials.password,
 			device_id: deviceId,
 			device_model: deviceModel,
 			device_name: deviceName,
+			push_token: hasPermission ? expoPushToken : undefined,
 		};
 
 		// Perform API login request
@@ -85,6 +105,8 @@ export function SessionProvider({ children }: PropsWithChildren) {
 	};
 
 	const signOut = async () => {
+		const { deviceId } = await getDeviceInfo();
+
 		if (deviceId) {
 			const request: LogoutRequest = {
 				device_id: deviceId,

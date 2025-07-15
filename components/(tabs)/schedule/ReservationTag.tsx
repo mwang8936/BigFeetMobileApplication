@@ -296,7 +296,7 @@ const ReservationTag: React.FC<ReservationTagProp> = ({
 						{timeText}
 					</Text>
 
-					<ScrollView>
+					<ScrollView style={{ marginBottom: 20 }}>
 						<View style={styles.modalTextContainer}>
 							{reservation.requested_gender && (
 								<Text
@@ -690,7 +690,7 @@ const styles = StyleSheet.create({
 		padding: 20,
 		marginHorizontal: 20,
 		alignItems: 'center',
-		maxHeight: '50%',
+		maxHeight: '80%',
 	},
 	modalTitle: {
 		fontSize: 24,

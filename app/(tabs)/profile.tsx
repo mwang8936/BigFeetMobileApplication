@@ -13,7 +13,6 @@ import {
 import { useTranslation } from 'react-i18next';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useIsFetching, useQueryClient } from '@tanstack/react-query';
-import { Toast } from 'toastify-react-native';
 
 import { useSession } from '@/context-providers/AuthContext';
 
@@ -38,6 +37,7 @@ import {
 	useUpdateUserLanguageMutation,
 	useUserQuery,
 } from '@/hooks/react-query/profile.hooks';
+import { useToast } from '@/hooks/toast/useToast';
 
 import { UpdateProfileRequest } from '@/models/requests/Profile.Request.Model';
 import { Gender, Language, Role } from '@/models/enums';
@@ -50,11 +50,12 @@ export default function ProfileScreen() {
 	const { signOut } = useSession();
 
 	const textColor = useThemeColor({}, 'text');
+	const { showErrorToast } = useToast();
 
 	const { data: user, isError } = useUserQuery({});
 
 	if (isError) {
-		Toast.error(t('Error Getting Profile'));
+		showErrorToast(t('Error Getting Profile'));
 	}
 
 	const isFetching = useIsFetching({

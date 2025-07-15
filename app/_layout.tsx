@@ -58,10 +58,11 @@ export default function RootLayout() {
 								>
 									<ThemeProvider value={isDarkMode ? DarkTheme : DefaultTheme}>
 										<ToastManager
-											textStyle={{ color: isDarkMode ? '#fff' : '#000' }}
+											useModal={false}
+											topOffset={100}
+											duration={5000}
 											style={{
 												height: 'auto',
-												backgroundColor: isDarkMode ? '#333' : '#fff',
 											}}
 										/>
 

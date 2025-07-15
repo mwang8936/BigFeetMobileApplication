@@ -17,7 +17,6 @@ import { Redirect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { Toast } from 'toastify-react-native';
 
 import { useSession } from '@/context-providers/AuthContext';
 
@@ -30,6 +29,8 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedTextInput } from '@/components/ThemedTextInput';
 import { ThemedView } from '@/components/ThemedView';
 
+import { useToast } from '@/hooks/toast/useToast';
+
 import { CustomAPIError } from '@/models/custom-errors/API.Error';
 
 export default function LoginScreen() {
@@ -38,6 +39,7 @@ export default function LoginScreen() {
 	const { session, signIn } = useSession();
 
 	const colorScheme = useColorScheme();
+	const { showErrorToast } = useToast();
 
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
@@ -63,7 +65,7 @@ export default function LoginScreen() {
 			console.error('Login Failed:', error);
 
 			if (error instanceof CustomAPIError)
-				Toast.error(t('Login Failed') + ': ' + error.messages[0]);
+				showErrorToast(t('Login Failed'), error.messages[0]);
 		} finally {
 			setIsLoading(false);
 		}

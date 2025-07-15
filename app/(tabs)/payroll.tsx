@@ -6,7 +6,6 @@ import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
 import { useIsFetching, useQueryClient } from '@tanstack/react-query';
-import { Toast } from 'toastify-react-native';
 
 import {
 	acupunctureReportsQueryKey,
@@ -28,6 +27,7 @@ import {
 	useUserAcupunctureReportsQuery,
 	useUserPayrollsQuery,
 } from '@/hooks/react-query/profile.hooks';
+import { useToast } from '@/hooks/toast/useToast';
 
 import { PayrollOption, PayrollPart } from '@/models/enums';
 import Payroll from '@/models/Payroll.Model';
@@ -40,6 +40,7 @@ export default function PayrollScreen() {
 	const { date, setDate } = usePayrollDate();
 
 	const textColor = useThemeColor({}, 'text');
+	const { showErrorToast } = useToast();
 
 	const payrollsQuery = useUserPayrollsQuery({ ...date });
 	const payrolls = payrollsQuery.data || [];
@@ -50,11 +51,11 @@ export default function PayrollScreen() {
 	const acupunctureReports = acupunctureReportsQuery.data;
 
 	if (payrollsQuery.isError) {
-		Toast.error(t('Error Getting Payrolls'));
+		showErrorToast(t('Error Getting Payrolls'));
 	}
 
 	if (acupunctureReportsQuery.isError) {
-		Toast.error(t('Error Getting Acupuncture Reports'));
+		showErrorToast(t('Error Getting Acupuncture Reports'));
 	}
 
 	const isLoading =
