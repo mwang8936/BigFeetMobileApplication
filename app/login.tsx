@@ -95,7 +95,7 @@ export default function LoginScreen() {
 							/>
 
 							<Image
-								source={require('../assets/images/logo.png')}
+								source={require('../assets/images/logo.webp')}
 								style={styles.image}
 							/>
 
