@@ -23,6 +23,7 @@ import {
 } from '@/hooks/react-query/profile.hooks';
 
 import { getLanguageFile } from '@/utils/i18n.utils';
+import { usePusher } from '@/hooks/pusher/usePusher';
 
 export default function TabLayout() {
 	const { i18n, t } = useTranslation();
@@ -35,6 +36,8 @@ export default function TabLayout() {
 	const { data: user, isLoading: userLoading } = useUserQuery({
 		enabled: !sessionLoading && interceptorsReady,
 	});
+
+	usePusher();
 
 	useEffect(() => {
 		if (!sessionLoading && interceptorsReady) {
