@@ -62,7 +62,7 @@ export default function ProfileScreen() {
 		queryKey: [userQueryKey, profileQueryKey],
 	});
 	const onRefresh = async () => {
-		queryClient.invalidateQueries({
+		queryClient.refetchQueries({
 			queryKey: [userQueryKey, profileQueryKey],
 		});
 	};

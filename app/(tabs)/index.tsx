@@ -65,7 +65,7 @@ export default function SchedulerScreen() {
 		],
 	});
 	const onRefresh = async () => {
-		queryClient.invalidateQueries({
+		queryClient.refetchQueries({
 			queryKey: [
 				userQueryKey,
 				schedulesQueryKey,

@@ -106,7 +106,7 @@ export const usePusher = () => {
 				'America/Los_Angeles'
 			);
 
-			queryClient.invalidateQueries({
+			queryClient.refetchQueries({
 				queryKey: [userQueryKey, schedulesQueryKey, year, month, day],
 			});
 		};
@@ -162,7 +162,7 @@ export const usePusher = () => {
 				'America/Los_Angeles'
 			);
 
-			queryClient.invalidateQueries({
+			queryClient.refetchQueries({
 				queryKey: [userQueryKey, schedulesQueryKey, year, month, day],
 			});
 		};
@@ -211,7 +211,7 @@ export const usePusher = () => {
 				'America/Los_Angeles'
 			);
 
-			queryClient.invalidateQueries({
+			queryClient.refetchQueries({
 				queryKey: [userQueryKey, schedulesQueryKey, year, month, day],
 			});
 		};

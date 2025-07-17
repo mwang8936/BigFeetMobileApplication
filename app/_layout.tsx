@@ -23,6 +23,8 @@ import { NotificationHandler } from '@/context-providers/NotificationHandler';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
+const queryClient = new QueryClient();
+
 export default function RootLayout() {
 	const colorScheme = useColorScheme();
 	const isDarkMode = colorScheme === 'dark';
@@ -40,8 +42,6 @@ export default function RootLayout() {
 	if (!loaded) {
 		return null;
 	}
-
-	const queryClient = new QueryClient();
 
 	return (
 		<I18nextProvider i18n={i18n}>

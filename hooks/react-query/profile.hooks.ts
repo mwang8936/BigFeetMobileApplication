@@ -52,8 +52,6 @@ export const useUserQuery = ({ enabled = true }: QueryProp) => {
 		enabled,
 		staleTime: 1000 * 60 * 15,
 		gcTime: 1000 * 60 * 60,
-		refetchOnReconnect: false,
-		refetchOnWindowFocus: false,
 		retry: 3,
 	});
 };
@@ -70,7 +68,7 @@ export const useUpdateUserLanguageMutation = ({ setLoading }: MutationProp) => {
 			if (setLoading) setLoading(true);
 		},
 		onSuccess: (_data, _variables, _context) => {
-			queryClient.invalidateQueries({
+			queryClient.refetchQueries({
 				queryKey: [userQueryKey, profileQueryKey],
 			});
 
@@ -129,7 +127,7 @@ export const useSignProfileScheduleMutation = ({
 		onSuccess: (data, _variables, _context) => {
 			if (onSuccess) onSuccess();
 
-			queryClient.invalidateQueries({
+			queryClient.refetchQueries({
 				queryKey: [
 					userQueryKey,
 					schedulesQueryKey,
@@ -172,8 +170,6 @@ export const useUserAcupunctureReportsQuery = ({
 		enabled: enabled && date.isValid,
 		staleTime: 1000 * 60 * 15,
 		gcTime: 1000 * 60 * 60,
-		refetchOnReconnect: false,
-		refetchOnWindowFocus: false,
 		retry: 3,
 	});
 };
@@ -199,8 +195,6 @@ export const useUserPayrollsQuery = ({
 		enabled: enabled && date.isValid,
 		staleTime: 1000 * 60 * 15,
 		gcTime: 1000 * 60 * 60,
-		refetchOnReconnect: false,
-		refetchOnWindowFocus: false,
 		retry: 3,
 	});
 };
@@ -227,8 +221,6 @@ export const useUserSchedulesQuery = ({
 		enabled: enabled && date.isValid,
 		staleTime: 1000 * 60 * 15,
 		gcTime: 1000 * 60 * 60,
-		refetchOnReconnect: false,
-		refetchOnWindowFocus: false,
 		retry: 3,
 	});
 };

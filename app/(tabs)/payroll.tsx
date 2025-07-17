@@ -70,7 +70,7 @@ export default function PayrollScreen() {
 
 	const isFetching = isAcupunctureReportFetching && isPayrollFetching;
 	const onRefresh = async () => {
-		queryClient.invalidateQueries({
+		queryClient.refetchQueries({
 			queryKey: [
 				userQueryKey,
 				acupunctureReportsQueryKey,
@@ -78,7 +78,7 @@ export default function PayrollScreen() {
 				date.month,
 			],
 		});
-		queryClient.invalidateQueries({
+		queryClient.refetchQueries({
 			queryKey: [userQueryKey, payrollsQueryKey, date.year, date.month],
 		});
 	};

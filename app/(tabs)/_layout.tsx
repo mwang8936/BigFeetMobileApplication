@@ -37,6 +37,8 @@ export default function TabLayout() {
 		enabled: !sessionLoading && interceptorsReady,
 	});
 
+	const language = user?.language;
+
 	usePusher();
 
 	useEffect(() => {
@@ -48,12 +50,12 @@ export default function TabLayout() {
 	}, [queryClient, sessionLoading, interceptorsReady]);
 
 	useEffect(() => {
-		if (user) {
-			i18n.changeLanguage(getLanguageFile(user.language));
+		if (language) {
+			i18n.changeLanguage(getLanguageFile(language));
 		} else {
 			i18n.changeLanguage(Localization?.getLocales?.()[0]?.languageTag);
 		}
-	}, [user]);
+	}, [i18n, language]);
 
 	const colorScheme = useColorScheme();
 	const color = Colors[colorScheme ?? 'light'];
