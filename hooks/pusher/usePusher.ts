@@ -24,7 +24,6 @@ import {
 	update_vip_package_event,
 	VipPackageEventMessage,
 } from '@/models/events/vip-package.events';
-import { Permissions } from '@/models/enums';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/hooks/toast/useToast';
 import { useSession } from '@/context-providers/AuthContext';
@@ -50,7 +49,6 @@ export const usePusher = () => {
 		if (!user || !pusher) return;
 
 		const employeeId = user.employee_id;
-		const permissions = user.permissions;
 
 		const channel: Channel = pusher.subscribe(schedules_channel);
 
@@ -61,11 +59,7 @@ export const usePusher = () => {
 				| 'update-reservation-event'
 				| 'delete-reservation-event'
 		) => {
-			if (
-				employeeId !== eventMessage.employee_id &&
-				!permissions.includes(Permissions.PERMISSION_GET_SCHEDULE)
-			)
-				return;
+			if (employeeId !== eventMessage.employee_id) return;
 
 			const time = eventMessage.time;
 			const username = eventMessage.username;
@@ -119,11 +113,7 @@ export const usePusher = () => {
 				| 'delete-schedule-event'
 				| 'sign-schedule-event'
 		) => {
-			if (
-				employeeId !== eventMessage.employee_id &&
-				!permissions.includes(Permissions.PERMISSION_GET_SCHEDULE)
-			)
-				return;
+			if (employeeId !== eventMessage.employee_id) return;
 
 			const username = eventMessage.username;
 
@@ -174,11 +164,7 @@ export const usePusher = () => {
 				| 'update-vip-package-event'
 				| 'delete-vip-package-event'
 		) => {
-			if (
-				eventMessage.employee_ids.includes(employeeId) &&
-				!permissions.includes(Permissions.PERMISSION_GET_SCHEDULE)
-			)
-				return;
+			if (eventMessage.employee_ids.includes(employeeId)) return;
 
 			const serial = eventMessage.serial;
 
