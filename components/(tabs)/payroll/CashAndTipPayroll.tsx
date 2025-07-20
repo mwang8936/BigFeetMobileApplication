@@ -1,40 +1,30 @@
-import { useMemo, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
-
-import { useTranslation } from 'react-i18next';
-import { DataTable } from 'react-native-paper';
-
+import { usePayrollDate } from '@/context-providers/PayrollDateContext';
 import { useThemeColor } from '@/hooks/colors/useThemeColor';
 import { useUserQuery } from '@/hooks/react-query/profile.hooks';
-
 import { PayrollPart } from '@/models/enums';
 import Payroll from '@/models/Payroll.Model';
-
 import { isHoliday } from '@/utils/date.utils';
 import {
 	getShortMonthString,
 	moneyToString,
 	padStringOrNumber,
 } from '@/utils/string.utils';
-import { usePayrollDate } from '@/context-providers/PayrollDateContext';
+import { useTranslation } from 'react-i18next';
+import { StyleSheet, Text } from 'react-native';
+import { DataTable } from 'react-native-paper';
 
-import CashAndTipsPayroll from './CashAndTipPayroll';
-
-interface StoreEmployeeWithCashAndTipsPayrollProp {
+export interface CashAndTipsPayrollProps {
 	payroll: Payroll;
 }
 
 interface RowData {
 	day: number;
-	body: number;
-	feet: number;
-	tips: number;
 	cash: number;
+	tips: number;
+	total: number;
 }
 
-const StoreEmployeeWithCashAndTipsPayroll: React.FC<
-	StoreEmployeeWithCashAndTipsPayrollProp
-> = ({ payroll }) => {
+const CashAndTipsPayroll: React.FC<CashAndTipsPayrollProps> = ({ payroll }) => {
 	const { t } = useTranslation();
 
 	const { date } = usePayrollDate();
@@ -50,13 +40,7 @@ const StoreEmployeeWithCashAndTipsPayroll: React.FC<
 	const rowColor = useThemeColor({}, 'row');
 	const alternatingRowColor = useThemeColor({}, 'alternatingRow');
 	const blueRowColor = useThemeColor({}, 'blueRow');
-	const greenRowColor = useThemeColor({}, 'greenRow');
-	const yellowRowColor = useThemeColor({}, 'yellowRow');
 	const goldRowColor = useThemeColor({}, 'goldRow');
-	const grayRowColor = useThemeColor({}, 'grayRow');
-	const redRowColor = useThemeColor({}, 'redRow');
-
-	const [isCashOutMode, setIsCashOutMode] = useState(false);
 
 	const dateText =
 		getShortMonthString(date.month, language) +
@@ -97,50 +81,27 @@ const StoreEmployeeWithCashAndTipsPayroll: React.FC<
 				scheduleData.vip_amount +
 				scheduleData.total_cash_out;
 
+			const tips = scheduleData.tips * 0.9;
+
 			return {
 				day,
-				body: scheduleData.body_sessions + scheduleData.acupuncture_sessions,
-				feet: scheduleData.feet_sessions,
-				tips: scheduleData.tips,
 				cash,
+				tips,
+				total: cash + tips,
 			};
 		} else {
 			return {
 				day,
-				body: 0,
-				feet: 0,
-				tips: 0,
 				cash: 0,
+				tips: 0,
+				total: 0,
 			};
 		}
 	});
 
-	const bodyRate = payroll.employee.body_rate ?? 0;
-	const feetRate = payroll.employee.feet_rate ?? 0;
-
-	const totalBodySessions = data
-		.map((row) => row.body)
-		.reduce((acc, curr) => acc + parseFloat(curr.toString()), 0);
-	const totalFeetSessions = data
-		.map((row) => row.feet)
-		.reduce((acc, curr) => acc + parseFloat(curr.toString()), 0);
-
-	const totalBodyMoney = totalBodySessions * bodyRate;
-	const totalFeetMoney = totalFeetSessions * feetRate;
-
-	const totalTips = data
-		.map((row) => row.tips)
-		.reduce((acc, curr) => acc + parseFloat(curr.toString()), 0);
-
-	const totalCash = data
-		.map((row) => row.cash)
-		.reduce((acc, curr) => acc + parseFloat(curr.toString()), 0);
-
-	const total = totalBodyMoney + totalFeetMoney + totalTips + totalCash;
-
-	const chequeAmount = payroll.cheque_amount || total;
-
-	const totalAfterCheque = total - chequeAmount;
+	const totalCash = data.reduce((sum, row) => sum + row.cash, 0);
+	const totalTips = data.reduce((sum, row) => sum + row.tips, 0);
+	const total = totalCash + totalTips;
 
 	const titleElement = (title: string) => {
 		return (
@@ -198,7 +159,7 @@ const StoreEmployeeWithCashAndTipsPayroll: React.FC<
 		);
 	};
 
-	const payrollTable = (
+	return (
 		<DataTable style={[styles.table, { backgroundColor: rowColor }]}>
 			<DataTable.Header
 				style={[
@@ -208,13 +169,11 @@ const StoreEmployeeWithCashAndTipsPayroll: React.FC<
 			>
 				{titleElement(dateText)}
 
-				{titleElement(t('Body'))}
-
-				{titleElement(t('Feet'))}
+				{titleElement(t('Cash'))}
 
 				{titleElement(t('Tips'))}
 
-				{titleElement(t('Cash'))}
+				{titleElement(t('Total'))}
 			</DataTable.Header>
 
 			{data.map((row, index) => (
@@ -231,13 +190,11 @@ const StoreEmployeeWithCashAndTipsPayroll: React.FC<
 				>
 					{cellElement(row.day)}
 
-					{cellElement(row.body)}
-
-					{cellElement(row.feet)}
+					{cellElement(moneyToString(row.cash))}
 
 					{cellElement(moneyToString(row.tips))}
 
-					{cellElement(moneyToString(row.cash))}
+					{cellElement(moneyToString(row.total))}
 				</DataTable.Row>
 			))}
 
@@ -249,47 +206,11 @@ const StoreEmployeeWithCashAndTipsPayroll: React.FC<
 			>
 				{leftAlignBoldCellElement(t('SUM'))}
 
-				{boldCellElement(totalBodySessions)}
-
-				{boldCellElement(totalFeetSessions)}
+				{boldCellElement(moneyToString(totalCash))}
 
 				{boldCellElement(moneyToString(totalTips))}
 
-				{boldCellElement(moneyToString(totalCash))}
-			</DataTable.Row>
-
-			<DataTable.Row
-				style={[
-					styles.payPerRow,
-					{ backgroundColor: greenRowColor, borderBlockColor: textColor },
-				]}
-			>
-				{leftAlignBoldCellElement(t('PAY/PER'))}
-
-				{boldCellElement(moneyToString(bodyRate) + '/B')}
-
-				{boldCellElement(moneyToString(feetRate) + '/F')}
-
-				{boldCellElement('-')}
-
-				{boldCellElement('-')}
-			</DataTable.Row>
-
-			<DataTable.Row
-				style={[
-					styles.totalRow,
-					{ backgroundColor: yellowRowColor, borderBlockColor: textColor },
-				]}
-			>
-				{leftAlignBoldCellElement(t('TOTAL/PER'))}
-
-				{boldCellElement(moneyToString(totalBodyMoney))}
-
-				{boldCellElement(moneyToString(totalFeetMoney))}
-
-				{boldCellElement(moneyToString(totalTips))}
-
-				{boldCellElement(moneyToString(totalCash))}
+				{boldCellElement(moneyToString(total))}
 			</DataTable.Row>
 
 			<DataTable.Row
@@ -301,7 +222,7 @@ const StoreEmployeeWithCashAndTipsPayroll: React.FC<
 				<DataTable.Cell
 					textStyle={[styles.extraBoldedCellTextStyle, { color: textColor }]}
 				>
-					{t('TOTAL')}
+					{t('CASH OUT')}
 				</DataTable.Cell>
 
 				<DataTable.Cell
@@ -311,84 +232,11 @@ const StoreEmployeeWithCashAndTipsPayroll: React.FC<
 					{moneyToString(total)}
 				</DataTable.Cell>
 			</DataTable.Row>
-
-			{totalAfterCheque > 0 && (
-				<>
-					<DataTable.Row
-						style={[
-							styles.chequeRow,
-							{ backgroundColor: grayRowColor, borderBlockColor: textColor },
-						]}
-					>
-						<DataTable.Cell
-							textStyle={[
-								styles.extraBoldedCellTextStyle,
-								{ color: textColor },
-							]}
-						>
-							{t('CHEQUE')}
-						</DataTable.Cell>
-
-						<DataTable.Cell
-							numeric
-							textStyle={[
-								styles.extraBoldedCellTextStyle,
-								{ color: textColor },
-							]}
-						>
-							{moneyToString(chequeAmount)}
-						</DataTable.Cell>
-					</DataTable.Row>
-
-					<DataTable.Row
-						style={[
-							styles.chequeRow,
-							{ backgroundColor: redRowColor, borderBlockColor: textColor },
-						]}
-					>
-						<DataTable.Cell
-							textStyle={[
-								styles.extraBoldedCellTextStyle,
-								{ color: textColor },
-							]}
-						>
-							{t('CASH OUT')}
-						</DataTable.Cell>
-
-						<DataTable.Cell
-							numeric
-							textStyle={[
-								styles.extraBoldedCellTextStyle,
-								{ color: textColor },
-							]}
-						>
-							{moneyToString(totalAfterCheque)}
-						</DataTable.Cell>
-					</DataTable.Row>
-				</>
-			)}
 		</DataTable>
-	);
-
-	const cashOutTable = useMemo(() => {
-		return <CashAndTipsPayroll payroll={payroll} />;
-	}, [payroll]);
-
-	return (
-		<TouchableOpacity
-			onLongPress={() => setIsCashOutMode(!isCashOutMode)}
-			activeOpacity={1}
-			style={styles.wrapper}
-		>
-			{isCashOutMode ? cashOutTable : payrollTable}
-		</TouchableOpacity>
 	);
 };
 
 const styles = StyleSheet.create({
-	wrapper: {
-		width: '100%',
-	},
 	table: {},
 	header: {
 		borderBottomWidth: 5,
@@ -398,7 +246,7 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 	},
 	titleTextStyle: {
-		fontSize: 16,
+		fontSize: 20,
 		fontWeight: 'bold',
 		marginVertical: 'auto',
 		textAlign: 'center',
@@ -439,4 +287,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default StoreEmployeeWithCashAndTipsPayroll;
+export default CashAndTipsPayroll;

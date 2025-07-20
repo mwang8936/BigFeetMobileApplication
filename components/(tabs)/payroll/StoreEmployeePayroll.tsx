@@ -1,4 +1,5 @@
-import { StyleSheet, Text } from 'react-native';
+import { useMemo, useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import { useTranslation } from 'react-i18next';
 import { DataTable } from 'react-native-paper';
@@ -16,6 +17,8 @@ import {
 	moneyToString,
 	padStringOrNumber,
 } from '@/utils/string.utils';
+
+import CashAndTipsPayroll from './CashAndTipPayroll';
 
 interface StoreEmployeePayrollProp {
 	payroll: Payroll;
@@ -48,6 +51,8 @@ const StoreEmployeePayroll: React.FC<StoreEmployeePayrollProp> = ({
 	const greenRowColor = useThemeColor({}, 'greenRow');
 	const yellowRowColor = useThemeColor({}, 'yellowRow');
 	const goldRowColor = useThemeColor({}, 'goldRow');
+
+	const [isCashOutMode, setIsCashOutMode] = useState(false);
 
 	const dateText =
 		getShortMonthString(date.month, language) +
@@ -148,7 +153,7 @@ const StoreEmployeePayroll: React.FC<StoreEmployeePayrollProp> = ({
 		);
 	};
 
-	return (
+	const payrollTable = (
 		<DataTable style={[styles.table, { backgroundColor: rowColor }]}>
 			<DataTable.Header
 				style={[
@@ -243,9 +248,26 @@ const StoreEmployeePayroll: React.FC<StoreEmployeePayrollProp> = ({
 			</DataTable.Row>
 		</DataTable>
 	);
+
+	const cashOutTable = useMemo(() => {
+		return <CashAndTipsPayroll payroll={payroll} />;
+	}, [payroll]);
+
+	return (
+		<TouchableOpacity
+			onLongPress={() => setIsCashOutMode(!isCashOutMode)}
+			activeOpacity={1}
+			style={styles.wrapper}
+		>
+			{isCashOutMode ? cashOutTable : payrollTable}
+		</TouchableOpacity>
+	);
 };
 
 const styles = StyleSheet.create({
+	wrapper: {
+		width: '100%',
+	},
 	table: {},
 	header: {
 		borderBottomWidth: 5,

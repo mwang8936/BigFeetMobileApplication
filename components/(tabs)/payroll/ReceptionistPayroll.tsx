@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import { DateTime } from 'luxon';
@@ -21,6 +21,8 @@ import {
 	moneyToString,
 	padStringOrNumber,
 } from '@/utils/string.utils';
+
+import CashAndTipsPayroll from './CashAndTipPayroll';
 
 interface ReceptionistPayrollProp {
 	payroll: Payroll;
@@ -59,7 +61,11 @@ const ReceptionistPayroll: React.FC<ReceptionistPayrollProp> = ({
 	const yellowRowColor = useThemeColor({}, 'yellowRow');
 	const goldRowColor = useThemeColor({}, 'goldRow');
 
-	const [isMinimized, setIsMinimized] = useState(true);
+	const [tableIndex, setTableIndex] = useState(0);
+
+	const handleLongPress = () => {
+		setTableIndex((prevIndex) => (prevIndex + 1) % 3);
+	};
 
 	const dateText =
 		getShortMonthString(date.month, language) +
@@ -476,13 +482,21 @@ const ReceptionistPayroll: React.FC<ReceptionistPayrollProp> = ({
 		);
 	};
 
+	const cashOutTable = useMemo(() => {
+		return <CashAndTipsPayroll payroll={payroll} />;
+	}, [payroll]);
+
 	return (
 		<TouchableOpacity
-			onLongPress={() => setIsMinimized(!isMinimized)}
+			onLongPress={handleLongPress}
 			activeOpacity={1}
 			style={styles.wrapper}
 		>
-			{isMinimized ? minimizedTable() : fullTable()}
+			{tableIndex === 0
+				? minimizedTable()
+				: tableIndex === 1
+				? fullTable()
+				: cashOutTable}
 		</TouchableOpacity>
 	);
 };
