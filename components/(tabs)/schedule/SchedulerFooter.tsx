@@ -10,6 +10,8 @@ import Tips from './footer/Tips';
 import Total from './footer/Total';
 import Sign from './footer/Sign';
 import VIP from './footer/VIP';
+import { View } from 'react-native';
+import { useThemeColor } from '@/hooks/colors/useThemeColor';
 
 interface SchedulerFooterProp {
 	schedule?: Schedule;
@@ -20,6 +22,8 @@ const SchedulerFooter: React.FC<SchedulerFooterProp> = ({
 	schedule,
 	setLoading,
 }) => {
+	const backgroundColor = useThemeColor({}, 'gridBackground');
+
 	const reservations = schedule?.reservations || [];
 
 	const completedReservations = reservations.filter((reservation) => {
@@ -37,7 +41,7 @@ const SchedulerFooter: React.FC<SchedulerFooterProp> = ({
 	const award = schedule?.award ?? 0;
 
 	return (
-		<>
+		<View style={{ backgroundColor, zIndex: 2 }}>
 			<Total reservations={completedReservations} />
 
 			<CashOut reservations={completedReservations} />
@@ -53,7 +57,7 @@ const SchedulerFooter: React.FC<SchedulerFooterProp> = ({
 			/>
 
 			{schedule && <Sign isSigned={schedule.signed} setLoading={setLoading} />}
-		</>
+		</View>
 	);
 };
 

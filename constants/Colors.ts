@@ -35,6 +35,7 @@ export const Colors = {
 		goldRow: '#D69E2E',
 		grayRow: '#E2E8F0',
 		redRow: '#F56565',
+		gridBackground: '#FFF',
 	},
 	dark: {
 		text: '#ECEDEE',
@@ -61,5 +62,6 @@ export const Colors = {
 		goldRow: '#D69E2E',
 		grayRow: '#2D3748',
 		redRow: '#E53E3E',
+		gridBackground: '#000',
 	},
 };

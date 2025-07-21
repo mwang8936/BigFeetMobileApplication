@@ -7,6 +7,7 @@ export interface DataRow {
 	acupuncture: number;
 	massage: number;
 	insurance: number;
+	non_acupuncturist_insurance: number;
 }
 
 export default interface AcupunctureReport {
@@ -16,6 +17,7 @@ export default interface AcupunctureReport {
 	acupuncture_percentage: number;
 	massage_percentage: number;
 	insurance_percentage: number;
+	non_acupuncturist_insurance_percentage: number;
 	data: DataRow[];
 	created_at: DateTime;
 	updated_at: DateTime;

@@ -1,4 +1,5 @@
-import { StyleSheet, Text } from 'react-native';
+import { ReactElement } from 'react';
+import { FlatList, RefreshControlProps, StyleSheet, Text } from 'react-native';
 
 import { useTranslation } from 'react-i18next';
 import { DataTable } from 'react-native-paper';
@@ -19,6 +20,7 @@ import {
 
 interface AcupunctureReportProp {
 	acupunctureReport: AcupunctureReport;
+	refreshControl: ReactElement<RefreshControlProps>;
 }
 
 interface RowData {
@@ -26,11 +28,13 @@ interface RowData {
 	acupuncture: number;
 	massage: number;
 	insurance: number;
+	non_acupuncturist_insurance: number;
 	total: number;
 }
 
 const AcupunctureReportTable: React.FC<AcupunctureReportProp> = ({
 	acupunctureReport,
+	refreshControl,
 }) => {
 	const { t } = useTranslation();
 
@@ -64,13 +68,16 @@ const AcupunctureReportTable: React.FC<AcupunctureReportProp> = ({
 			const total =
 				scheduleData.acupuncture * acupunctureReport.acupuncture_percentage +
 				scheduleData.massage * acupunctureReport.massage_percentage -
-				scheduleData.insurance * acupunctureReport.insurance_percentage;
+				scheduleData.insurance * acupunctureReport.insurance_percentage -
+				scheduleData.non_acupuncturist_insurance *
+					acupunctureReport.non_acupuncturist_insurance_percentage;
 
 			return {
 				day,
 				acupuncture: scheduleData.acupuncture,
 				massage: scheduleData.massage,
 				insurance: scheduleData.insurance,
+				non_acupuncturist_insurance: scheduleData.non_acupuncturist_insurance,
 				total,
 			};
 		} else {
@@ -79,6 +86,7 @@ const AcupunctureReportTable: React.FC<AcupunctureReportProp> = ({
 				acupuncture: 0,
 				massage: 0,
 				insurance: 0,
+				non_acupuncturist_insurance: 0,
 				total: 0,
 			};
 		}
@@ -87,6 +95,8 @@ const AcupunctureReportTable: React.FC<AcupunctureReportProp> = ({
 	const acupuncturePercentage = acupunctureReport.acupuncture_percentage;
 	const massagePercentage = acupunctureReport.massage_percentage;
 	const insurancePercentage = acupunctureReport.insurance_percentage;
+	const nonAcupuncturistInsurancePercentage =
+		acupunctureReport.non_acupuncturist_insurance_percentage;
 
 	const totalAcupuncture = data
 		.map((row) => row.acupuncture)
@@ -97,21 +107,26 @@ const AcupunctureReportTable: React.FC<AcupunctureReportProp> = ({
 	const totalInsurance = data
 		.map((row) => row.insurance)
 		.reduce((acc, curr) => acc + parseFloat(curr.toString()), 0);
+	const totalNonAcupuncturistInsurance = data
+		.map((row) => row.non_acupuncturist_insurance)
+		.reduce((acc, curr) => acc + parseFloat(curr.toString()), 0);
 
 	const totalAcupunctureMoney = totalAcupuncture * acupuncturePercentage;
 	const totalMassageMoney = totalMassage * massagePercentage;
 	const totalInsuranceMoney = totalInsurance * insurancePercentage;
+	const totalNonAcupuncturistInsuranceMoney =
+		totalNonAcupuncturistInsurance * nonAcupuncturistInsurancePercentage;
 
 	const totalMoney = data
 		.map((row) => row.total)
 		.reduce((acc, curr) => acc + parseFloat(curr.toString()), 0);
 
-	const titleElement = (title: string) => {
+	const titleElement = (title: string, numberOfLines: number = 1) => {
 		return (
 			<DataTable.Cell style={styles.title}>
 				<Text
 					adjustsFontSizeToFit
-					numberOfLines={1}
+					numberOfLines={numberOfLines}
 					style={[styles.titleTextStyle, { color: textColor }]}
 				>
 					{title}
@@ -162,49 +177,54 @@ const AcupunctureReportTable: React.FC<AcupunctureReportProp> = ({
 		);
 	};
 
-	return (
-		<DataTable style={[styles.table, { backgroundColor: rowColor }]}>
-			<DataTable.Header
-				style={[
-					styles.header,
-					{ backgroundColor: headerColor, borderBlockColor: textColor },
-				]}
-			>
-				{titleElement(dateText)}
+	const header = (
+		<DataTable.Header
+			style={[
+				styles.header,
+				{ backgroundColor: headerColor, borderBlockColor: textColor },
+			]}
+		>
+			{titleElement(dateText)}
 
-				{titleElement(t('Acu'))}
+			{titleElement(t('Acu'))}
 
-				{titleElement(t('Massage'))}
+			{titleElement(t('Massage'))}
 
-				{titleElement(t('Insurance'))}
+			{titleElement(t('Insurance'))}
 
-				{titleElement(t('Total'))}
-			</DataTable.Header>
+			{titleElement(t('Insurance (Other)'), 2)}
 
-			{data.map((row, index) => (
-				<DataTable.Row
-					key={index}
-					style={[
-						styles.row,
-						{
-							backgroundColor:
-								index % 2 === 0 ? alternatingRowColor : undefined,
-							borderBlockColor: textColor,
-						},
-					]}
-				>
-					{cellElement(row.day)}
+			{titleElement(t('Total'))}
+		</DataTable.Header>
+	);
 
-					{cellElement(moneyToString(row.acupuncture))}
+	const renderItem = ({ item, index }: { item: RowData; index: number }) => (
+		<DataTable.Row
+			key={index}
+			style={[
+				styles.row,
+				{
+					backgroundColor: index % 2 === 0 ? alternatingRowColor : undefined,
+					borderBlockColor: textColor,
+				},
+			]}
+		>
+			{cellElement(item.day)}
 
-					{cellElement(moneyToString(row.massage))}
+			{cellElement(moneyToString(item.acupuncture))}
 
-					{cellElement(moneyToString(row.insurance))}
+			{cellElement(moneyToString(item.massage))}
 
-					{cellElement(moneyToString(row.total))}
-				</DataTable.Row>
-			))}
+			{cellElement(moneyToString(item.insurance))}
 
+			{cellElement(moneyToString(item.non_acupuncturist_insurance))}
+
+			{cellElement(moneyToString(item.total))}
+		</DataTable.Row>
+	);
+
+	const footer = (
+		<>
 			<DataTable.Row
 				style={[
 					styles.sumRow,
@@ -218,6 +238,8 @@ const AcupunctureReportTable: React.FC<AcupunctureReportProp> = ({
 				{boldCellElement(moneyToString(totalMassage))}
 
 				{boldCellElement(moneyToString(totalInsurance))}
+
+				{boldCellElement(moneyToString(totalNonAcupuncturistInsurance))}
 
 				{boldCellElement('-')}
 			</DataTable.Row>
@@ -235,6 +257,10 @@ const AcupunctureReportTable: React.FC<AcupunctureReportProp> = ({
 				{boldCellElement(percentageToString(massagePercentage))}
 
 				{boldCellElement('-' + percentageToString(insurancePercentage))}
+
+				{boldCellElement(
+					'-' + percentageToString(nonAcupuncturistInsurancePercentage)
+				)}
 
 				{boldCellElement('-')}
 			</DataTable.Row>
@@ -255,6 +281,12 @@ const AcupunctureReportTable: React.FC<AcupunctureReportProp> = ({
 					totalInsuranceMoney === 0
 						? moneyToString(0)
 						: '-' + moneyToString(totalInsuranceMoney)
+				)}
+
+				{boldCellElement(
+					totalNonAcupuncturistInsuranceMoney === 0
+						? moneyToString(0)
+						: '-' + moneyToString(totalNonAcupuncturistInsuranceMoney)
 				)}
 
 				{boldCellElement('-')}
@@ -279,6 +311,20 @@ const AcupunctureReportTable: React.FC<AcupunctureReportProp> = ({
 					{moneyToString(totalMoney)}
 				</DataTable.Cell>
 			</DataTable.Row>
+		</>
+	);
+
+	return (
+		<DataTable style={[styles.table, { backgroundColor: rowColor }]}>
+			<FlatList
+				data={data}
+				renderItem={renderItem}
+				keyExtractor={(_, index) => index.toString()}
+				refreshControl={refreshControl}
+				ListHeaderComponent={header}
+				ListFooterComponent={footer}
+				stickyHeaderIndices={[0]}
+			/>
 		</DataTable>
 	);
 };
