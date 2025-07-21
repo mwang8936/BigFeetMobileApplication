@@ -16,6 +16,7 @@ export default interface AcupunctureReport {
 	acupuncture_percentage: number;
 	massage_percentage: number;
 	insurance_percentage: number;
+	non_acupuncturist_insurance_percentage: number;
 	data: DataRow[];
 	created_at: DateTime;
 	updated_at: DateTime;

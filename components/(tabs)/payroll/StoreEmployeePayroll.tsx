@@ -1,5 +1,11 @@
-import { useMemo, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { ReactElement, useMemo, useState } from 'react';
+import {
+	RefreshControlProps,
+	StyleSheet,
+	Text,
+	TouchableOpacity,
+	FlatList,
+} from 'react-native';
 
 import { useTranslation } from 'react-i18next';
 import { DataTable } from 'react-native-paper';
@@ -22,6 +28,7 @@ import CashAndTipsPayroll from './CashAndTipPayroll';
 
 interface StoreEmployeePayrollProp {
 	payroll: Payroll;
+	refreshControl: ReactElement<RefreshControlProps>;
 }
 
 interface RowData {
@@ -32,6 +39,7 @@ interface RowData {
 
 const StoreEmployeePayroll: React.FC<StoreEmployeePayrollProp> = ({
 	payroll,
+	refreshControl,
 }) => {
 	const { t } = useTranslation();
 
@@ -153,41 +161,41 @@ const StoreEmployeePayroll: React.FC<StoreEmployeePayrollProp> = ({
 		);
 	};
 
-	const payrollTable = (
-		<DataTable style={[styles.table, { backgroundColor: rowColor }]}>
-			<DataTable.Header
-				style={[
-					styles.header,
-					{ backgroundColor: headerColor, borderBlockColor: textColor },
-				]}
-			>
-				{titleElement(dateText)}
+	const header = (
+		<DataTable.Header
+			style={[
+				styles.header,
+				{
+					backgroundColor: headerColor,
+					borderBlockColor: textColor,
+				},
+			]}
+		>
+			{titleElement(dateText)}
+			{titleElement(t('Body'))}
+			{titleElement(t('Feet'))}
+		</DataTable.Header>
+	);
 
-				{titleElement(t('Body'))}
+	const renderItem = ({ item, index }: { item: RowData; index: number }) => (
+		<DataTable.Row
+			key={index}
+			style={[
+				styles.row,
+				{
+					backgroundColor: index % 2 === 0 ? alternatingRowColor : undefined,
+					borderBlockColor: textColor,
+				},
+			]}
+		>
+			{cellElement(item.day)}
+			{cellElement(item.body)}
+			{cellElement(item.feet)}
+		</DataTable.Row>
+	);
 
-				{titleElement(t('Feet'))}
-			</DataTable.Header>
-
-			{data.map((row, index) => (
-				<DataTable.Row
-					key={index}
-					style={[
-						styles.row,
-						{
-							backgroundColor:
-								index % 2 === 0 ? alternatingRowColor : undefined,
-							borderBlockColor: textColor,
-						},
-					]}
-				>
-					{cellElement(row.day)}
-
-					{cellElement(row.body)}
-
-					{cellElement(row.feet)}
-				</DataTable.Row>
-			))}
-
+	const footer = (
+		<>
 			<DataTable.Row
 				style={[
 					styles.sumRow,
@@ -217,7 +225,10 @@ const StoreEmployeePayroll: React.FC<StoreEmployeePayrollProp> = ({
 			<DataTable.Row
 				style={[
 					styles.totalRow,
-					{ backgroundColor: yellowRowColor, borderBlockColor: textColor },
+					{
+						backgroundColor: yellowRowColor,
+						borderBlockColor: textColor,
+					},
 				]}
 			>
 				{leftAlignBoldCellElement(t('TOTAL'))}
@@ -246,11 +257,27 @@ const StoreEmployeePayroll: React.FC<StoreEmployeePayrollProp> = ({
 					{moneyToString(cheque)}
 				</DataTable.Cell>
 			</DataTable.Row>
+		</>
+	);
+
+	const payrollTable = (
+		<DataTable style={[styles.table, { backgroundColor: rowColor }]}>
+			<FlatList
+				data={data}
+				renderItem={renderItem}
+				keyExtractor={(_, index) => index.toString()}
+				refreshControl={refreshControl}
+				ListHeaderComponent={header}
+				ListFooterComponent={footer}
+				stickyHeaderIndices={[0]}
+			/>
 		</DataTable>
 	);
 
 	const cashOutTable = useMemo(() => {
-		return <CashAndTipsPayroll payroll={payroll} />;
+		return (
+			<CashAndTipsPayroll payroll={payroll} refreshControl={refreshControl} />
+		);
 	}, [payroll]);
 
 	return (

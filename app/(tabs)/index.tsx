@@ -254,13 +254,9 @@ export default function SchedulerScreen() {
 									setHeaderHeight={setHeaderHeight}
 								/>
 							}
-							ListFooterComponent={
-								<SchedulerFooter
-									schedule={schedule}
-									setLoading={setIsSigning}
-								/>
-							}
 						/>
+						{/* Needs to be placed outside to be on top of reservations */}
+						<SchedulerFooter schedule={schedule} setLoading={setIsSigning} />
 
 						{generateReservations()}
 					</ScrollView>

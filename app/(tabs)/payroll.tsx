@@ -83,58 +83,59 @@ export default function PayrollScreen() {
 		});
 	};
 
+	const refreshControl = (
+		<RefreshControl refreshing={Boolean(isFetching)} onRefresh={onRefresh} />
+	);
+
 	const payrollElement = (payroll: Payroll) => {
 		switch (payroll.option) {
 			case PayrollOption.ACUPUNCTURIST:
-				return <AcupuncturistPayroll payroll={payroll} />;
+				return (
+					<AcupuncturistPayroll
+						payroll={payroll}
+						refreshControl={refreshControl}
+					/>
+				);
 			case PayrollOption.RECEPTIONIST:
-				return <ReceptionistPayroll payroll={payroll} />;
+				return (
+					<ReceptionistPayroll
+						payroll={payroll}
+						refreshControl={refreshControl}
+					/>
+				);
 			case PayrollOption.STORE_EMPLOYEE:
-				return <StoreEmployeePayroll payroll={payroll} />;
+				return (
+					<StoreEmployeePayroll
+						payroll={payroll}
+						refreshControl={refreshControl}
+					/>
+				);
 			case PayrollOption.STORE_EMPLOYEE_WITH_TIPS_AND_CASH:
-				return <StoreEmployeeWithCashAndTipsPayroll payroll={payroll} />;
+				return (
+					<StoreEmployeeWithCashAndTipsPayroll
+						payroll={payroll}
+						refreshControl={refreshControl}
+					/>
+				);
 			default:
-				return <StoreEmployeePayroll payroll={payroll} />;
+				return (
+					<StoreEmployeePayroll
+						payroll={payroll}
+						refreshControl={refreshControl}
+					/>
+				);
 		}
 	};
 
 	const payrollPart1 = payrolls.find(
 		(payroll) => payroll.part === PayrollPart.PART_1
 	);
-	const payrollPart1Element = payrollPart1 && (
-		<ScrollView
-			key={payrollPart1.part}
-			style={styles.scrollView}
-			contentContainerStyle={styles.scrollViewContent}
-			refreshControl={
-				<RefreshControl
-					refreshing={Boolean(isFetching)}
-					onRefresh={onRefresh}
-				/>
-			}
-		>
-			{payrollElement(payrollPart1)}
-		</ScrollView>
-	);
+	const payrollPart1Element = payrollPart1 && payrollElement(payrollPart1);
 
 	const payrollPart2 = payrolls.find(
 		(payroll) => payroll.part === PayrollPart.PART_2
 	);
-	const payrollPart2Element = payrollPart2 && (
-		<ScrollView
-			key={payrollPart2.part}
-			style={styles.scrollView}
-			contentContainerStyle={styles.scrollViewContent}
-			refreshControl={
-				<RefreshControl
-					refreshing={Boolean(isFetching)}
-					onRefresh={onRefresh}
-				/>
-			}
-		>
-			{payrollElement(payrollPart2)}
-		</ScrollView>
-	);
+	const payrollPart2Element = payrollPart2 && payrollElement(payrollPart2);
 
 	const acupunctureReport = acupunctureReports?.find(
 		(acupunctureReport) =>
@@ -142,18 +143,10 @@ export default function PayrollScreen() {
 			acupunctureReport.month === date.month
 	);
 	const acupunctureReportElement = acupunctureReport && (
-		<ScrollView
-			style={styles.scrollView}
-			contentContainerStyle={styles.scrollViewContent}
-			refreshControl={
-				<RefreshControl
-					refreshing={Boolean(isFetching)}
-					onRefresh={onRefresh}
-				/>
-			}
-		>
-			<AcupunctureReportTable acupunctureReport={acupunctureReport} />
-		</ScrollView>
+		<AcupunctureReportTable
+			acupunctureReport={acupunctureReport}
+			refreshControl={refreshControl}
+		/>
 	);
 
 	const noPayrollsElement =
@@ -163,12 +156,7 @@ export default function PayrollScreen() {
 			<ScrollView
 				style={styles.scrollView}
 				contentContainerStyle={styles.scrollViewContent}
-				refreshControl={
-					<RefreshControl
-						refreshing={Boolean(isFetching)}
-						onRefresh={onRefresh}
-					/>
-				}
+				refreshControl={refreshControl}
 			>
 				<Text style={[styles.textContent, { color: textColor }]}>
 					{t('No Payrolls')}
