@@ -1,11 +1,5 @@
-import { ReactElement, useMemo, useState } from 'react';
-import {
-	FlatList,
-	RefreshControlProps,
-	StyleSheet,
-	Text,
-	TouchableOpacity,
-} from 'react-native';
+import { useMemo, useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -32,7 +26,6 @@ import CashAndTipsPayroll from './CashAndTipPayroll';
 
 interface ReceptionistPayrollProp {
 	payroll: Payroll;
-	refreshControl: ReactElement<RefreshControlProps>;
 }
 
 interface RowData {
@@ -48,7 +41,6 @@ interface RowData {
 }
 const ReceptionistPayroll: React.FC<ReceptionistPayrollProp> = ({
 	payroll,
-	refreshControl,
 }) => {
 	const { t } = useTranslation();
 
@@ -224,318 +216,274 @@ const ReceptionistPayroll: React.FC<ReceptionistPayrollProp> = ({
 		);
 	};
 
-	const minimizedHeader = (
-		<DataTable.Header
-			style={[
-				styles.header,
-				{ backgroundColor: headerColor, borderBlockColor: textColor },
-			]}
-		>
-			{titleElement(dateText)}
-
-			{titleElement(t('Body'))}
-
-			{titleElement(t('Feet'))}
-
-			{titleElement(t('Total Hours'), 2)}
-		</DataTable.Header>
-	);
-
-	const renderMinimizedItem = ({
-		item,
-		index,
-	}: {
-		item: RowData;
-		index: number;
-	}) => (
-		<DataTable.Row
-			key={index}
-			style={[
-				styles.row,
-				{
-					backgroundColor: index % 2 === 0 ? alternatingRowColor : undefined,
-					borderBlockColor: textColor,
-				},
-			]}
-		>
-			{cellElement(item.day)}
-
-			{cellElement(item.body)}
-
-			{cellElement(item.feet)}
-
-			{cellElement(hoursToString(item.total_hours))}
-		</DataTable.Row>
-	);
-
-	const minimizedFooter = (
-		<>
-			<DataTable.Row
-				style={[
-					styles.sumRow,
-					{ backgroundColor: blueRowColor, borderBlockColor: textColor },
-				]}
-			>
-				{leftAlignBoldCellElement(t('SUM'))}
-
-				{boldCellElement(totalBodySessions)}
-
-				{boldCellElement(totalFeetSessions)}
-
-				{boldCellElement(hoursToString(totalHoursFinal))}
-			</DataTable.Row>
-
-			<DataTable.Row
-				style={[
-					styles.payPerRow,
-					{ backgroundColor: greenRowColor, borderBlockColor: textColor },
-				]}
-			>
-				{leftAlignBoldCellElement(t('PAY/PER'))}
-
-				{boldCellElement(moneyToString(bodyRate) + '/B')}
-
-				{boldCellElement(moneyToString(feetRate) + '/F')}
-
-				{boldCellElement(moneyToString(hourlyRate) + '/hr')}
-			</DataTable.Row>
-
-			<DataTable.Row
-				style={[
-					styles.totalRow,
-					{ backgroundColor: yellowRowColor, borderBlockColor: textColor },
-				]}
-			>
-				{leftAlignBoldCellElement(t('TOTAL'))}
-
-				{boldCellElement(moneyToString(totalBodyMoney))}
-
-				{boldCellElement(moneyToString(totalFeetMoney))}
-
-				{boldCellElement(moneyToString(totalHourlyMoney))}
-			</DataTable.Row>
-
-			<DataTable.Row
-				style={[
-					styles.chequeRow,
-					{ backgroundColor: goldRowColor, borderBlockColor: textColor },
-				]}
-			>
-				<DataTable.Cell
-					textStyle={[styles.extraBoldedCellTextStyle, { color: textColor }]}
-				>
-					{t('CHEQUE')}
-				</DataTable.Cell>
-
-				<DataTable.Cell
-					numeric
-					textStyle={[styles.extraBoldedCellTextStyle, { color: textColor }]}
-				>
-					{moneyToString(cheque)}
-				</DataTable.Cell>
-			</DataTable.Row>
-		</>
-	);
-
 	const minimizedTable = () => {
 		return (
 			<DataTable style={[styles.table, { backgroundColor: rowColor }]}>
-				<FlatList
-					data={data}
-					renderItem={renderMinimizedItem}
-					keyExtractor={(_, index) => index.toString()}
-					refreshControl={refreshControl}
-					ListHeaderComponent={minimizedHeader}
-					ListFooterComponent={minimizedFooter}
-					stickyHeaderIndices={[0]}
-				/>
+				<DataTable.Header
+					style={[
+						styles.header,
+						{ backgroundColor: headerColor, borderBlockColor: textColor },
+					]}
+				>
+					{titleElement(dateText)}
+
+					{titleElement(t('Body'))}
+
+					{titleElement(t('Feet'))}
+
+					{titleElement(t('Total Hours'), 2)}
+				</DataTable.Header>
+
+				{data.map((row, index) => (
+					<DataTable.Row
+						key={index}
+						style={[
+							styles.row,
+							{
+								backgroundColor:
+									index % 2 === 0 ? alternatingRowColor : undefined,
+								borderBlockColor: textColor,
+							},
+						]}
+					>
+						{cellElement(row.day)}
+
+						{cellElement(row.body)}
+
+						{cellElement(row.feet)}
+
+						{cellElement(hoursToString(row.total_hours))}
+					</DataTable.Row>
+				))}
+
+				<DataTable.Row
+					style={[
+						styles.sumRow,
+						{ backgroundColor: blueRowColor, borderBlockColor: textColor },
+					]}
+				>
+					{leftAlignBoldCellElement(t('SUM'))}
+
+					{boldCellElement(totalBodySessions)}
+
+					{boldCellElement(totalFeetSessions)}
+
+					{boldCellElement(hoursToString(totalHoursFinal))}
+				</DataTable.Row>
+
+				<DataTable.Row
+					style={[
+						styles.payPerRow,
+						{ backgroundColor: greenRowColor, borderBlockColor: textColor },
+					]}
+				>
+					{leftAlignBoldCellElement(t('PAY/PER'))}
+
+					{boldCellElement(moneyToString(bodyRate) + '/B')}
+
+					{boldCellElement(moneyToString(feetRate) + '/F')}
+
+					{boldCellElement(moneyToString(hourlyRate) + '/hr')}
+				</DataTable.Row>
+
+				<DataTable.Row
+					style={[
+						styles.totalRow,
+						{ backgroundColor: yellowRowColor, borderBlockColor: textColor },
+					]}
+				>
+					{leftAlignBoldCellElement(t('TOTAL'))}
+
+					{boldCellElement(moneyToString(totalBodyMoney))}
+
+					{boldCellElement(moneyToString(totalFeetMoney))}
+
+					{boldCellElement(moneyToString(totalHourlyMoney))}
+				</DataTable.Row>
+
+				<DataTable.Row
+					style={[
+						styles.chequeRow,
+						{ backgroundColor: goldRowColor, borderBlockColor: textColor },
+					]}
+				>
+					<DataTable.Cell
+						textStyle={[styles.extraBoldedCellTextStyle, { color: textColor }]}
+					>
+						{t('CHEQUE')}
+					</DataTable.Cell>
+
+					<DataTable.Cell
+						numeric
+						textStyle={[styles.extraBoldedCellTextStyle, { color: textColor }]}
+					>
+						{moneyToString(cheque)}
+					</DataTable.Cell>
+				</DataTable.Row>
 			</DataTable>
 		);
 	};
 
-	const fullHeader = (
-		<DataTable.Header
-			style={[
-				styles.header,
-				{ backgroundColor: headerColor, borderBlockColor: textColor },
-			]}
-		>
-			{titleElement(dateText)}
-
-			{titleElement(t('Start'))}
-
-			{titleElement(t('End'))}
-
-			{titleElement(t('Hours'))}
-
-			{titleElement(t('Body'))}
-
-			{titleElement(t('Feet'))}
-
-			{titleElement(t('Counted Hours'), 2)}
-
-			{titleElement(t('Holiday Rate'), 2)}
-
-			{titleElement(t('Total Hours'), 2)}
-		</DataTable.Header>
-	);
-
-	const renderFullItem = ({
-		item,
-		index,
-	}: {
-		item: RowData;
-		index: number;
-	}) => (
-		<DataTable.Row
-			key={index}
-			style={[
-				styles.row,
-				{
-					backgroundColor: index % 2 === 0 ? alternatingRowColor : undefined,
-					borderBlockColor: textColor,
-				},
-			]}
-		>
-			{cellElement(item.day)}
-
-			{cellElement(item.start ? getTimeString(item.start) : '-')}
-
-			{cellElement(item.end ? getTimeString(item.end) : '-')}
-
-			{cellElement(hoursToString(item.hours))}
-
-			{cellElement(item.body)}
-
-			{cellElement(item.feet)}
-
-			{cellElement(hoursToString(item.hours_minus_sessions))}
-
-			{cellElement(item.holiday ? '× 1.5' : '× 1')}
-
-			{cellElement(hoursToString(item.total_hours))}
-		</DataTable.Row>
-	);
-
-	const fullFooter = (
-		<>
-			<DataTable.Row
-				style={[
-					styles.sumRow,
-					{ backgroundColor: blueRowColor, borderBlockColor: textColor },
-				]}
-			>
-				{leftAlignBoldCellElement(t('SUM'))}
-
-				{boldCellElement('-')}
-
-				{boldCellElement('-')}
-
-				{boldCellElement(hoursToString(totalHours))}
-
-				{boldCellElement(totalBodySessions)}
-
-				{boldCellElement(totalFeetSessions)}
-
-				{boldCellElement(hoursToString(totalHoursMinusSessions))}
-
-				{boldCellElement('-')}
-
-				{boldCellElement(hoursToString(totalHoursFinal))}
-			</DataTable.Row>
-
-			<DataTable.Row
-				style={[
-					styles.payPerRow,
-					{ backgroundColor: greenRowColor, borderBlockColor: textColor },
-				]}
-			>
-				{leftAlignBoldCellElement(t('PAY/PER'))}
-
-				{boldCellElement('-')}
-
-				{boldCellElement('-')}
-
-				{boldCellElement('-')}
-
-				{boldCellElement(moneyToString(bodyRate) + '/B')}
-
-				{boldCellElement(moneyToString(feetRate) + '/F')}
-
-				{boldCellElement('-')}
-
-				{boldCellElement('-')}
-
-				{boldCellElement(moneyToString(hourlyRate) + '/hr')}
-			</DataTable.Row>
-
-			<DataTable.Row
-				style={[
-					styles.totalRow,
-					{ backgroundColor: yellowRowColor, borderBlockColor: textColor },
-				]}
-			>
-				{leftAlignBoldCellElement(t('TOTAL'))}
-
-				{boldCellElement('-')}
-
-				{boldCellElement('-')}
-
-				{boldCellElement('-')}
-
-				{boldCellElement(moneyToString(totalBodyMoney))}
-
-				{boldCellElement(moneyToString(totalFeetMoney))}
-
-				{boldCellElement('-')}
-
-				{boldCellElement('-')}
-
-				{boldCellElement(moneyToString(totalHourlyMoney))}
-			</DataTable.Row>
-
-			<DataTable.Row
-				style={[
-					styles.chequeRow,
-					{ backgroundColor: goldRowColor, borderBlockColor: textColor },
-				]}
-			>
-				<DataTable.Cell
-					textStyle={[styles.extraBoldedCellTextStyle, { color: textColor }]}
-				>
-					{t('CHEQUE')}
-				</DataTable.Cell>
-
-				<DataTable.Cell
-					numeric
-					textStyle={[styles.extraBoldedCellTextStyle, { color: textColor }]}
-				>
-					{moneyToString(cheque)}
-				</DataTable.Cell>
-			</DataTable.Row>
-		</>
-	);
-
 	const fullTable = () => {
 		return (
 			<DataTable style={[styles.table, { backgroundColor: rowColor }]}>
-				<FlatList
-					data={data}
-					renderItem={renderFullItem}
-					keyExtractor={(_, index) => index.toString()}
-					refreshControl={refreshControl}
-					ListHeaderComponent={fullHeader}
-					ListFooterComponent={fullFooter}
-					stickyHeaderIndices={[0]}
-				/>
+				<DataTable.Header
+					style={[
+						styles.header,
+						{ backgroundColor: headerColor, borderBlockColor: textColor },
+					]}
+				>
+					{titleElement(dateText)}
+
+					{titleElement(t('Start'))}
+
+					{titleElement(t('End'))}
+
+					{titleElement(t('Hours'))}
+
+					{titleElement(t('Body'))}
+
+					{titleElement(t('Feet'))}
+
+					{titleElement(t('Counted Hours'), 2)}
+
+					{titleElement(t('Holiday Rate'), 2)}
+
+					{titleElement(t('Total Hours'), 2)}
+				</DataTable.Header>
+
+				{data.map((row, index) => (
+					<DataTable.Row
+						key={index}
+						style={[
+							styles.row,
+							{
+								backgroundColor:
+									index % 2 === 0 ? alternatingRowColor : undefined,
+								borderBlockColor: textColor,
+							},
+						]}
+					>
+						{cellElement(row.day)}
+
+						{cellElement(row.start ? getTimeString(row.start) : '-')}
+
+						{cellElement(row.end ? getTimeString(row.end) : '-')}
+
+						{cellElement(hoursToString(row.hours))}
+
+						{cellElement(row.body)}
+
+						{cellElement(row.feet)}
+
+						{cellElement(hoursToString(row.hours_minus_sessions))}
+
+						{cellElement(row.holiday ? '× 1.5' : '× 1')}
+
+						{cellElement(hoursToString(row.total_hours))}
+					</DataTable.Row>
+				))}
+
+				<DataTable.Row
+					style={[
+						styles.sumRow,
+						{ backgroundColor: blueRowColor, borderBlockColor: textColor },
+					]}
+				>
+					{leftAlignBoldCellElement(t('SUM'))}
+
+					{boldCellElement('-')}
+
+					{boldCellElement('-')}
+
+					{boldCellElement(hoursToString(totalHours))}
+
+					{boldCellElement(totalBodySessions)}
+
+					{boldCellElement(totalFeetSessions)}
+
+					{boldCellElement(hoursToString(totalHoursMinusSessions))}
+
+					{boldCellElement('-')}
+
+					{boldCellElement(hoursToString(totalHoursFinal))}
+				</DataTable.Row>
+
+				<DataTable.Row
+					style={[
+						styles.payPerRow,
+						{ backgroundColor: greenRowColor, borderBlockColor: textColor },
+					]}
+				>
+					{leftAlignBoldCellElement(t('PAY/PER'))}
+
+					{boldCellElement('-')}
+
+					{boldCellElement('-')}
+
+					{boldCellElement('-')}
+
+					{boldCellElement(moneyToString(bodyRate) + '/B')}
+
+					{boldCellElement(moneyToString(feetRate) + '/F')}
+
+					{boldCellElement('-')}
+
+					{boldCellElement('-')}
+
+					{boldCellElement(moneyToString(hourlyRate) + '/hr')}
+				</DataTable.Row>
+
+				<DataTable.Row
+					style={[
+						styles.totalRow,
+						{ backgroundColor: yellowRowColor, borderBlockColor: textColor },
+					]}
+				>
+					{leftAlignBoldCellElement(t('TOTAL'))}
+
+					{boldCellElement('-')}
+
+					{boldCellElement('-')}
+
+					{boldCellElement('-')}
+
+					{boldCellElement(moneyToString(totalBodyMoney))}
+
+					{boldCellElement(moneyToString(totalFeetMoney))}
+
+					{boldCellElement('-')}
+
+					{boldCellElement('-')}
+
+					{boldCellElement(moneyToString(totalHourlyMoney))}
+				</DataTable.Row>
+
+				<DataTable.Row
+					style={[
+						styles.chequeRow,
+						{ backgroundColor: goldRowColor, borderBlockColor: textColor },
+					]}
+				>
+					<DataTable.Cell
+						textStyle={[styles.extraBoldedCellTextStyle, { color: textColor }]}
+					>
+						{t('CHEQUE')}
+					</DataTable.Cell>
+
+					<DataTable.Cell
+						numeric
+						textStyle={[styles.extraBoldedCellTextStyle, { color: textColor }]}
+					>
+						{moneyToString(cheque)}
+					</DataTable.Cell>
+				</DataTable.Row>
 			</DataTable>
 		);
 	};
 
 	const cashOutTable = useMemo(() => {
-		return (
-			<CashAndTipsPayroll payroll={payroll} refreshControl={refreshControl} />
-		);
+		return <CashAndTipsPayroll payroll={payroll} />;
 	}, [payroll]);
 
 	return (

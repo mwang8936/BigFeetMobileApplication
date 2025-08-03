@@ -1,9 +1,3 @@
-import { ReactElement } from 'react';
-import { FlatList, RefreshControlProps, StyleSheet, Text } from 'react-native';
-import { DataTable } from 'react-native-paper';
-
-import { useTranslation } from 'react-i18next';
-
 import { usePayrollDate } from '@/context-providers/PayrollDateContext';
 import { useThemeColor } from '@/hooks/colors/useThemeColor';
 import { useUserQuery } from '@/hooks/react-query/profile.hooks';
@@ -15,10 +9,12 @@ import {
 	moneyToString,
 	padStringOrNumber,
 } from '@/utils/string.utils';
+import { useTranslation } from 'react-i18next';
+import { StyleSheet, Text } from 'react-native';
+import { DataTable } from 'react-native-paper';
 
 export interface CashAndTipsPayrollProps {
 	payroll: Payroll;
-	refreshControl: ReactElement<RefreshControlProps>;
 }
 
 interface RowData {
@@ -28,10 +24,7 @@ interface RowData {
 	total: number;
 }
 
-const CashAndTipsPayroll: React.FC<CashAndTipsPayrollProps> = ({
-	payroll,
-	refreshControl,
-}) => {
+const CashAndTipsPayroll: React.FC<CashAndTipsPayrollProps> = ({ payroll }) => {
 	const { t } = useTranslation();
 
 	const { date } = usePayrollDate();
@@ -166,46 +159,45 @@ const CashAndTipsPayroll: React.FC<CashAndTipsPayrollProps> = ({
 		);
 	};
 
-	const header = (
-		<DataTable.Header
-			style={[
-				styles.header,
-				{ backgroundColor: headerColor, borderBlockColor: textColor },
-			]}
-		>
-			{titleElement(dateText)}
+	return (
+		<DataTable style={[styles.table, { backgroundColor: rowColor }]}>
+			<DataTable.Header
+				style={[
+					styles.header,
+					{ backgroundColor: headerColor, borderBlockColor: textColor },
+				]}
+			>
+				{titleElement(dateText)}
 
-			{titleElement(t('Cash'))}
+				{titleElement(t('Cash'))}
 
-			{titleElement(t('Tips'))}
+				{titleElement(t('Tips'))}
 
-			{titleElement(t('Total'))}
-		</DataTable.Header>
-	);
+				{titleElement(t('Total'))}
+			</DataTable.Header>
 
-	const renderItem = ({ item, index }: { item: RowData; index: number }) => (
-		<DataTable.Row
-			key={index}
-			style={[
-				styles.row,
-				{
-					backgroundColor: index % 2 === 0 ? alternatingRowColor : undefined,
-					borderBlockColor: textColor,
-				},
-			]}
-		>
-			{cellElement(item.day)}
+			{data.map((row, index) => (
+				<DataTable.Row
+					key={index}
+					style={[
+						styles.row,
+						{
+							backgroundColor:
+								index % 2 === 0 ? alternatingRowColor : undefined,
+							borderBlockColor: textColor,
+						},
+					]}
+				>
+					{cellElement(row.day)}
 
-			{cellElement(moneyToString(item.cash))}
+					{cellElement(moneyToString(row.cash))}
 
-			{cellElement(moneyToString(item.tips))}
+					{cellElement(moneyToString(row.tips))}
 
-			{cellElement(moneyToString(item.total))}
-		</DataTable.Row>
-	);
+					{cellElement(moneyToString(row.total))}
+				</DataTable.Row>
+			))}
 
-	const footer = (
-		<>
 			<DataTable.Row
 				style={[
 					styles.sumRow,
@@ -240,20 +232,6 @@ const CashAndTipsPayroll: React.FC<CashAndTipsPayrollProps> = ({
 					{moneyToString(total)}
 				</DataTable.Cell>
 			</DataTable.Row>
-		</>
-	);
-
-	return (
-		<DataTable style={[styles.table, { backgroundColor: rowColor }]}>
-			<FlatList
-				data={data}
-				renderItem={renderItem}
-				keyExtractor={(_, index) => index.toString()}
-				refreshControl={refreshControl}
-				ListHeaderComponent={header}
-				ListFooterComponent={footer}
-				stickyHeaderIndices={[0]}
-			/>
 		</DataTable>
 	);
 };

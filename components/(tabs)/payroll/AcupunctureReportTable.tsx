@@ -1,5 +1,4 @@
-import { ReactElement } from 'react';
-import { FlatList, RefreshControlProps, StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 
 import { useTranslation } from 'react-i18next';
 import { DataTable } from 'react-native-paper';
@@ -20,7 +19,6 @@ import {
 
 interface AcupunctureReportProp {
 	acupunctureReport: AcupunctureReport;
-	refreshControl: ReactElement<RefreshControlProps>;
 }
 
 interface RowData {
@@ -34,7 +32,6 @@ interface RowData {
 
 const AcupunctureReportTable: React.FC<AcupunctureReportProp> = ({
 	acupunctureReport,
-	refreshControl,
 }) => {
 	const { t } = useTranslation();
 
@@ -177,54 +174,53 @@ const AcupunctureReportTable: React.FC<AcupunctureReportProp> = ({
 		);
 	};
 
-	const header = (
-		<DataTable.Header
-			style={[
-				styles.header,
-				{ backgroundColor: headerColor, borderBlockColor: textColor },
-			]}
-		>
-			{titleElement(dateText)}
+	return (
+		<DataTable style={[styles.table, { backgroundColor: rowColor }]}>
+			<DataTable.Header
+				style={[
+					styles.header,
+					{ backgroundColor: headerColor, borderBlockColor: textColor },
+				]}
+			>
+				{titleElement(dateText)}
 
-			{titleElement(t('Acu'))}
+				{titleElement(t('Acu'))}
 
-			{titleElement(t('Massage'))}
+				{titleElement(t('Massage'))}
 
-			{titleElement(t('Insurance'))}
+				{titleElement(t('Insurance'))}
 
-			{titleElement(t('Insurance (Other)'), 2)}
+				{titleElement(t('Insurance (Other)'), 2)}
 
-			{titleElement(t('Total'))}
-		</DataTable.Header>
-	);
+				{titleElement(t('Total'))}
+			</DataTable.Header>
 
-	const renderItem = ({ item, index }: { item: RowData; index: number }) => (
-		<DataTable.Row
-			key={index}
-			style={[
-				styles.row,
-				{
-					backgroundColor: index % 2 === 0 ? alternatingRowColor : undefined,
-					borderBlockColor: textColor,
-				},
-			]}
-		>
-			{cellElement(item.day)}
+			{data.map((row, index) => (
+				<DataTable.Row
+					key={index}
+					style={[
+						styles.row,
+						{
+							backgroundColor:
+								index % 2 === 0 ? alternatingRowColor : undefined,
+							borderBlockColor: textColor,
+						},
+					]}
+				>
+					{cellElement(row.day)}
 
-			{cellElement(moneyToString(item.acupuncture))}
+					{cellElement(moneyToString(row.acupuncture))}
 
-			{cellElement(moneyToString(item.massage))}
+					{cellElement(moneyToString(row.massage))}
 
-			{cellElement(moneyToString(item.insurance))}
+					{cellElement(moneyToString(row.insurance))}
 
-			{cellElement(moneyToString(item.non_acupuncturist_insurance))}
+					{cellElement(moneyToString(row.non_acupuncturist_insurance))}
 
-			{cellElement(moneyToString(item.total))}
-		</DataTable.Row>
-	);
+					{cellElement(moneyToString(row.total))}
+				</DataTable.Row>
+			))}
 
-	const footer = (
-		<>
 			<DataTable.Row
 				style={[
 					styles.sumRow,
@@ -311,20 +307,6 @@ const AcupunctureReportTable: React.FC<AcupunctureReportProp> = ({
 					{moneyToString(totalMoney)}
 				</DataTable.Cell>
 			</DataTable.Row>
-		</>
-	);
-
-	return (
-		<DataTable style={[styles.table, { backgroundColor: rowColor }]}>
-			<FlatList
-				data={data}
-				renderItem={renderItem}
-				keyExtractor={(_, index) => index.toString()}
-				refreshControl={refreshControl}
-				ListHeaderComponent={header}
-				ListFooterComponent={footer}
-				stickyHeaderIndices={[0]}
-			/>
 		</DataTable>
 	);
 };
