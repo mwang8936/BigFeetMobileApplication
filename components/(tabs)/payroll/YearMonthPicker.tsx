@@ -112,7 +112,7 @@ const YearMonthPicker: React.FC<YearMonthPickerProp> = ({
 								style={styles.picker}
 								itemStyle={{ color: textColor }}
 							>
-								{generateYearPickerItems(2020, 2050)}
+								{generateYearPickerItems(2026, 2050)}
 							</Picker>
 						</View>
 

@@ -93,6 +93,52 @@ const HOLIDAYS: Record<number, DateTime[]> = {
 			{ zone: 'America/Los_Angeles' }
 		).startOf('day'), // Christmas Day
 	],
+	2026: [
+		DateTime.fromObject(
+			{ year: 2026, month: 1, day: 1 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // New Year's Day
+		DateTime.fromObject(
+			{ year: 2026, month: 2, day: 16 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // Family Day
+		DateTime.fromObject(
+			{ year: 2026, month: 4, day: 3 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // Good Friday
+		DateTime.fromObject(
+			{ year: 2026, month: 5, day: 18 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // Victoria Day
+		DateTime.fromObject(
+			{ year: 2026, month: 7, day: 1 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // Canada Day
+		DateTime.fromObject(
+			{ year: 2026, month: 8, day: 3 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // B.C. Day
+		DateTime.fromObject(
+			{ year: 2026, month: 9, day: 7 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // Labour Day
+		DateTime.fromObject(
+			{ year: 2026, month: 9, day: 30 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // National Day for Truth and Reconciliation
+		DateTime.fromObject(
+			{ year: 2026, month: 10, day: 12 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // Thanksgiving Day
+		DateTime.fromObject(
+			{ year: 2026, month: 11, day: 11 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // Remembrance Day
+		DateTime.fromObject(
+			{ year: 2026, month: 12, day: 25 },
+			{ zone: 'America/Los_Angeles' }
+		).startOf('day'), // Christmas Day
+	],
 };
 
 export default HOLIDAYS;
