@@ -36,6 +36,9 @@
 		"production": {
 			"autoIncrement": true,
 			"environment": "production",
+			"ios": {
+				"image": "latest"
+			},
 			"env": {
 				"APP_VARIANT": "production",
 				"EXPO_PUBLIC_BASE_API_URL": "https://bigfeetwebserver-t0ia.onrender.com/api"
