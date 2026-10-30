@@ -2,6 +2,8 @@ import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 
 import { DateTime } from 'luxon';
 
+import { getBCZone, getBCZoneForDay } from '@/utils/timezone.utils';
+
 import API_BASE_URL, { dateKeys } from '@/constants/API';
 
 import { CustomAPIError } from '@/models/custom-errors/API.Error';
@@ -23,9 +25,10 @@ const parseDate = (input: string): DateTime | string => {
 			.replace(/^(\d{4})-(\d)-/, '$1-0$2-') // Pad month
 			.replace(/-(\d)$/, '-0$1');
 
-		// Parse as a date in the beginning of the day in PST (America/Los_Angeles)
+		// Parse as a date in the beginning of the day in BC
+		const [year, month, day] = normalizedInput.split('-').map(Number);
 		const isoDate = DateTime.fromISO(normalizedInput, {
-			zone: 'America/Los_Angeles',
+			zone: getBCZoneForDay(year, month, day),
 		}).startOf('day');
 
 		if (isoDate.isValid) {
@@ -40,10 +43,10 @@ const parseDate = (input: string): DateTime | string => {
 		// Extract hours, minutes, and seconds
 		const [hours, minutes, seconds] = input.split(':').map(Number);
 
-		// Create a new DateTime for this time, assuming it's in PST (America/Los_Angeles)
+		// Create a new DateTime for this time today, assuming it's in BC
 		const time = DateTime.fromObject(
 			{ hour: hours, minute: minutes, second: seconds },
-			{ zone: 'America/Los_Angeles' }
+			{ zone: getBCZone() }
 		);
 
 		if (time.isValid) {

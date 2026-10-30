@@ -26,6 +26,7 @@ import { useToast } from '@/hooks/toast/useToast';
 import Schedule from '@/models/Schedule.Model';
 
 import { getTimeString } from '@/utils/string.utils';
+import { nowInBC } from '@/utils/timezone.utils';
 
 export default function SchedulerScreen() {
 	const { t } = useTranslation();
@@ -124,7 +125,7 @@ export default function SchedulerScreen() {
 	};
 
 	useEffect(() => {
-		let currentDate = DateTime.now().setZone('America/Los_Angeles');
+		let currentDate = nowInBC();
 
 		if (
 			currentDate.year === date.year &&

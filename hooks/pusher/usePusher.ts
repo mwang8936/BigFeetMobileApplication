@@ -17,7 +17,7 @@ import {
 	update_reservation_event,
 } from '@/models/events/reservation.events';
 import { schedulesQueryKey, userQueryKey } from '@/constants/Query';
-import { DateTime } from 'luxon';
+import { nowInBC } from '@/utils/timezone.utils';
 import {
 	add_vip_package_event,
 	delete_vip_package_event,
@@ -96,9 +96,7 @@ export const usePusher = () => {
 
 			showPusherToast(eventTitle, message);
 
-			const { year, month, day } = DateTime.now().setZone(
-				'America/Los_Angeles'
-			);
+			const { year, month, day } = nowInBC();
 
 			queryClient.refetchQueries({
 				queryKey: [userQueryKey, schedulesQueryKey, year, month, day],
@@ -148,9 +146,7 @@ export const usePusher = () => {
 
 			showPusherToast(eventTitle, message);
 
-			const { year, month, day } = DateTime.now().setZone(
-				'America/Los_Angeles'
-			);
+			const { year, month, day } = nowInBC();
 
 			queryClient.refetchQueries({
 				queryKey: [userQueryKey, schedulesQueryKey, year, month, day],
@@ -193,9 +189,7 @@ export const usePusher = () => {
 
 			showPusherToast(eventTitle, message);
 
-			const { year, month, day } = DateTime.now().setZone(
-				'America/Los_Angeles'
-			);
+			const { year, month, day } = nowInBC();
 
 			queryClient.refetchQueries({
 				queryKey: [userQueryKey, schedulesQueryKey, year, month, day],

@@ -16,6 +16,7 @@ import {
 } from '@/hooks/react-query/profile.hooks';
 
 import { getDateString } from '@/utils/string.utils';
+import { getBCZoneForDay } from '@/utils/timezone.utils';
 
 interface SignProp {
 	isSigned: boolean;
@@ -54,7 +55,7 @@ const Sign: React.FC<SignProp> = ({ isSigned, setLoading }) => {
 		const signDate = DateTime.fromObject(
 			{ ...date },
 			{
-				zone: 'America/Los_Angeles',
+				zone: getBCZoneForDay(date.year, date.month, date.day),
 			}
 		).startOf('day');
 

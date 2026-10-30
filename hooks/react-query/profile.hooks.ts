@@ -1,4 +1,6 @@
 import { DateTime } from 'luxon';
+
+import { getBCZoneForDay, nowInBC } from '@/utils/timezone.utils';
 import { useTranslation } from 'react-i18next';
 import {
 	QueryClient,
@@ -156,7 +158,7 @@ export const useUserAcupunctureReportsQuery = ({
 }: AcupunctureReportQueryProp) => {
 	const date = DateTime.fromObject(
 		{ year, month },
-		{ zone: 'America/Los_Angeles' }
+		{ zone: getBCZoneForDay(year, month) }
 	).startOf('day');
 
 	const params: GetProfileAcupunctureReportsParam = {
@@ -181,7 +183,7 @@ export const useUserPayrollsQuery = ({
 }: PayrollQueryProp) => {
 	const date = DateTime.fromObject(
 		{ year, month },
-		{ zone: 'America/Los_Angeles' }
+		{ zone: getBCZoneForDay(year, month) }
 	).startOf('day');
 
 	const params: GetProfilePayrollsParam = {
@@ -207,7 +209,7 @@ export const useUserSchedulesQuery = ({
 }: ScheduleQueryProp) => {
 	const date = DateTime.fromObject(
 		{ year, month, day },
-		{ zone: 'America/Los_Angeles' }
+		{ zone: getBCZoneForDay(year, month, day) }
 	).startOf('day');
 
 	const params: GetProfileSchedulesParam = {
@@ -226,10 +228,7 @@ export const useUserSchedulesQuery = ({
 };
 
 export const prefetchUserPayrollsQuery = async (queryClient: QueryClient) => {
-	let currentDate = DateTime.now();
-	currentDate = currentDate.setZone('America/Los_Angeles', {
-		keepLocalTime: true,
-	}) as DateTime;
+	const currentDate = nowInBC();
 
 	if (!currentDate.isValid) return;
 
@@ -253,10 +252,7 @@ export const prefetchUserPayrollsQuery = async (queryClient: QueryClient) => {
 export const prefetchUserAcupunctureReportsQuery = async (
 	queryClient: QueryClient
 ) => {
-	let currentDate = DateTime.now();
-	currentDate = currentDate.setZone('America/Los_Angeles', {
-		keepLocalTime: true,
-	}) as DateTime;
+	const currentDate = nowInBC();
 
 	if (!currentDate.isValid) return;
 
@@ -278,10 +274,7 @@ export const prefetchUserAcupunctureReportsQuery = async (
 };
 
 export const prefetchUserSchedulesQuery = async (queryClient: QueryClient) => {
-	let currentDate = DateTime.now();
-	currentDate = currentDate.setZone('America/Los_Angeles', {
-		keepLocalTime: true,
-	}) as DateTime;
+	const currentDate = nowInBC();
 
 	if (!currentDate.isValid) return;
 

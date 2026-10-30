@@ -2,6 +2,8 @@ import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { DateTime } from 'luxon';
+
+import { nowInBC, toBCTime } from '@/utils/timezone.utils';
 import { useTranslation } from 'react-i18next';
 import { ScrollView } from 'react-native-gesture-handler';
 import Modal from 'react-native-modal';
@@ -53,9 +55,7 @@ const ReservationTag: React.FC<ReservationTagProp> = ({
 	const service = reservation.service;
 	const customer = reservation.customer;
 
-	const reservationStart = reservation.reserved_date.setZone(
-		'America/Los_Angeles'
-	);
+	const reservationStart = toBCTime(reservation.reserved_date);
 	const reservationDuration = reservation.time ?? service.time;
 	const reservationEnd = reservationStart.plus({
 		minutes: reservationDuration,
@@ -98,7 +98,7 @@ const ReservationTag: React.FC<ReservationTagProp> = ({
 
 	const height = itemHeight * (reservationDuration / 30);
 
-	const currentPSTDate = DateTime.now().setZone('America/Los_Angeles');
+	const currentPSTDate = nowInBC();
 
 	const isActive =
 		currentPSTDate >= reservationStart && currentPSTDate < reservationEnd;

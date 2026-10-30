@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { DateTime } from 'luxon';
+import { nowInBC } from '@/utils/timezone.utils';
 
 import Schedule from '@/models/Schedule.Model';
 
@@ -31,7 +31,7 @@ const SchedulerFooter: React.FC<SchedulerFooterProp> = ({
 		const duration = reservation.time ?? reservation.service.time;
 		const endDate = start.plus({ minutes: duration });
 
-		const currentDate = DateTime.now().setZone('America/Los_Angeles');
+		const currentDate = nowInBC();
 
 		return endDate <= currentDate;
 	});
