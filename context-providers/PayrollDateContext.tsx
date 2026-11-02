@@ -1,5 +1,7 @@
 import { createContext, PropsWithChildren, useContext, useState } from 'react';
 
+import { nowInBC } from '@/utils/timezone.utils';
+
 interface YearMonth {
 	year: number;
 	month: number;
@@ -9,7 +11,7 @@ const PayrollDateContext = createContext<{
 	date: YearMonth;
 	setDate: (date: YearMonth) => void;
 }>({
-	date: { year: new Date().getFullYear(), month: new Date().getMonth() + 1 },
+	date: { year: nowInBC().year, month: nowInBC().month },
 	setDate: () => null,
 });
 
@@ -28,8 +30,8 @@ export const usePayrollDate = () => {
 
 export function PayrollDateProvider({ children }: PropsWithChildren) {
 	const [date, setDate] = useState<YearMonth>({
-		year: new Date().getFullYear(),
-		month: new Date().getMonth() + 1,
+		year: nowInBC().year,
+		month: nowInBC().month,
 	});
 
 	return (

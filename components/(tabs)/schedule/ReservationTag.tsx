@@ -600,7 +600,7 @@ const ReservationTag: React.FC<ReservationTagProp> = ({
 								<Text style={{ fontWeight: 'bold' }}>
 									{' '}
 									{reservation.updated_by +
-										` (${reservation.updated_at.toLocaleString()})`}
+										` (${toBCTime(reservation.updated_at).toLocaleString()})`}
 								</Text>
 							</Text>
 
@@ -614,7 +614,7 @@ const ReservationTag: React.FC<ReservationTagProp> = ({
 								<Text style={{ fontWeight: 'bold' }}>
 									{' '}
 									{reservation.created_by +
-										` (${reservation.created_at.toLocaleString()})`}
+										` (${toBCTime(reservation.created_at).toLocaleString()})`}
 								</Text>
 							</Text>
 						</View>

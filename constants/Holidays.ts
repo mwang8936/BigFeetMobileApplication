@@ -141,6 +141,52 @@ const HOLIDAYS: Record<number, DateTime[]> = {
 			{ zone: getBCZoneForDay(2026, 12, 25) }
 		).startOf('day'), // Christmas Day
 	],
+	2027: [
+		DateTime.fromObject(
+			{ year: 2027, month: 1, day: 1 },
+			{ zone: getBCZoneForDay(2027, 1, 1) }
+		).startOf('day'), // New Year's Day
+		DateTime.fromObject(
+			{ year: 2027, month: 2, day: 15 },
+			{ zone: getBCZoneForDay(2027, 2, 15) }
+		).startOf('day'), // Family Day
+		DateTime.fromObject(
+			{ year: 2027, month: 3, day: 26 },
+			{ zone: getBCZoneForDay(2027, 3, 26) }
+		).startOf('day'), // Good Friday
+		DateTime.fromObject(
+			{ year: 2027, month: 5, day: 24 },
+			{ zone: getBCZoneForDay(2027, 5, 24) }
+		).startOf('day'), // Victoria Day
+		DateTime.fromObject(
+			{ year: 2027, month: 7, day: 1 },
+			{ zone: getBCZoneForDay(2027, 7, 1) }
+		).startOf('day'), // Canada Day
+		DateTime.fromObject(
+			{ year: 2027, month: 8, day: 2 },
+			{ zone: getBCZoneForDay(2027, 8, 2) }
+		).startOf('day'), // B.C. Day
+		DateTime.fromObject(
+			{ year: 2027, month: 9, day: 6 },
+			{ zone: getBCZoneForDay(2027, 9, 6) }
+		).startOf('day'), // Labour Day
+		DateTime.fromObject(
+			{ year: 2027, month: 9, day: 30 },
+			{ zone: getBCZoneForDay(2027, 9, 30) }
+		).startOf('day'), // National Day for Truth and Reconciliation
+		DateTime.fromObject(
+			{ year: 2027, month: 10, day: 11 },
+			{ zone: getBCZoneForDay(2027, 10, 11) }
+		).startOf('day'), // Thanksgiving Day
+		DateTime.fromObject(
+			{ year: 2027, month: 11, day: 11 },
+			{ zone: getBCZoneForDay(2027, 11, 11) }
+		).startOf('day'), // Remembrance Day
+		DateTime.fromObject(
+			{ year: 2027, month: 12, day: 25 },
+			{ zone: getBCZoneForDay(2027, 12, 25) }
+		).startOf('day'), // Christmas Day
+	],
 };
 
 export default HOLIDAYS;

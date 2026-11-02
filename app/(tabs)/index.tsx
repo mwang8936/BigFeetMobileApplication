@@ -26,7 +26,7 @@ import { useToast } from '@/hooks/toast/useToast';
 import Schedule from '@/models/Schedule.Model';
 
 import { getTimeString } from '@/utils/string.utils';
-import { nowInBC } from '@/utils/timezone.utils';
+import { nowInBC, setBCDay } from '@/utils/timezone.utils';
 
 export default function SchedulerScreen() {
 	const { t } = useTranslation();
@@ -82,27 +82,29 @@ export default function SchedulerScreen() {
 
 	if (schedule) {
 		if (schedule.start) {
-			schedule.start = schedule.start.set({
-				year: schedule.date.year,
-				month: schedule.date.month,
-				day: schedule.date.day,
-			});
+			schedule.start = setBCDay(
+				schedule.start,
+				schedule.date.year,
+				schedule.date.month,
+				schedule.date.day
+			);
 		}
 
 		if (schedule.end) {
-			schedule.end = schedule.end.set({
-				year: schedule.date.year,
-				month: schedule.date.month,
-				day: schedule.date.day,
-			});
+			schedule.end = setBCDay(
+				schedule.end,
+				schedule.date.year,
+				schedule.date.month,
+				schedule.date.day
+			);
 		}
 	}
 
 	// TODO Fix Scrolling
 	const data: { date: DateTime; name: string }[] = [];
 	for (
-		let currTime = STORES.start.set({ ...date });
-		currTime <= STORES.end.set({ ...date });
+		let currTime = setBCDay(STORES.start, date.year, date.month, date.day);
+		currTime <= setBCDay(STORES.end, date.year, date.month, date.day);
 		currTime = currTime.plus({ minutes: 30 })
 	) {
 		data.push({

@@ -66,3 +66,35 @@ export function toBCTime(dateTime: DateTime): DateTime {
 export function nowInBC(): DateTime {
 	return toBCTime(DateTime.now());
 }
+
+/**
+ * Moves a BC time of day onto a BC calendar day, using that day's time zone.
+ * Times parsed from the server ('hh:mm:ss') and the store hours are created on
+ * whatever day they were parsed, so their zone can be the wrong one for the day
+ * they're shown on.
+ *
+ * @param {DateTime} time - The time of day, already in BC.
+ * @param {number} year - The year of the day.
+ * @param {number} month - The month of the day (1 for January, 12 for December).
+ * @param {number} day - The day of the month.
+ *
+ * @returns {DateTime} - That time of day on that day in BC.
+ */
+export function setBCDay(
+	time: DateTime,
+	year: number,
+	month: number,
+	day: number
+): DateTime {
+	return DateTime.fromObject(
+		{
+			year,
+			month,
+			day,
+			hour: time.hour,
+			minute: time.minute,
+			second: time.second,
+		},
+		{ zone: getBCZoneForDay(year, month, day) }
+	);
+}

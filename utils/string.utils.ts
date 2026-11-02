@@ -65,7 +65,7 @@ export function getShortMonthString(
 		);
 	}
 
-	const date = new Date(2000, monthNumber - 1);
+	const date = new Date(Date.UTC(2000, monthNumber - 1));
 
 	let locale;
 	if (language === Language.SIMPLIFIED_CHINESE) {
@@ -78,6 +78,7 @@ export function getShortMonthString(
 
 	return date.toLocaleDateString(locale, {
 		month: 'short',
+		timeZone: 'UTC', // Built in UTC above, so the phone's time zone can't shift it
 	});
 }
 
@@ -115,7 +116,7 @@ export function getFullMonthString(
 		);
 	}
 
-	const date = new Date(2000, monthNumber - 1);
+	const date = new Date(Date.UTC(2000, monthNumber - 1));
 
 	let locale;
 	if (language === Language.SIMPLIFIED_CHINESE) {
@@ -128,6 +129,7 @@ export function getFullMonthString(
 
 	return date.toLocaleDateString(locale, {
 		month: 'long',
+		timeZone: 'UTC', // Built in UTC above, so the phone's time zone can't shift it
 	});
 }
 
@@ -162,7 +164,7 @@ export function getYearMonthString(
 	language: Language = Language.ENGLISH
 ): string {
 	// Create a new Date object using the provided year and month (note: month is zero-indexed)
-	const date = new Date(yearNumber, monthNumber - 1);
+	const date = new Date(Date.UTC(yearNumber, monthNumber - 1));
 
 	// Determine the appropriate locale based on the specified language
 	let locale;
@@ -178,6 +180,7 @@ export function getYearMonthString(
 	return date.toLocaleDateString(locale, {
 		year: 'numeric', // Include the year as a numeric value
 		month: 'long', // Include the month name as a long text (e.g., "January")
+		timeZone: 'UTC', // Built in UTC above, so the phone's time zone can't shift it
 	});
 }
 
@@ -216,7 +219,7 @@ export function getDateString(
 	language: Language = Language.ENGLISH
 ): string {
 	// Create a new Date object using the provided year, month, and day (note: month is zero-indexed)
-	const date = new Date(yearNumber, monthNumber - 1, dayNumber);
+	const date = new Date(Date.UTC(yearNumber, monthNumber - 1, dayNumber));
 
 	// Determine the appropriate locale based on the specified language
 	let locale;
@@ -234,6 +237,7 @@ export function getDateString(
 		month: 'long',
 		day: 'numeric',
 		weekday: 'short',
+		timeZone: 'UTC', // Built in UTC above, so the phone's time zone can't shift it
 	});
 }
 

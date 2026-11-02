@@ -1,5 +1,7 @@
 import { createContext, PropsWithChildren, useContext, useState } from 'react';
 
+import { nowInBC } from '@/utils/timezone.utils';
+
 interface YearMonthDay {
 	year: number;
 	month: number;
@@ -11,9 +13,9 @@ const ScheduleDateContext = createContext<{
 	setDate: (date: YearMonthDay) => void;
 }>({
 	date: {
-		year: new Date().getFullYear(),
-		month: new Date().getMonth() + 1,
-		day: new Date().getDate(),
+		year: nowInBC().year,
+		month: nowInBC().month,
+		day: nowInBC().day,
 	},
 	setDate: () => null,
 });
@@ -33,9 +35,9 @@ export const useScheduleDate = () => {
 
 export function ScheduleDateProvider({ children }: PropsWithChildren) {
 	const [date, setDate] = useState<YearMonthDay>({
-		year: new Date().getFullYear(),
-		month: new Date().getMonth() + 1,
-		day: new Date().getDate(),
+		year: nowInBC().year,
+		month: nowInBC().month,
+		day: nowInBC().day,
 	});
 
 	return (
